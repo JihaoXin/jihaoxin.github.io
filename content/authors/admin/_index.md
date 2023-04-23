@@ -1,28 +1,28 @@
 ---
 # Display name
-title: Alice Wu 吳恩達
+title: Jihao Xin 辛继灏
 
 # Full name (for SEO)
-first_name: Alice
-last_name: Wu
+first_name: Jihao
+last_name: Xin
 
 # Status emoji
 status:
-  icon: ☕️
+  icon: 🇨🇳
 
 # Is this the primary user of the site?
 superuser: true
 
 # Role/position/tagline
-role: Professor of Artificial Intelligence
+role: Ph.D. Student in Machine Learning Systems
 
 # Organizations/Affiliations to show in About widget
 organizations:
-  - name: Stanford University
-    url: https://www.stanford.edu/
+  - name: KAUST, Saudi Arabia
+    url: https://www.kaust.edu.sa/
 
 # Short bio (displayed in user profile at end of posts)
-bio: My research interests include distributed robotics, mobile computing and programmable matter.
+bio: 
 
 # Interests to show in About widget
 interests:
@@ -33,7 +33,7 @@ interests:
 # Education to show in About widget
 education:
   courses:
-    - course: PhD in Artificial Intelligence
+    - course: PhD in Art    ificial Intelligence
       institution: Stanford University
       year: 2012
     - course: MEng in Artificial Intelligence
@@ -80,5 +80,5 @@ email: ''
 highlight_name: true
 ---
 
-Alice Wu is a professor of artificial intelligence at the Stanford AI Lab. Her research interests include distributed robotics, mobile computing and programmable matter. She leads the Robotic Neurobiology group, which develops self-reconfiguring robots, systems of self-organizing robots, and mobile sensor networks.
+👋 I'm a first-year PhD student in computer science, working with Prof. Marco Canini, in SANDS Lab. My research interests lie between computer systems and machine learning, devoting to speedup Deep Learning network training with efficient communication.
 {style="text-align: justify;"}
