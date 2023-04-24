@@ -172,6 +172,7 @@ sections:
           icon_pack: fab
 
   - block: markdown
+    id: kaust
     content:
       title: Gallery of KAUST
       subtitle: ''
