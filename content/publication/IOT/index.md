@@ -35,7 +35,7 @@ featured: false
 # links:
 # - name: ""
 #   url: ""
-url_pdf: 
+url_pdf:  'https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=9615751'
 url_code: ''
 url_dataset: ''
 url_poster: ''
