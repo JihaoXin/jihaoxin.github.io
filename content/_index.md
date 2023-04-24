@@ -196,7 +196,7 @@ sections:
         postcode: '23955'
         country: Saudi Arabia
         country_code: SA
-      directions: 4307-WS18, 4th Floor,Building 1
+      directions: 4307-WS18, 4th Floor, Building 1
       # Automatically link email and phone or display as text?
       # autolink: false
       # # Email form provider
