@@ -1,6 +1,6 @@
 ---
 # Display name
-title: Jihao Xin
+title: Jihao Xin  (辛继灏)
 # Full name (for SEO)
 first_name: Jihao
 last_name: Xin

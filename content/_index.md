@@ -9,7 +9,7 @@ sections:
     id: about
     content:
       # Choose a user profile to display (a folder name within `content/authors/`)
-      username: Admin
+      username: JihaoCH
       # Override your bio text from `authors/admin/_index.md`?
       text:
   - block: collection
