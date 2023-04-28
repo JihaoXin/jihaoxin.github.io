@@ -16,15 +16,15 @@ appearance:
 marketing:
   seo:
     site_type: Person
-    local_business_type: ''
-    org_name: ''
-    description: "👋🏻Welcome to Jihao's Homepage! "
+    local_business_type: 
+    org_name: 'KAUST'
+    description: "Jihao Xin's Homepage"
     twitter: 'jihao_xin'
   analytics:
-    google_analytics: '5126474970'
+    google_analytics: 'G-2WQMY0P6KB'
     baidu_tongji: ''
   verification:
-    google: ''
+    google: 'google-site-verification=d-Nr40-Vqt8YJk-XQKdpJ06hyKNCKn5T57As4uFXI3w'
     baidu: ''
 
 # Site header
