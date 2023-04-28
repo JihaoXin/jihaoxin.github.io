@@ -1,13 +1,13 @@
 ---
 # Display name
-title: Jihao Xin
+title: 辛继灏
 # Full name (for SEO)
 first_name: Jihao
 last_name: Xin
 
 # Status emoji
 status:
-  icon: ©️
+  icon:
 
 # Is this the primary user of the site?
 superuser: true

@@ -1,0 +1,36 @@
+# Navigation Links
+#   To link a homepage widget, specify the URL as a hash `#` followed by the filename of the
+#     desired widget in your `content/home/` folder.
+#   The weight parameter defines the order that the links will appear in.
+
+main:
+  - name: 简介
+    url: '#about'
+    weight: 10
+  - name: 论文
+    url: '#publication'
+    weight: 20
+  - name: 学历
+    url: '#education'
+    weight: 30
+  - name: 实习
+    url: '#internship'
+    weight: 40
+  - name: 其他
+    url: '#experience'
+    weight: 50
+  - name: 技能
+    url: '#like'
+    weight: 60
+  - name: KAUST剪影
+    url: '#kaust'
+    weight: 70
+  - name: 联系我
+    url: '#contact'
+    weight: 80
+
+# Link to a PDF of your resume/CV from the menu.
+# To enable, copy your resume/CV to `static/uploads/resume.pdf` and uncomment the lines below.
+#  - name: CV
+#    url: uploads/resume.pdf
+#    weight: 70

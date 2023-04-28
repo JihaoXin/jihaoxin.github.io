@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>0 | JihaoXin</title>
+    <link>https://jihaoxin.github.io/publication-type/0/</link>
+      <atom:link href="https://jihaoxin.github.io/publication-type/0/index.xml" rel="self" type="application/rss+xml" />
+    <description>0</description>
+    <generator>Wowchemy (https://wowchemy.com)</generator><language>en-us</language><lastBuildDate>Tue, 08 Aug 2023 00:00:00 +0000</lastBuildDate>
+    <image>
+      <url>https://jihaoxin.github.io/media/icon_hu018c1dc55165e26c84beadb86d6cf2ef_83085_512x512_fill_lanczos_center_3.png</url>
+      <title>0</title>
+      <link>https://jihaoxin.github.io/publication-type/0/</link>
+    </image>
+    
+    <item>
+      <title>Global QSGD: Practical Floatless Quantization for Distributed Learning with Theoretical Guarantees</title>
+      <link>https://jihaoxin.github.io/publication/gqsgd/</link>
+      <pubDate>Tue, 08 Aug 2023 00:00:00 +0000</pubDate>
+      <guid>https://jihaoxin.github.io/publication/gqsgd/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>
