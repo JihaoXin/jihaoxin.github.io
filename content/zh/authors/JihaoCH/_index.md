@@ -82,5 +82,5 @@ email: ''
 highlight_name: true
 ---
 
-👋 辛继灏，1998年生，山东潍坊人，计算机科学博一在读学生，师从[SANDS 实验室](https://sands.kaust.edu.sa/)的[Marco Canini 教授](https://mcanini.github.io/)，研究方向位于计算机系统和人工智能的交叉领域，通过梯度压缩算法和通信层面的优化，致力于解决分布式深度学习训练系统中的网络带宽瓶颈问题。
+👋 辛继灏，1998年生，山东潍坊人，计算机科学博一在读学生，师从金沙实验室[(SANDS)](https://sands.kaust.edu.sa/)的马可·卡尼尼[(Marco Canini)](https://mcanini.github.io/)教授，研究方向位于计算机系统和人工智能的交叉领域，通过梯度压缩算法和通信层面的优化，致力于解决分布式深度学习训练系统中的网络带宽瓶颈问题。
 {style="text-align: justify;"}
