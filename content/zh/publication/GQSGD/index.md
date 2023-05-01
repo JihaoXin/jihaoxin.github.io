@@ -36,7 +36,7 @@ featured: false
 url_pdf: 
 url_code: ''
 url_dataset: ''
-url_poster: ''
+url_poster: 'https://2023.eurosys.org/accepted-posters.html#accepted-posters'
 url_project: ''
 url_slides: ''
 url_source: ''
