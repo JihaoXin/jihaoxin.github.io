@@ -1,6 +1,6 @@
 ---
 # Leave the homepage title empty to use the site title
-title:
+title: Jihao Xin
 date: 2022-10-24
 type: landing
 
@@ -9,7 +9,7 @@ sections:
     id: about
     content:
       # Choose a user profile to display (a folder name within `content/authors/`)
-      username: JihaoCH
+      username: admin
       # Override your bio text from `authors/admin/_index.md`?
       text:
   - block: collection
