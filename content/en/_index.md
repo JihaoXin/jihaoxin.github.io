@@ -1,8 +1,8 @@
 ---
 # Leave the homepage title empty to use the site title
-title: Jihao Xin
-date: 2022-10-24
-type: landing
+title:
+date:
+type:
 
 sections:
   - block: about.avatar
