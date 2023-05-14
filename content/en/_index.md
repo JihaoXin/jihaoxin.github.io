@@ -1,8 +1,8 @@
 ---
 # Leave the homepage title empty to use the site title
 title:
-date:
-type:
+date: 2023-05-14
+type: landing
 
 sections:
   - block: about.avatar
