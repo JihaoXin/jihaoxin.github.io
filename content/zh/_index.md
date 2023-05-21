@@ -84,7 +84,7 @@ sections:
       #   Begin multi-line descriptions with YAML's `|2-` multi-line prefix.
       items:
         - title: 研究实习生
-          company: 奥地利理工
+          company: 奥地利科学技术研究所
           company_url: ''
           company_logo: ista
           location: 奥地利 维也纳
