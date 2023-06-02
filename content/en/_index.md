@@ -15,10 +15,10 @@ sections:
   - block: collection
     id: publication
     content:
-      title: Publication
+      title: Paper
       text: |-
         {{% callout note %}}
-        Quickly discover relevant content by [filtering publications](./publication/).
+        Quickly discover relevant content by [filtering papers](./publication/).
         {{% /callout %}}
       filters:
         folders:
