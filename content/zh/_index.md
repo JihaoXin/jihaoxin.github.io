@@ -47,7 +47,7 @@ sections:
           location: 沙特阿拉伯 麦加省 图瓦
           date_start: '2023-01-01'
           date_end:
-        - title: "计算机科学 硕士 成绩: 3.88/4.0"
+        - title: "计算机科学 硕士 成绩:3.90/4.0"
           company: 阿卜杜拉国王科技大学
           company_url: https://www.kaust.edu.sa
           company_logo: KAUST

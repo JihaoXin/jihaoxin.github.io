@@ -51,7 +51,7 @@ sections:
           company: KAUST
           company_url: https://www.kaust.edu.sa
           company_logo: KAUST
-          location: "Thuwal, Saudi Arabia · GPA = 3.88/4.0"
+          location: "Thuwal, Saudi Arabia · GPA = 3.90/4.0"
           date_end: '2022-12-01'
           date_start: '2021-08-01'
         - title: Master of Science in Applied Computational Science and Engineering
