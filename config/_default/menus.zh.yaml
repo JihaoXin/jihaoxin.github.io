@@ -22,12 +22,15 @@ main:
   - name: 技能
     url: '#like'
     weight: 60
+  - name: 奖项
+    url: '#award'
+    weight: 70
   - name: KAUST剪影
     url: '#kaust'
-    weight: 70
+    weight: 80
   - name: 联系我
     url: '#contact'
-    weight: 80
+    weight: 90
 
 # Link to a PDF of your resume/CV from the menu.
 # To enable, copy your resume/CV to `static/uploads/resume.pdf` and uncomment the lines below.
