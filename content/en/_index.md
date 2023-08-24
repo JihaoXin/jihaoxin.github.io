@@ -184,7 +184,7 @@ sections:
           description: ''
           organization: KAUST
           organization_url: https://www.kaust.org
-          title: KAUST Dean's List
+          title: Dean's List Award
           url: 
 
     design:

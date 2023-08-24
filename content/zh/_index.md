@@ -184,7 +184,7 @@ sections:
           description: ''
           organization: KAUST
           organization_url: https://www.kaust.org
-          title: KAUST院长奖
+          title: 院长嘉许名单
           url: 
 
 
