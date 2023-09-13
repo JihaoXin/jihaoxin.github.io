@@ -84,6 +84,14 @@ sections:
       #   Begin multi-line descriptions with YAML's `|2-` multi-line prefix.
       items:
         - title: Research Intern
+          company: Microsoft Research Asia
+          company_url: ''
+          company_logo: microsoft
+          location: Beijing, China
+          date_start: '2023-09-12'
+          date_end: ''
+          description:
+        - title: Research Intern
           company: ISTAustria
           company_url: ''
           company_logo: ista
