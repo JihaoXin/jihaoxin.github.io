@@ -8,7 +8,7 @@ authors:
   - Peter Richtárik
 
 date: "2023-08-12T00:00:00Z"
-doi: ""
+doi: "10.1145/3630048.3630184"
 
 # Schedule page publish date (NOT publication's date).
 publishDate: "2023-08-12T00:00:00Z"
@@ -34,7 +34,7 @@ featured: false
 # links:
 # - name: ""
 #   url: ""
-url_pdf: 
+url_pdf: 'https://dl.acm.org/doi/10.1145/3630048.3630184'
 url_code: ''
 url_dataset: ''
 url_poster: ''
