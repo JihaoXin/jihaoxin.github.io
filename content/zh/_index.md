@@ -40,15 +40,15 @@ sections:
       #   Leave `date_end` empty if it's your current employer.
       #   Begin multi-line descriptions with YAML's `|2-` multi-line prefix.
       items:
-        - title: 计算机科学 博士生，
+        - title: 计算机科学 博士在读
           company: 阿卜杜拉国王科技大学
           company_url: https://www.kaust.edu.sa
           company_logo: KAUST
           location: 沙特阿拉伯 麦加省 图瓦
           date_start: '2023-01-01'
           date_end:
-        - title: "计算机科学 硕士 成绩:3.90/4.0"
-          company: 阿卜杜拉国王科技大学
+        - title: "计算机科学 硕士 GPA 3.90/4.0 院长嘉许名单"
+          company: 阿卜杜拉国王科技大学 
           company_url: https://www.kaust.edu.sa
           company_logo: KAUST
           location: "沙特阿拉伯 麦加省 图瓦"
@@ -61,8 +61,8 @@ sections:
           location: 英国 伦敦
           date_end: '2021-10-01'
           date_start: '2020-10-01'
-        - title: "计算机科学与技术 学士 成绩: 89.34/100"
-          company: 山东大学
+        - title: "计算机科学与技术 学士 GPA 89.34/100"
+          company: 山东大学 
           company_url: https://www.sdu.edu.cn
           company_logo: SDU
           location: 山东省 威海
@@ -173,28 +173,28 @@ sections:
 
     design:
       columns: '2'
-  - block: accomplishments
-    id: award
-    content:
-      # Note: `&shy;` is used to add a 'soft' hyphen in a long heading.
-      title: '奖项'
-      subtitle:
-      # Date format: https://wowchemy.com/docs/customization/#date-format
-      date_format: Jan 2006
-      # Accomplishments.
-      #   Add/remove as many `item` blocks below as you like.
-      #   `title`, `organization`, and `date_start` are the required parameters.
-      #   Leave other parameters empty if not required.
-      #   Begin multi-line descriptions with YAML's `|2-` multi-line prefix.
-      items:
-        - certificate_url:
-          date_end: ''
-          date_start: '2023-08-24'
-          description: ''
-          organization: KAUST
-          organization_url: https://www.kaust.org
-          title: 院长嘉许名单
-          url: 
+  # - block: accomplishments
+  #   id: award
+  #   content:
+  #     # Note: `&shy;` is used to add a 'soft' hyphen in a long heading.
+  #     title: '奖项'
+  #     subtitle:
+  #     # Date format: https://wowchemy.com/docs/customization/#date-format
+  #     date_format: Jan 2006
+  #     # Accomplishments.
+  #     #   Add/remove as many `item` blocks below as you like.
+  #     #   `title`, `organization`, and `date_start` are the required parameters.
+  #     #   Leave other parameters empty if not required.
+  #     #   Begin multi-line descriptions with YAML's `|2-` multi-line prefix.
+  #     items:
+  #       - certificate_url:
+  #         date_end: ''
+  #         date_start: '2023-08-24'
+  #         description: ''
+  #         organization: KAUST
+  #         organization_url: https://www.kaust.org
+  #         title: 院长嘉许名单
+  #         url: 
 
 
     design:

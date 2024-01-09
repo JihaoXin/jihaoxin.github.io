@@ -40,32 +40,32 @@ sections:
       #   Leave `date_end` empty if it's your current employer.
       #   Begin multi-line descriptions with YAML's `|2-` multi-line prefix.
       items:
-        - title: Ph.D student in Computer Science
+        - title: Ph.D. student in Computer Science
           company: KAUST
           company_url: https://www.kaust.edu.sa
           company_logo: KAUST
           location: Thuwal, Saudi Arabia
           date_start: '2023-01-01'
           date_end:
-        - title: Master of Science in Computer Science
+        - title: Master of Science in Computer Science (GPA = 3.90/4.0, Dean's List)
           company: KAUST
           company_url: https://www.kaust.edu.sa
           company_logo: KAUST
-          location: "Thuwal, Saudi Arabia · GPA = 3.90/4.0"
+          location: "Thuwal, Saudi Arabia"
           date_end: '2022-12-01'
           date_start: '2021-08-01'
-        - title: Master of Science in Applied Computational Science and Engineering
+        - title: Master of Science in Applied Computational Science and Engineering  (Distinction)
           company: Imperial College London
           company_url: https://www.imperial.ac.uk
           company_logo: ICL
-          location: London, UK  · Distinction Degree
+          location: London, UK
           date_end: '2021-10-01'
           date_start: '2020-10-01'
-        - title: Bachelor of Engineering in Computer Science and Technology
+        - title: Bachelor of Engineering in Computer Science and Technology (GPA = 89.34/100)
           company: Shandong University
           company_url: https://www.sdu.edu.cn
           company_logo: SDU
-          location: Weihai, China  · GPA = 89.34/100
+          location: Weihai, China
           date_end: '2020-06-01'
           date_start: '2016-09-01'
     design:
@@ -170,30 +170,30 @@ sections:
           title: "Robotics & AI Winter School - Imperial College London Hamlyn Center"
           url: 
 
-    design:
-      columns: '2'
-  - block: accomplishments
-    id: award
-    content:
-      # Note: `&shy;` is used to add a 'soft' hyphen in a long heading.
-      title: 'Award'
-      subtitle:
-      # Date format: https://wowchemy.com/docs/customization/#date-format
-      date_format: Jan 2006
-      # Accomplishments.
-      #   Add/remove as many `item` blocks below as you like.
-      #   `title`, `organization`, and `date_start` are the required parameters.
-      #   Leave other parameters empty if not required.
-      #   Begin multi-line descriptions with YAML's `|2-` multi-line prefix.
-      items:
-        - certificate_url:
-          date_end: ''
-          date_start: '2023-08-24'
-          description: ''
-          organization: KAUST
-          organization_url: https://www.kaust.org
-          title: Dean's List Award
-          url: 
+  #   design:
+  #     columns: '2'
+  # - block: accomplishments
+  #   id: award
+  #   content:
+  #     # Note: `&shy;` is used to add a 'soft' hyphen in a long heading.
+  #     title: 'Award'
+  #     subtitle:
+  #     # Date format: https://wowchemy.com/docs/customization/#date-format
+  #     date_format: Jan 2006
+  #     # Accomplishments.
+  #     #   Add/remove as many `item` blocks below as you like.
+  #     #   `title`, `organization`, and `date_start` are the required parameters.
+  #     #   Leave other parameters empty if not required.
+  #     #   Begin multi-line descriptions with YAML's `|2-` multi-line prefix.
+  #     items:
+  #       - certificate_url:
+  #         date_end: ''
+  #         date_start: '2023-08-24'
+  #         description: ''
+  #         organization: KAUST
+  #         organization_url: https://www.kaust.org
+  #         title: Dean's List Award
+  #         url: 
 
     design:
       columns: '2'
