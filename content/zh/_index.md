@@ -103,7 +103,7 @@ sections:
               基于高效阈值选择的TopK梯度压缩。 语言：CUDA/C++
               
         - title: 后端开发实习生
-          company: Tencent Cloud
+          company: 腾讯云
           company_url: ''
           company_logo: tencent
           location: 中国 深圳
