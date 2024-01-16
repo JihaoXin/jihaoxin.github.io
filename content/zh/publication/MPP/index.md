@@ -20,7 +20,7 @@ publication_types: ["2"]
 
 # Publication name and optional abbreviated publication name.
 publication: "*IEEE Transactions on Instrumentation and Measurement 2022*"
-publication_short: "TIM'22"
+publication_short: "TIM'22 (JCR Q1)"
 
 abstract: The shadows formed by fast-moving vehicles on a pavement PV array exhibit complex dynamic random distribution characteristics, which can cause a dynamic multipeak PV curve. Dynamic vehicle shadow will cause a reduction in pavement PV power, so the question is how to maximize the power in such conditions by operating at different maximum power point (MPP) quickly and continually. To address this issue, this article proposes an MPP voltage forecasting method based on convolutional neural network (CNN). This method inputs the environmental information of pavement PV array into the proposed CNN model for learning and then uses this model to forecast the MPP voltage. Finally, simulation and experimental test with ResNet, MLP, and CNN methods are carried out and the comparison results show that this model can accurately predict the MPP voltage of pavement PV array under different vehicle shading conditions.
 
