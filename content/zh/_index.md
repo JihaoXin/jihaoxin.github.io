@@ -88,10 +88,10 @@ sections:
           company_url: ''
           company_logo: microsoft
           location: 北京 中国
-          date_start: '2023-09-12'
-          date_end: ''
-          description:
-
+          date_start: '2023-09-19'
+          date_end: '2024-03-19'
+          description: |
+           大语言模型推理的多GPU通信
         - title: 研究实习生
           company: 奥地利科学技术研究所
           company_url: ''

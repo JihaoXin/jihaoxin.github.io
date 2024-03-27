@@ -47,7 +47,7 @@ sections:
           location: Thuwal, Saudi Arabia
           date_start: '2023-01-01'
           date_end:
-        - title: Master of Science in Computer Science (GPA = 3.90/4.0, Dean's List)
+        - title: Master of Science in Computer Science (Dean's List Award) (GPA = 3.90/4.0)
           company: KAUST
           company_url: https://www.kaust.edu.sa
           company_logo: KAUST
@@ -88,8 +88,8 @@ sections:
           company_url: ''
           company_logo: microsoft
           location: Beijing, China
-          date_start: '2023-09-12'
-          date_end: ''
+          date_start: '2023-09-19'
+          date_end: '2024-03-19'
           description:
         - title: Research Intern
           company: ISTAustria
