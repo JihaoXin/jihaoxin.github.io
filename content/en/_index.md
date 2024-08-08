@@ -138,6 +138,14 @@ sections:
       #   Begin multi-line descriptions with YAML's `|2-` multi-line prefix.
       items:
         - certificate_url:
+          date_end: '2024-04-01'
+          date_start: '2024-06-01'
+          description: ''
+          organization: 'KAUST'
+          organization_url: https://www.kaust.org
+          title: 'TA -  Saudi Ministry of Interior Program CS229: Machine Learning'
+          url: 
+        - certificate_url:
           date_end: ''
           date_start: '2023-07-01'
           description: ''
