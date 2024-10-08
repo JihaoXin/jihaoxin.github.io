@@ -21,7 +21,7 @@ publishDate: "2024-02-10T00:00:00Z"
 publication_types: ["1"]
 
 # Publication name and optional abbreviated publication name.
-publication: "The 2nd Workshop on Hot Topics in System Infrastructure"
+publication: "SOSP Workshop on Hot Topics in System Infrastructure"
 publication_short: "HotInfra'24"
 
 abstract: Large AI models have necessitated efficient communication strategies across multi-GPU and multi-node infrastructures due to their increasing complexity. Current methods focusing on inter-operator overlaps fail when dependencies exist, leading to underutilized hardware. DistFuse addresses this by enabling fine-grained overlapping of computation and communication, triggering communication as soon as data is ready, and reducing latency. Initial experiments show up to 44.3% reduction in communication latency of Llama3-70B inference on a single node, demonstrating its potential to accelerate diverse AI workloads.

@@ -20,7 +20,7 @@ publishDate: "2023-08-12T00:00:00Z"
 publication_types: ["1"]
 
 # Publication name and optional abbreviated publication name.
-publication: "*DistributedML'23*"
+publication: "CoNEXT workshop on Distributed Machine Learning"
 publication_short: "DistributedML'23"
 
 abstract: In distributed training, communication often emerges as a bottleneck. In response, we introduce Kimad, a solution that offers adaptive gradient compression. By consistently monitoring bandwidth, Kimad refines compression ratios to match specific neural network layer requirements. Our exhaustive tests and proofs confirm Kimad's outstanding performance, establishing it as a benchmark in adaptive compression for distributed deep learning.
