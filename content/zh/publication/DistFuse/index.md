@@ -6,7 +6,6 @@ authors:
   - KyoungSoo Park
   - Marco Canini 
   - Changho Hwang
-  - Peng Cheng
 
 date: "2024-02-10T00:00:00Z"
 doi: ""
