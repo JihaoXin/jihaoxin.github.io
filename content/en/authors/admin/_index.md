@@ -82,5 +82,5 @@ email: ''
 highlight_name: true
 ---
 
-👋 I'm a second-year PhD student in computer science, working with [Prof. Marco Canini](https://mcanini.github.io/) at [SANDS Lab](https://sands.kaust.edu.sa/). My research interests lie between computer systems and machine learning, devoting to speedup deep learning training and inference via efficient communication. My recent work focuses on gradient compression and optimized GPU communication. I'm also a member at KAUST Graduate Student Council(12/1683).
+👋 I'm a PhD student in computer science, working with [Prof. Marco Canini](https://mcanini.github.io/) at [SANDS Lab](https://sands.kaust.edu.sa/). My research interests lie between computer systems and machine learning, devoting to speedup deep learning training and inference via efficient communication. My recent work focuses on gradient compression and optimized GPU communication.
 {style="text-align: justify;"}

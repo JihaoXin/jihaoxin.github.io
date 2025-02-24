@@ -42,13 +42,22 @@ sections:
       items:
         - title: 计算机科学 博士在读
           company: 阿卜杜拉国王科技大学
+          description: |2-
+            * KAUST学生会代表 (12/1683) (2024-2025)
+            * 助教-KAUST CS240: 并发计算系统 (2022秋季, 2024秋季)
+            * 助教-沙特内政部学位培训 CS229: 机器学习 (2023春季)
+            * 助教-电子科大暑校 (2022夏季, 2023夏季)
+            * 助教-CS398 研究生研讨会 (2025春季)
           company_url: https://www.kaust.edu.sa
           company_logo: KAUST
           location: 沙特阿拉伯 麦加省 图瓦
           date_start: '2023-01-01'
           date_end:
-        - title: "计算机科学 硕士 GPA 3.90/4.0 院长嘉许名单"
+        - title: "计算机科学 硕士"
           company: 阿卜杜拉国王科技大学 
+          description: |2-
+            * 院长嘉许名单 (2023)
+            * GPA = 3.88/4.0
           company_url: https://www.kaust.edu.sa
           company_logo: KAUST
           location: "沙特阿拉伯 麦加省 图瓦"
@@ -139,37 +148,12 @@ sections:
       #   Begin multi-line descriptions with YAML's `|2-` multi-line prefix.
       items:
         - certificate_url:
-          date_end: '2024-04-01'
-          date_start: '2024-06-01'
-          description: ''
-          organization: 'KAUST'
-          organization_url: https://www.kaust.org
-          title: '助教 - 沙特内政部学位培训 CS229: 机器学习'
-          url: 
-        - certificate_url:
-          date_end: ''
-          date_start: '2023-07-01'
-          description: ''
-          organization: KAUST
-          organization_url: https://www.kaust.org
-          title: 助教 - 电子科大 & KAUST 暑校
-          url: 
-        - certificate_url:
-          date_end: '2022-12-01'
-          date_start: '2022-08-01'
-          description: ''
-          organization: KAUST
-          organization_url: https://www.kaust.org
-          title: "助教 - KAUST CS240 : 并发计算系统"
-          url: 'https://sands.kaust.edu.sa/classes/CS240/F22/'
-        - certificate_url:
-          date_end: ''
-          date_start: '2022-06-01'
-          description: ''
-          organization: KAUST
-          organization_url: https://www.kaust.org
-          title: 助教 - 电子科大 & KAUST 暑校
-          url: 
+          date_start: '2019-06-01'
+          date_end: '2019-08-01'
+          organization: uwa
+          organization_url: ''
+          title: "暑期研究项目 - 西澳大利亚大学"
+          url: ''
         - certificate_url:
           date_start: '2019-01-01'
           date_end: '2019-02-01'

@@ -42,13 +42,22 @@ sections:
       items:
         - title: Ph.D. student in Computer Science
           company: KAUST
+          description: |2-
+            * KAUST Graduate Student Council Representative (12/1683) (2024-2025)
+            * TA-KAUST CS240: Computing Systems and Concurrency (2022 Fall, 2024Fall)
+            * TA-Saudi Ministry of Interior Program CS229: Machine Learning (2023 Spring)
+            * TA-UESTC Boot Camp (2022 Summer, 2023 Summer)
+            * TA-CS398 Graduate Seminar (2025 Spring)
           company_url: https://www.kaust.edu.sa
           company_logo: KAUST
           location: Thuwal, Saudi Arabia
           date_start: '2023-01-01'
           date_end:
-        - title: Master of Science in Computer Science (Dean's List Award) (GPA = 3.90/4.0)
+        - title: Master of Science in Computer Science
           company: KAUST
+          description: |2-
+            * Dean's List Award (2023)
+            * GPA = 3.88/4.0
           company_url: https://www.kaust.edu.sa
           company_logo: KAUST
           location: "Thuwal, Saudi Arabia"
@@ -138,37 +147,12 @@ sections:
       #   Begin multi-line descriptions with YAML's `|2-` multi-line prefix.
       items:
         - certificate_url:
-          date_end: '2024-04-01'
-          date_start: '2024-06-01'
-          description: ''
-          organization: 'KAUST'
-          organization_url: https://www.kaust.org
-          title: 'TA -  Saudi Ministry of Interior Program CS229: Machine Learning'
-          url: 
-        - certificate_url:
-          date_end: ''
-          date_start: '2023-07-01'
-          description: ''
-          organization: KAUST
-          organization_url: https://www.kaust.org
-          title: TA - UESTC & KAUST Summer School
-          url: 
-        - certificate_url:
-          date_end: '2022-12-01'
-          date_start: '2022-08-01'
-          description: ''
-          organization: KAUST
-          organization_url: https://www.kaust.org
-          title: "TA - CS240 : Computing Systems and Concurrency"
-          url: 'https://sands.kaust.edu.sa/classes/CS240/F22/'
-        - certificate_url:
-          date_end: ''
-          date_start: '2022-06-01'
-          description: ''
-          organization: KAUST
-          organization_url: https://www.kaust.org
-          title: TA - UESTC & KAUST Summer School
-          url: 
+          date_start: '2019-06-01'
+          date_end: '2019-08-01'
+          organization: uwa
+          organization_url: ''
+          title: "Summer Research Program - The University of Western Australia"
+          url: ''
         - certificate_url:
           date_start: '2019-01-01'
           date_end: '2019-02-01'
@@ -177,6 +161,7 @@ sections:
           organization_url: https://www.ic.ac.uk
           title: "Robotics & AI Winter School - Imperial College London Hamlyn Center"
           url: 
+ 
 
   #   design:
   #     columns: '2'
