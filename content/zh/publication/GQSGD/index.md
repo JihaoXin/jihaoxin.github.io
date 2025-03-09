@@ -6,9 +6,9 @@ authors:
   - Peter Richtárik
   - Samuel Horváth
 
-date: "2025-03-30T00:00:00Z"
-doi: "10.48550/arXiv.2305.18627"
-
+date: "2025-03-08T00:00:00Z"
+doi: "10.1145/3721146.3721932"
+ 
 # Schedule page publish date (NOT publication's date).
 publishDate: "2022-11-08T00:00:00Z"
 
@@ -19,7 +19,7 @@ publishDate: "2022-11-08T00:00:00Z"
 publication_types: ["1"]
 
 # Publication name and optional abbreviated publication name.
-publication: "*The 5th Workshop on Machine Learning and Systems *"
+publication: "*EuroMLSys*"
 publication_short: "EuroMLSys'25"
 
 abstract: The increase of deep learning models and dataset sizes make training time-consuming, while heavy communication, primarily due to gradients synchronization as a key bottleneck. Sapio et al. [7] show that communication can take up to 90% of a training iteration. A popular remedy is to reduce the size of communication data between nodes by applying gradient compression methods [1, 3, 6, 8, 9, 11]. Unfortunately, a majority of the proposed compressors are not natively compatible with the AllReduce collective communication primitive because of the change in data format and the need for custom reduction operations. To the best of our knowledge, the only compressors compatible with AllReduce are PowerSGD [10] and IntSGD [5, 7]. However, practical implementations of these methods are heuristic-based and do not come with rigorous theoretical guarantees. Concurrently, C-Coll [4] proposes error-bounded lossy compression with MPI collectives. We address this question can we provide theoretical guarantees for gradient compression while retaining AllReduce compatibility for an efficient implementation?
@@ -33,7 +33,7 @@ featured: false
 # links:
 # - name: ""
 #   url: ""
-url_pdf: 'https://arxiv.org/pdf/2305.18627.pdf' 
+url_pdf: 'https://doi.org/10.1145/3721146.3721932' 
 url_code: ''
 url_dataset: ''
 url_poster: ''

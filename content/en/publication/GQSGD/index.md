@@ -7,7 +7,7 @@ authors:
   - Samuel Horváth
 
 date: "2025-03-08T00:00:00Z"
-doi: "10.48550/arXiv.2305.18627"
+doi: "10.1145/3721146.3721932"
  
 # Schedule page publish date (NOT publication's date).
 publishDate: "2022-11-08T00:00:00Z"
@@ -33,7 +33,7 @@ featured: false
 # links:
 # - name: ""
 #   url: ""
-url_pdf: 'https://arxiv.org/pdf/2305.18627.pdf' 
+url_pdf: 'https://doi.org/10.1145/3721146.3721932' 
 url_code: ''
 url_dataset: ''
 url_poster: ''
