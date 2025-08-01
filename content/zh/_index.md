@@ -148,6 +148,14 @@ sections:
       #   Begin multi-line descriptions with YAML's `|2-` multi-line prefix.
       items:
         - certificate_url:
+          date_start: '2025-07-14'
+          date_end: '2025-07-18'
+          description: ''
+          organization: BSC
+          organization_url: https://pumps.bsc.es/
+          title: "PUMPS+AI暑校 - 巴塞罗那超算中心"
+          url: 
+        - certificate_url:
           date_start: '2019-06-01'
           date_end: '2019-08-01'
           organization: uwa

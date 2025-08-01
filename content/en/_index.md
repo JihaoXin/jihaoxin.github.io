@@ -147,9 +147,17 @@ sections:
       #   Begin multi-line descriptions with YAML's `|2-` multi-line prefix.
       items:
         - certificate_url:
+          date_start: '2025-07-14'
+          date_end: '2025-07-18'
+          description: ''
+          organization: BSC
+          organization_url: https://pumps.bsc.es/
+          title: "PUMPS+AI Summer School - Barcelona Supercomputing Center"
+          url: 
+        - certificate_url:
           date_start: '2019-06-01'
           date_end: '2019-08-01'
-          organization: uwa
+          organization: UWA
           organization_url: ''
           title: "Summer Research Program - The University of Western Australia"
           url: ''
@@ -157,7 +165,7 @@ sections:
           date_start: '2019-01-01'
           date_end: '2019-02-01'
           description: ''
-          organization: ICL
+          organization: 'ICL'
           organization_url: https://www.ic.ac.uk
           title: "Robotics & AI Winter School - Imperial College London Hamlyn Center"
           url: 
