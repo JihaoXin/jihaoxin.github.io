@@ -7,8 +7,7 @@ authors:
   - Samuel Horváth
 
 date: "2025-10-25T00:00:00Z"
-doi: ""
- 
+
 # Schedule page publish date (NOT publication's date).
 publishDate: "2022-11-08T00:00:00Z"
 
@@ -34,7 +33,7 @@ featured: false
 # - name: ""
 #   url: ""
 url_pdf: 'https://arxiv.org/pdf/2305.18627' 
-url_code: 'https://github.com/sands-lab/global-qsgd'
+url_code: ''
 url_dataset: ''
 url_poster: ''
 url_project: ''

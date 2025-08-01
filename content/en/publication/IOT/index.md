@@ -9,7 +9,6 @@ authors:
   - Xin Huang
 
 date: "2021-08-08T00:00:00Z"
-doi: 10.1109/ISNCC52172.2021.9615751
 
 # Schedule page publish date (NOT publication's date).
 publishDate: "2022-11-08T00:00:00Z"

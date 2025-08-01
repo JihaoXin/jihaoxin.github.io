@@ -8,7 +8,6 @@ authors:
   - Changho Hwang
 
 date: "2024-02-10T00:00:00Z"
-doi: ""
 
 # Schedule page publish date (NOT publication's date).
 publishDate: "2024-02-10T00:00:00Z"

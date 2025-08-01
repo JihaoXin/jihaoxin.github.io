@@ -7,7 +7,6 @@ authors:
   - Tommy W. S. Chow
 
 date: "2022-11-08T00:00:00Z"
-doi: "10.1109/TIM.2022.3227552"
 
 # Schedule page publish date (NOT publication's date).
 publishDate: "2022-11-08T00:00:00Z"

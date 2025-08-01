@@ -8,7 +8,6 @@ authors:
   - Peter Richtárik
 
 date: "2023-08-12T00:00:00Z"
-doi: "10.1145/3630048.3630184"
 
 # Schedule page publish date (NOT publication's date).
 publishDate: "2023-08-12T00:00:00Z"

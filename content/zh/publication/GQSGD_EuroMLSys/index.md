@@ -7,8 +7,7 @@ authors:
   - Samuel Horváth
 
 date: "2025-03-08T00:00:00Z"
-doi: "10.1145/3721146.3721932"
- 
+
 # Schedule page publish date (NOT publication's date).
 publishDate: "2022-11-08T00:00:00Z"
 
