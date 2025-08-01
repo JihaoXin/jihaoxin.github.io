@@ -21,7 +21,7 @@ publication_types: ["1"]
 
 # Publication name and optional abbreviated publication name.
 publication: "*International Symposium on Networks, Computers and Communications 2021*"
-publication_short: "ISNCC'21 Best Paper"
+publication_short: "ISNCC (Best Paper Award)"
 
 abstract: "The recent surge in the prosperity of the Internet of Things (IoT) has been attracting an increasing number of researchers and experts with great attention due to its significant economic and social values. The IoT brings appealing opportunities and new challenges for both the current and future Internet. In practice, various IoT smart devices are generally pre-programmed and deployed specifically in the proper place to fulfill corresponding functions according to divergent requirements. However, lately, these pre-stored functions tend to be upgraded or reprogrammed more frequently on account of the increment of dynamic needs or urgent situations. Inspired by Software Defined Networking (SDN), the authors propose a framework in this work: Software Defined Function (SDF) for IoT, enabling IoT smart devices to be upgraded or reprogrammed securely and remotely. The authors further present a protocol named as OpenFunction stemmed from OpenFlow. Moreover, the security properties of this protocol are analyzed. Finally, the authors implement a preliminary SDF system and evaluate its performance. Experimental results indicate that OpenFunction allows a controller to update or rewrite functions in IoT devices, as well as to obtain flexibility and security. Accordingly, this work contributes to the future fusion of SDN and IoT technologies."
 
