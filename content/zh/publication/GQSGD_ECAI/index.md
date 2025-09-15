@@ -18,8 +18,8 @@ publishDate: "2022-11-08T00:00:00Z"
 publication_types: ["1"]
 
 # Publication name and optional abbreviated publication name.
-publication: "*ECAI*"
-publication_short: "ECAI"
+publication: "*ECAI* (oral)"
+publication_short: "ECAI (oral)"
 
 abstract: Distributed training enables large-scale deep learning, but suffers from high communication overhead, especially as models and datasets grow. Gradient compression, particularly quantization, is a promising approach to mitigate this bottleneck. However, existing quantization schemes are often incompatible with Allreduce, the dominant communication primitive in distributed deep learning, and many prior solutions rely on heuristics without theoretical guarantees. We introduce Global-QSGD, an Allreduce-compatible gradient quantization method that leverages global norm scaling to reduce communication overhead while preserving accuracy. Global-QSGD is backed by rigorous theoretical analysis, extending standard unbiased compressor frameworks to establish formal convergence guarantees. Additionally, we develop a performance model to evaluate its impact across different hardware configurations. Extensive experiments on NVLink, PCIe, and large-scale cloud environments show that Global-QSGD accelerates distributed training by up to 3.51% over baseline quantization methods, making it a practical and efficient solution for large-scale deep learning workloads.
 
