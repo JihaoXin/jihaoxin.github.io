@@ -230,7 +230,7 @@ sections:
       subtitle:
       text: |-
       # Contact (add or remove contact options as necessary)
-      phone: +966560569149
+      phone:
       address:
         street: KAUST Campus
         city: Thuwal
