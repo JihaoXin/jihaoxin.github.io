@@ -13,7 +13,7 @@ status:
 superuser: true
 
 # Role/position/tagline
-role: Ph.D. Student in Machine Learning Systems
+role: Ph.D. Student in Machine Learning Systems & Agentic AI
 
 # Organizations/Affiliations to show in About widget
 organizations:
@@ -25,9 +25,10 @@ bio:
 
 # Interests to show in About widget
 interests:
-  - Computer Systems
-  - Artificial Intelligence
-  - Information Retrieval
+  - Agentic AI Systems
+  - AutoResearch
+  - Machine Learning Systems
+  - Distributed Systems
 
 # Education to show in About widget
 education:
@@ -77,4 +78,5 @@ email: ''
 highlight_name: true
 ---
 
-
+👋 我是计算机科学博士生，在 [SANDS Lab](https://sands.kaust.edu.sa/) 师从 [Marco Canini 教授](https://mcanini.github.io/)。我目前的研究方向是 **Agentic AI 系统**和**自动化科研 (AutoResearch)**，致力于构建加速科学发现的自主智能体。此前，我的研究聚焦于分布式机器学习系统，包括梯度压缩、KV-Cache 优化以及面向大语言模型训练与推理的高效 GPU 通信。
+{style="text-align: justify;"}

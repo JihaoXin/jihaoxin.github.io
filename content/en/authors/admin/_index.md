@@ -13,7 +13,7 @@ status:
 superuser: true
 
 # Role/position/tagline
-role: Ph.D. Student in Machine Learning Systems
+role: Ph.D. Student in Machine Learning Systems & Agentic AI
 
 # Organizations/Affiliations to show in About widget
 organizations:
@@ -25,9 +25,10 @@ bio:
 
 # Interests to show in About widget
 interests:
-  - Computer Systems
-  - Artificial Intelligence
-  - Information Retrieval
+  - Agentic AI Systems
+  - AutoResearch
+  - Machine Learning Systems
+  - Distributed Systems
 
 # Education to show in About widget
 education:
@@ -77,5 +78,5 @@ email: ''
 highlight_name: true
 ---
 
-👋 I'm a PhD student in computer science, working with [Prof. Marco Canini](https://mcanini.github.io/) at [SANDS Lab](https://sands.kaust.edu.sa/). My research interests lie between computer systems and machine learning, devoting to speedup deep learning training and inference via efficient communication. My recent work focuses on gradient compression and optimized GPU communication.
+👋 I'm a PhD student in computer science, working with [Prof. Marco Canini](https://mcanini.github.io/) at [SANDS Lab](https://sands.kaust.edu.sa/). My current research focuses on **Agentic AI Systems** and **AutoResearch**, building autonomous agents that accelerate scientific discovery. Previously, I worked on distributed machine learning systems, including gradient compression, KV-Cache optimization, and efficient GPU communication for LLM training and inference.
 {style="text-align: justify;"}
