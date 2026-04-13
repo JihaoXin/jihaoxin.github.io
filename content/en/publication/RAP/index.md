@@ -3,6 +3,8 @@ title: "KV-Cache Compression via RoPE-Aligned Pruning"
 authors:
   - Admin
   - Tian Lyu
+  - David Keyes
+  - Hatem Ltaief
   - Marco Canini
 
 date: "2026-02-04T00:00:00Z"
