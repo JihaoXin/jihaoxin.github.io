@@ -33,7 +33,7 @@ featured: false
 # links:
 # - name: ""
 #   url: ""
-url_pdf: 'https://euromlsys.eu/'
+url_pdf: 'https://doi.org/10.1145/3805621.3807608'
 url_code: ''
 url_dataset: ''
 url_poster: ''
