@@ -78,5 +78,5 @@ email: ''
 highlight_name: true
 ---
 
-👋 我是 KAUST 计算机科学博士生，在 [SANDS Lab](https://sands.kaust.edu.sa/) 师从 [Marco Canini 教授](https://mcanini.github.io/)。我正在研究自动化科研（AutoResearch），并构建 [ARK](https://kaust-ark.github.io/)——一个加速科学发现的自动化科研工具包。此前，我的研究聚焦于分布式机器学习系统，包括梯度压缩、KV-Cache 优化以及面向大语言模型训练与推理的高效 GPU 通信。
+👋 我是 KAUST 计算机科学博士生，在 [SANDS Lab](https://sands.kaust.edu.sa/) 师从 [Marco Canini 教授](https://mcanini.github.io/)。我近期专注于自动化科研（AutoResearch），并构建了 [ARK: Automatic Research Kit](https://kaust-ark.github.io/)，旨在加速科学发现。此前，我的研究聚焦于分布式机器学习系统，包括梯度压缩、KV-Cache 优化以及面向大语言模型训练与推理的高效 GPU 通信。
 {style="text-align: justify;"}
