@@ -78,5 +78,5 @@ email: ''
 highlight_name: true
 ---
 
-👋 I'm a PhD student in computer science, working with [Prof. Marco Canini](https://mcanini.github.io/) at [SANDS Lab](https://sands.kaust.edu.sa/). My current research focuses on **Agentic AI Systems** and **AutoResearch**, building autonomous agents that accelerate scientific discovery. Previously, I worked on distributed machine learning systems, including gradient compression, KV-Cache optimization, and efficient GPU communication for LLM training and inference.
+👋 I'm a PhD student in computer science at KAUST, working with [Prof. Marco Canini](https://mcanini.github.io/) at [SANDS Lab](https://sands.kaust.edu.sa/). I'm working on AutoResearch, and I build [ARK](https://kaust-ark.github.io/), an automatic research kit that accelerates scientific discovery. Previously, I worked on distributed machine learning systems, including gradient compression, KV-Cache optimization, and efficient GPU communication for LLM training and inference.
 {style="text-align: justify;"}
