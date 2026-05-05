@@ -51,9 +51,7 @@ social:
     icon_pack: fas
     link: 'mailto:jihao.xin@kaust.edu.sa'
     label: Send me email
-  - icon: weixin
-    icon_pack: fab
-    link:  './wechat.jpg'
+
   # - icon: graduation-cap # Alternatively, use `google-scholar` icon from `ai` icon pack
   #   icon_pack: fas
   #   link: https://scholar.google.co.uk/citations?user=sIwtMXoAAAAJ

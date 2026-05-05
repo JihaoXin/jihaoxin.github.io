@@ -51,9 +51,7 @@ social:
     icon_pack: fas
     link: 'mailto:jihao.xin@kaust.edu.sa'
     label: Send me email
-  - icon: weixin
-    icon_pack: fab
-    link:  './wechat.jpg'
+
 
   - icon: github
     icon_pack: fab
