@@ -1,6 +1,15 @@
-@inproceedings{xin2026gac,
-  title={Why Smaller Is Slower? Dimensional Misalignment in Compressed LLMs},
-  author={Xin, Jihao and Lyu, Tian and Pan, Qilong and Wang, Kesen and Canini, Marco},
-  booktitle={Proceedings of the 6th Workshop on Machine Learning and Systems (EuroMLSys)},
-  year={2026}
+@inproceedings{10.1145/3805621.3807608,
+author = {Xin, Jihao and Lyu, Tian and Pan, Qilong and Wang, Kesen and Canini, Marco},
+title = {Why Smaller Is Slower? Dimensional Misalignment in Compressed LLMs},
+year = {2026},
+isbn = {9798400726057},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3805621.3807608},
+doi = {10.1145/3805621.3807608},
+abstract = {Post-training compression reduces LLM parameter counts but often produces irregular tensor dimensions that degrade GPU performance—a phenomenon we call dimensional misalignment. We present a full-stack analysis tracing root causes at three levels: framework, library, and hardware. The key insight is that model inference becomes slower because the resulting dimensions are unfriendly with the GPU execution stack. For example, compressing Llama-3-8B with activation-aware singular value decomposition (ASVD) has 15% fewer parameters yet runs no faster than the uncompressed baseline, because 95% of its dimensions are misaligned.We propose GAC (GPU-Aligned Compression), a new compression paradigm that wraps any dimension-reducing compressor and re-selects hardware-aligned dimensions via multi-choice knapsack optimization under the same parameter budget. We evaluate GAC on Llama-3-8B with ASVD and LLM-Pruner, achieving 100% alignment and recovering up to 1.5x speedup while preserving model quality.},
+booktitle = {Proceedings of the Sixth European Workshop on Machine Learning and Systems},
+pages = {49--59},
+numpages = {11},
+series = {EuroMLSys '26}
 }

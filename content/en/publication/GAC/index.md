@@ -23,7 +23,7 @@ summary:
 tags:
 featured: true
 
-url_pdf: ''
+url_pdf: 'https://dl.acm.org/doi/epdf/10.1145/3805621.3807608'
 url_code: 'https://github.com/sands-lab/GAC'
 url_dataset: ''
 url_poster: ''
