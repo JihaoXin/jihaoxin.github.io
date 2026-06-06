@@ -1,0 +1,21 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import HorizontalCard from "../components/HorizontalCard.astro";
+---
+<BaseLayout title="服务" sideBarActiveItemID="services">
+  <div>
+    <div class="text-3xl w-full font-bold mb-2">我能提供的服务</div>
+    <div class="mb-5 text-lg">围绕品牌全生命周期，从策略到落地的整合能力。</div>
+  </div>
+  <HorizontalCard title="品牌策略与定位" img="/post_img.webp" desc="基于市场洞察与竞争分析，制定品牌定位与年度传播推广策略，搭建品牌矩阵，巩固或重塑品牌在行业中的位置。" url="#" />
+  <div class="divider my-0"></div>
+  <HorizontalCard title="整合营销传播（IMC）" img="/post_img.webp" desc="整合赛事赞助、IP 合作、广告投放、社媒内容等多元资源，将分散动作升级为系统性营销战役，线上线下双轮驱动。" url="#" />
+  <div class="divider my-0"></div>
+  <HorizontalCard title="体育营销 & IP 商务合作" img="/post_img.webp" desc="对接顶级赛事与 IP 资源，设计权益激活方案，实现品牌曝光与业务转化的品销一体化。" url="#" />
+  <div class="divider my-0"></div>
+  <HorizontalCard title="社媒运营与品牌年轻化" img="/post_img.webp" desc="布局小红书、微博、微信视频号等多平台，以热点驱动内容策略，重塑品牌与年轻消费者的对话方式。" url="#" />
+  <div class="divider my-0"></div>
+  <HorizontalCard title="品牌内容制作与媒介投放" img="/post_img.webp" desc="统筹宣传片、微电影、海报等多形态内容制作，并制定全域媒介投放策略与预算分配，提升传播效能。" url="#" />
+  <div class="divider my-0"></div>
+  <HorizontalCard title="品牌合规与资源统筹" img="/post_img.webp" desc="把关《广告法》合规与视觉识别规范，统筹大额预算与跨部门设计需求，确保品牌输出的一致性与高效配置。" url="#" />
+</BaseLayout>

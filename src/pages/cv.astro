@@ -1,0 +1,32 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import TimeLineElement from "../components/cv/TimeLine.astro";
+---
+<BaseLayout title="履历" sideBarActiveItemID="cv">
+  <div class="mb-5"><div class="text-3xl w-full font-bold">个人简介</div></div>
+  <div class="mb-10 text-justify">品牌营销从业者，香港中文大学广告学硕士。现任中国人寿保险品牌推广高级主管，专注品牌策略、整合营销与内容传播。擅长将分散的资源整合为系统性营销战役，主导项目累计触达数亿人次，多次斩获国内外品牌营销奖项。</div>
+  <div class="mb-5"><div class="text-3xl w-full font-bold">教育背景</div></div>
+  <div class="time-line-container grid gap-4 mb-10">
+    <TimeLineElement title="香港中文大学 · 广告学 硕士" subtitle="2020.09 - 2021.07｜GPA 3.63/4.0（Top 10%）">主修：广告及传播理论、广告法与伦理、人际传播与团体关系、客户企划与管理。</TimeLineElement>
+    <TimeLineElement title="山东大学 · 汉语言文学 本科" subtitle="2016.09 - 2020.06｜GPA 88/100（Top 9%）">主修：中文写作训练、中国当代文学、社会调查方法。</TimeLineElement>
+  </div>
+  <div class="mb-5"><div class="text-3xl w-full font-bold">工作经历</div></div>
+  <div class="time-line-container mb-10">
+    <TimeLineElement title="中国人寿保险股份有限公司 · 品牌推广高级主管" subtitle="2021.08 - 至今｜品牌宣传部">统筹母品牌年度传播推广策略，落地 10+ 场品牌活动；主导「国寿好服务」子品牌从 0 到 1 建设，累计曝光超 5 亿人次；牵头金融行业首个系统性体育营销计划，触达超 1000 万人次，荣获「燕梳奖·卓越品牌营销奖」；作为北京环球度假区官方保险合作伙伴落地「中国人寿环球品牌日」；推动品牌年轻化，微信视频号行业排名 Top1，小红书涨粉速度达同业 5 倍；统筹上亿级宣传与广告预算，对接 20+ 部门、每年交付 300+ 项设计服务。</TimeLineElement>
+    <TimeLineElement title="万博宣伟公关公司（Weber Shandwick）· Corporate 组实习生" subtitle="2019.11 - 2020.03｜服务客户：微软、康宝莱">运营「微软中国」微博账号，原创博文 120+，4 个月增粉 2w+、互动总数 5w+；疫情期间调整康宝莱线上品宣策略，微信公众号推文累计 10w 阅读量；设计并落实媒体关系维护方案，分析舆情为客户提供法律与文化角度的立论支持。</TimeLineElement>
+  </div>
+  <div class="mb-5"><div class="text-3xl w-full font-bold">荣誉奖项</div></div>
+  <ul class="list-disc mx-6 mb-10 grid gap-2">
+    <li>燕梳奖 · 卓越品牌营销奖</li>
+    <li>IAI 传鉴国际广告奖</li>
+    <li>麒麟国际广告奖</li>
+    <li>中国创新传播大奖 · 蒲公英奖</li>
+  </ul>
+  <div class="mb-5"><div class="text-3xl w-full font-bold">专业技能</div></div>
+  <ul class="list-disc md:columns-3 columns-2 mx-6">
+    <li>品牌策略与定位</li><li>整合营销传播（IMC）</li><li>体育营销</li>
+    <li>IP 合作与商务拓展</li><li>社媒运营与品牌年轻化</li><li>品牌内容制作</li>
+    <li>全域媒介投放</li><li>预算管理与资源统筹</li><li>《广告法》合规审核</li>
+    <li>公关与媒体关系</li><li>舆情分析</li><li>视觉资产体系搭建</li>
+  </ul>
+</BaseLayout>

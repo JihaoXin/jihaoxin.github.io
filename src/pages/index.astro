@@ -1,0 +1,35 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import HorizontalCard from "../components/HorizontalCard.astro";
+import { getCollection } from "astro:content";
+import createSlug from "../lib/createSlug"
+const posts = (await getCollection("blog")).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const last_posts = posts.slice(0, 3);
+---
+<BaseLayout sideBarActiveItemID="home">
+  <div class="pb-12 mt-5">
+    <div class="text-xl py-1">你好 👋</div>
+    <div class="text-5xl font-bold">我是张悦 Freya</div>
+    <div class="text-3xl py-3 font-bold">品牌营销 · 品牌推广高级主管</div>
+    <div class="py-2">
+      <text class="text-lg">
+        香港中文大学广告学硕士，现就职于中国人寿品牌宣传部。我专注于
+        <b>品牌策略、整合营销与内容传播</b>，擅长把分散的资源整合成系统性战役——
+        从体育营销矩阵、顶级 IP 合作，到子品牌从 0 到 1 的搭建与品牌年轻化转型，
+        主导项目累计触达数亿人次，并多次斩获国内外品牌营销奖项。
+      </text>
+    </div>
+    <div class="mt-8">
+      <a class="btn" href="mailto:877181179@qq.com">联系我合作</a>
+      <a href="/projects" class="btn btn-outline ml-5">看我的案例</a>
+    </div>
+  </div>
+  <div><div class="text-3xl w-full font-bold mb-2">精选案例</div></div>
+  <HorizontalCard title="金融行业首个系统性体育营销计划" img="/post_img.webp" desc="整合篮球、足球、极限运动等多元赛事资源，线上话题与线下活动双轮驱动，累计触达超 1000 万人次，荣获「燕梳奖·卓越品牌营销奖」。" url="/projects" badge="获奖项目" />
+  <div class="divider my-0"></div>
+  <HorizontalCard title="北京环球度假区官方保险合作" img="/post_img.webp" desc="主导「中国人寿环球品牌日」落地，借力变形金刚、小黄人等顶级 IP 为产品做场景化包装，累计提供保额超 700 亿元。" url="/projects" badge="IP 合作" />
+  <div class="divider my-0"></div>
+  <HorizontalCard title="「国寿好服务」子品牌 0 到 1 建设" img="/post_img.webp" desc="制定子品牌定位与推广策略，构建视觉资产体系、策划电视节目、推出创意广告，累计曝光超 5 亿人次。" url="/projects" />
+  <div><div class="text-3xl w-full font-bold mb-5 mt-10">最新思考</div></div>
+  {last_posts.map((post) => (<><HorizontalCard title={post.data.title} img={post.data.heroImage} desc={post.data.description} url={"/blog/" + createSlug(post.data.title, post.slug)} target="_self" badge={post.data.badge} /><div class="divider my-0" /></>))}
+</BaseLayout>
