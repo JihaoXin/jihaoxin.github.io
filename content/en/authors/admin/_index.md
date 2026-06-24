@@ -76,5 +76,5 @@ email: ''
 highlight_name: true
 ---
 
-👋 I'm a PhD student in computer science at KAUST, working with [Prof. Marco Canini](https://mcanini.github.io/) at [SANDS Lab](https://sands.kaust.edu.sa/). My current focus is AutoResearch — I'm building [idea2paper.org](https://idea2paper.org) to accelerate scientific discovery through agentic tools. Previously, I worked on distributed machine learning systems, including gradient compression, KV-Cache optimization, and efficient GPU communication for LLM training and inference.
+👋 I'm a PhD student in computer science at KAUST, working with [Prof. Marco Canini](https://mcanini.github.io/) at [SANDS Lab](https://sands.kaust.edu.sa/). My current focus is AutoResearch — I'm building [idea2paper.org](https://idea2paper.org) to accelerate scientific discovery through agentic tools, and more recently [AttentionHub.org](https://attentionhub.org), the library for AI Scientists. Previously, I worked on distributed machine learning systems, including gradient compression, KV-Cache optimization, and efficient GPU communication for LLM training and inference.
 {style="text-align: justify;"}

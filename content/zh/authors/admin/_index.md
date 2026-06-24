@@ -76,5 +76,5 @@ email: ''
 highlight_name: true
 ---
 
-👋 我是 KAUST 计算机科学博士生，在 [SANDS Lab](https://sands.kaust.edu.sa/) 师从 [Marco Canini 教授](https://mcanini.github.io/)。我目前专注于自动化科研（AutoResearch），正在构建 [idea2paper.org](https://idea2paper.org)，借助智能体（Agentic）工具加速科学发现。此前，我的研究聚焦于分布式机器学习系统，包括梯度压缩、KV-Cache 优化以及面向大语言模型训练与推理的高效 GPU 通信。
+👋 我是 KAUST 计算机科学博士生，在 [SANDS Lab](https://sands.kaust.edu.sa/) 师从 [Marco Canini 教授](https://mcanini.github.io/)。我目前专注于自动化科研（AutoResearch），正在构建 [idea2paper.org](https://idea2paper.org)，借助智能体（Agentic）工具加速科学发现；最近还打造了 [AttentionHub.org](https://attentionhub.org)——服务 AI Scientist 的资源库（the library for AI Scientists）。此前，我的研究聚焦于分布式机器学习系统，包括梯度压缩、KV-Cache 优化以及面向大语言模型训练与推理的高效 GPU 通信。
 {style="text-align: justify;"}
