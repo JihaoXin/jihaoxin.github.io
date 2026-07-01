@@ -74,7 +74,7 @@ sections:
           company: Shandong University
           company_url: https://www.sdu.edu.cn
           company_logo: SDU
-          location: Weihai, China
+          location: Shandong, China
           date_end: '2020-06-01'
           date_start: '2016-09-01'
     design:

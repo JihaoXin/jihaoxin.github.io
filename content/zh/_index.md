@@ -74,7 +74,7 @@ sections:
           company: 山东大学 
           company_url: https://www.sdu.edu.cn
           company_logo: SDU
-          location: 山东省 威海
+          location: 山东
           date_end: '2020-06-01'
           date_start: '2016-09-01'
     design:
