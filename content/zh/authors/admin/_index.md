@@ -13,11 +13,11 @@ status:
 superuser: true
 
 # Role/position/tagline
-role: Ph.D. Student in Machine Learning Systems & Agentic AI
+role: 机器学习系统与 Agentic AI 博士生
 
 # Organizations/Affiliations to show in About widget
 organizations:
-  - name: KAUST, Saudi Arabia
+  - name: 沙特阿卜杜拉国王科技大学(KAUST)
     url: https://www.kaust.edu.sa/
 
 # Short bio (displayed in user profile at end of posts)
