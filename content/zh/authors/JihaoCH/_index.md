@@ -13,7 +13,7 @@ status:
 superuser: true
 
 # Role/position/tagline
-role: 机器学习系统博士生
+role: 机器学习系统与 Agentic AI 博士生
 
 # Organizations/Affiliations to show in About widget
 organizations:
@@ -25,9 +25,10 @@ bio:
 
 # Interests to show in About widget
 interests:
-  - Computer Systems
-  - Artificial Intelligence
-  - Information Retrieval
+  - Agentic AI Systems
+  - AutoResearch
+  - Machine Learning Systems
+  - Distributed Systems
 
 # Education to show in About widget
 education:
@@ -75,5 +76,5 @@ email: ''
 highlight_name: true
 ---
 
-👋 辛继灏，1998年生，山东潍坊人，计算机科学在读博士生，师从金沙实验室[(SANDS)](https://sands.kaust.edu.sa/)的马可·卡尼尼[(Marco Canini)](https://mcanini.github.io/)教授，研究方向位于计算机系统和人工智能的交叉领域，致力于解决分布式深度学习训练系统中的网络带宽瓶颈问题，主要关注的课题有GPU通信和梯度压缩。
+👋 辛继灏，1998年生，山东人，KAUST 计算机科学在读博士生，师从金沙实验室[(SANDS)](https://sands.kaust.edu.sa/)的马可·卡尼尼[(Marco Canini)](https://mcanini.github.io/)教授。目前专注于自动化科研（AutoResearch），正在构建 [idea2paper.org](https://idea2paper.org)，借助智能体（Agentic）工具加速科学发现；最近还打造了 [AttentionHub.org](https://attentionhub.org)——服务 AI Scientist 的资源库（the library for AI Scientists）。此前的研究聚焦于分布式深度学习系统，主要关注 GPU 通信与梯度压缩。
 {style="text-align: justify;"}
