@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>The Research-Integrity Sandbox — measurements</title>
+<title>The Metered Arena — measurements</title>
 <style>
   :root {
     --bg: #ffffff; --fg: #16181d; --mut: #5b636e; --line: #d9dde3;
@@ -210,7 +210,8 @@
   <h3>Four parts, and why the agent must not own the denominator</h3>
   <div class="cards">
     <div class="card"><h4>Meter</h4><p>Every evaluation is an API call the platform
-      records. The party being graded never supplies its own trial count.</p></div>
+      records, keyed so a crash-retry costs nothing and a nudged parameter costs a
+      trial. The party being graded never supplies its own denominator.</p></div>
     <div class="card"><h4>Calibrator</h4><p>Manufactures matched nulls on demand and
       measures what the acceptance rule's error rate actually is.</p></div>
     <div class="card"><h4>Deflator</h4><p>Estimates N<sub>eff</sub> from the ledger
@@ -221,6 +222,11 @@
   <p>The self-improvement harness rides on top. The agent may rewrite its own
   search policy, but its fitness signal is the deflated score. That single
   substitution is what separates improving from self-deceiving.</p>
+  <p>Two details decide whether the meter is real. Trial identity has to be an
+  idempotency key that absorbs a crash-retry without incrementing the count, yet
+  refuses to let a renamed variable buy a fresh one. And replay only means anything
+  if the data is pinned, because prices get adjusted and fundamentals get restated,
+  so every ledger row names the content-addressed snapshot it saw.</p>
   <pre><span class="k">attestation</span> {
   finding          "candidate <span id="atCand">…</span> improves panel-only MAE"
   raw_gain         <span id="atRaw">…</span>
