@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>The Research-Integrity Sandbox — measurements</title>
+<style>
+  :root {
+    --bg: #ffffff; --fg: #16181d; --mut: #5b636e; --line: #d9dde3;
+    --card: #f7f8fa; --accent: #1d4e77;
+    --naive: #c2701c;      /* what you think you found */
+    --sealed: #1d6b5f;     /* what actually held up */
+    --defl: #6a4c93;       /* what the meter says */
+    --null: #9aa1aa;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0f1216; --fg: #e6e9ee; --mut: #9aa3ae; --line: #262c34;
+      --card: #161b21; --accent: #7fb2dc;
+      --naive: #e0a05a; --sealed: #5fb8a6; --defl: #a98bd4; --null: #6b737d;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f1216; --fg: #e6e9ee; --mut: #9aa3ae; --line: #262c34;
+    --card: #161b21; --accent: #7fb2dc;
+    --naive: #e0a05a; --sealed: #5fb8a6; --defl: #a98bd4; --null: #6b737d;
+  }
+  :root[data-theme="light"] {
+    --bg: #ffffff; --fg: #16181d; --mut: #5b636e; --line: #d9dde3;
+    --card: #f7f8fa; --accent: #1d4e77;
+    --naive: #c2701c; --sealed: #1d6b5f; --defl: #6a4c93; --null: #9aa1aa;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--fg);
+    font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 820px; margin: 0 auto; padding: 0 20px 80px; }
+
+  header { padding: 56px 0 28px; border-bottom: 1px solid var(--line); }
+  h1 { font-size: clamp(24px, 4.4vw, 34px); line-height: 1.18; margin: 0 0 12px;
+       letter-spacing: -0.02em; }
+  .lede { font-size: 17px; color: var(--mut); margin: 0 0 6px; max-width: 62ch; }
+  .byline { font-size: 14px; color: var(--mut); margin-top: 18px; }
+  .byline a { color: var(--accent); }
+
+  section { padding: 40px 0 8px; border-bottom: 1px solid var(--line); }
+  section:last-of-type { border-bottom: none; }
+  h2 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.09em;
+       color: var(--accent); margin: 0 0 10px; font-weight: 600; }
+  h3 { font-size: 20px; margin: 0 0 10px; letter-spacing: -0.01em; }
+  p { margin: 0 0 14px; max-width: 68ch; }
+  .small { font-size: 14px; color: var(--mut); }
+
+  .tag { display: inline-block; font-size: 11px; letter-spacing: .07em;
+         text-transform: uppercase; padding: 3px 8px; border-radius: 3px;
+         border: 1px solid var(--line); color: var(--mut); margin-bottom: 10px; }
+  .tag.real { color: var(--sealed); border-color: var(--sealed); }
+
+  figure { margin: 20px 0 8px; }
+  .chart { width: 100%; overflow-x: auto; }
+  svg { display: block; max-width: 100%; height: auto; }
+  figcaption { font-size: 13.5px; color: var(--mut); margin-top: 10px;
+               max-width: 68ch; }
+
+  .ctl { display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+         margin: 16px 0 4px; font-size: 14px; }
+  .ctl input[type=range] { flex: 1 1 240px; min-width: 180px; accent-color: var(--accent); }
+  .ctl output { font-variant-numeric: tabular-nums; font-weight: 600;
+                min-width: 5.5em; }
+
+  .legend { display: flex; gap: 18px; flex-wrap: wrap; font-size: 13.5px;
+            margin: 4px 0 0; color: var(--mut); }
+  .legend i { display: inline-block; width: 22px; height: 3px; border-radius: 2px;
+              vertical-align: middle; margin-right: 7px; }
+
+  table { width: 100%; border-collapse: collapse; margin: 18px 0; font-size: 14.5px; }
+  th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--line); }
+  th { font-size: 12px; text-transform: uppercase; letter-spacing: .06em;
+       color: var(--mut); font-weight: 600; }
+  td.n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  tbody tr:last-child td { border-bottom: none; }
+
+  .cards { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+           margin: 18px 0; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 8px;
+          padding: 14px 16px; }
+  .card h4 { margin: 0 0 6px; font-size: 15px; }
+  .card p { margin: 0; font-size: 14px; color: var(--mut); }
+
+  pre { background: var(--card); border: 1px solid var(--line); border-radius: 8px;
+        padding: 14px 16px; overflow-x: auto; font-size: 13px; line-height: 1.55;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .k { color: var(--accent); }
+
+  footer { padding: 36px 0 0; font-size: 13.5px; color: var(--mut); }
+  .theme { position: fixed; top: 14px; right: 14px; background: var(--card);
+           border: 1px solid var(--line); color: var(--mut); border-radius: 6px;
+           padding: 6px 10px; font-size: 12px; cursor: pointer; }
+</style>
+</head>
+<body>
+<button class="theme" id="themeBtn">theme</button>
+<div class="wrap">
+
+<header>
+  <h1>A self-improving agent gets better at whatever you score it on.</h1>
+  <p class="lede">For code that is fine, because a test passes or it does not. For
+  research it is a trap, because the score itself is what decays: judging an idea
+  means trying it on history, and trying more ideas makes the best of them look
+  better whether or not anything real was found.</p>
+  <p class="lede">So the thing to build first is not a better search. It is an
+  honest scoreboard. Below are four measurements of what one costs and what one
+  buys, three of them on real data.</p>
+  <p class="byline">Jihao Xin &middot; KAUST &middot; supporting material for a research
+  proposal to ADIA Lab. Every number here is reproducible from the scripts named
+  beside it.</p>
+</header>
+
+<!-- ─────────────────────────── 1 ─────────────────────────── -->
+<section>
+  <h2>1 &middot; The mechanism</h2>
+  <span class="tag">illustration, synthetic</span>
+  <h3>Search N useless ideas, report the best one</h3>
+  <p>Every dot is one idea with genuinely zero skill, scored on noise alone. The
+  bar is the best score you would report after trying that many. Nothing here has
+  any edge, and the reported number climbs anyway. That climb is the entire
+  problem, and it is the reason a trial count has to appear somewhere in the
+  final answer.</p>
+
+  <div class="ctl">
+    <label for="nSlider">ideas tried</label>
+    <input type="range" id="nSlider" min="1" max="400" value="1" step="1">
+    <output id="nOut">1</output>
+  </div>
+  <figure>
+    <div class="chart"><svg id="fig1" viewBox="0 0 760 300" role="img"
+      aria-label="Best score found rises with the number of useless ideas tried"></svg></div>
+    <figcaption>Standard normal scores, fixed seed, so the same slider position
+    always gives the same picture. The dashed line is the expected best of N,
+    which grows without limit, slowly.</figcaption>
+  </figure>
+</section>
+
+<!-- ─────────────────────────── 2 ─────────────────────────── -->
+<section>
+  <h2>2 &middot; The measurement</h2>
+  <span class="tag real">real data &middot; dev/prelim_harness.py</span>
+  <h3>What a search actually costs, checked against a sealed hold-out</h3>
+  <p>A pool of 64 candidates, 24 real and 40 matched nulls, on the ADIA Lab
+  forecast fusion data. Draw candidates in random order, keep the one that scores
+  best on the development folds, then open a sealed hold-out that no selection was
+  ever allowed to touch and see what the winner really delivered. Averaged over
+  <span id="nOrd">many</span> random orderings.</p>
+
+  <figure>
+    <div class="chart"><svg id="fig2" viewBox="0 0 760 340" role="img"
+      aria-label="Development gain versus sealed gain as the number of candidates grows"></svg></div>
+    <figcaption id="cap2"></figcaption>
+  </figure>
+  <div class="legend">
+    <span><i style="background:var(--naive)"></i>apparent lift from searching</span>
+    <span><i style="background:var(--sealed)"></i>lift that survived the seal</span>
+    <span><i style="background:var(--defl)"></i>retention, the ratio of the two</span>
+  </div>
+  <p class="small" id="gap2" style="margin-top:16px"></p>
+</section>
+
+<!-- ─────────────────────────── 3 ─────────────────────────── -->
+<section>
+  <h2>3 &middot; The calibration</h2>
+  <span class="tag real">real data &middot; dev/prelim.py, dev/prelim_hard_null.py</span>
+  <h3>An acceptance rule with a measured error rate, not an assumed one</h3>
+  <p>A null candidate is the same construction evaluated on a randomly chosen
+  other day from the same site. It keeps the column count, the marginal
+  distribution, the per-hour distribution and the within-day shape, and destroys
+  only the alignment to the target, so it carries no information by construction.
+  Put 64 of them through the identical gate and count how many get in.</p>
+
+  <figure>
+    <div class="chart"><svg id="fig3" viewBox="0 0 760 260" role="img"
+      aria-label="Null candidates all fall on the wrong side of the acceptance threshold"></svg></div>
+    <figcaption id="cap3"></figcaption>
+  </figure>
+</section>
+
+<!-- ─────────────────────────── 4 ─────────────────────────── -->
+<section>
+  <h2>4 &middot; Nominal versus effective</h2>
+  <span class="tag real">real data &middot; dev/prelim.py</span>
+  <h3>Twenty-four tries is not twenty-four tries, and junk makes it worse</h3>
+  <p>Correcting a result by the raw number of attempts over-penalises a researcher
+  who examined one idea from twenty angles. The quantity the theory wants is the
+  number of <em>independent</em> attempts, read off the eigenvalues of the
+  correlation matrix of what each candidate actually improved.</p>
+  <figure>
+    <div class="chart"><svg id="fig4" viewBox="0 0 760 150" role="img"
+      aria-label="Nominal trial count versus effective trial count"></svg></div>
+    <figcaption id="cap4"></figcaption>
+  </figure>
+</section>
+
+<!-- ─────────────────────────── 5 ─────────────────────────── -->
+<section>
+  <h2>5 &middot; The platform</h2>
+  <h3>Four parts, and why the agent must not own the denominator</h3>
+  <div class="cards">
+    <div class="card"><h4>Meter</h4><p>Every evaluation is an API call the platform
+      records. The party being graded never supplies its own trial count.</p></div>
+    <div class="card"><h4>Calibrator</h4><p>Manufactures matched nulls on demand and
+      measures what the acceptance rule's error rate actually is.</p></div>
+    <div class="card"><h4>Deflator</h4><p>Estimates N<sub>eff</sub> from the ledger
+      online and returns a discounted score. Never a raw one.</p></div>
+    <div class="card"><h4>Attestation</h4><p>Result, effective trial count, seal
+      schedule and a replayable record, signed and travelling with the agent.</p></div>
+  </div>
+  <p>The self-improvement harness rides on top. The agent may rewrite its own
+  search policy, but its fitness signal is the deflated score. That single
+  substitution is what separates improving from self-deceiving.</p>
+  <pre><span class="k">attestation</span> {
+  finding          "candidate <span id="atCand">…</span> improves panel-only MAE"
+  raw_gain         <span id="atRaw">…</span>
+  trials_nominal   <span id="atNom">…</span>
+  trials_effective <span id="atEff">…</span>     <span class="k">// measured, not declared</span>
+  deflated_gain    <span id="atDef">…</span>
+  null_calibration "<span id="atNull">…</span> of matched nulls admitted"
+  seals_opened     ["S1","S2"]  <span class="k">// after the design was frozen</span>
+  replay           sha256:… + ledger rows
+}</pre>
+</section>
+
+<footer>
+  <p>Scripts: <code>dev/prelim.py</code>, <code>dev/prelim_hard_null.py</code>,
+  <code>dev/prelim_harness.py</code>. Panels 2 to 4 are measurements on the ADIA Lab
+  forecast fusion data. Panel 1 is a synthetic illustration of the mechanism and is
+  labelled as such, deliberately, because a headline result should not live inside a
+  simulator its author wrote.</p>
+</footer>
+
+</div>
+
+<script>
+/* ── injected measurements ─────────────────────────────────────────────── */
+const DATA = {"n_orderings": 4000, "curve": [{"n": 2, "D": 0.002015630219298367, "S": 0.002672726029379705, "retention": 1.3260001779046906, "n_eff": 1.9882374967055871}, {"n": 3, "D": 0.0036583301091156987, "S": 0.004847372695427915, "retention": 1.3250233168814924, "n_eff": 2.96251989128538}, {"n": 4, "D": 0.004971375524623938, "S": 0.0065721313750354395, "retention": 1.3219945551251817, "n_eff": 3.9234232916159146}, {"n": 5, "D": 0.006093328653366122, "S": 0.008086080010494162, "retention": 1.3270382200748665, "n_eff": 4.8694095540714795}, {"n": 6, "D": 0.007088966241256016, "S": 0.009396197605441413, "retention": 1.3254679576209412, "n_eff": 5.802455491782017}, {"n": 7, "D": 0.007928747388387851, "S": 0.010495506294043739, "retention": 1.3237281729286858, "n_eff": 6.719668312833433}, {"n": 8, "D": 0.008643392513914834, "S": 0.011420769326529669, "retention": 1.3213294789220307, "n_eff": 7.626197543500458}, {"n": 9, "D": 0.00929604302756341, "S": 0.01226616113801934, "retention": 1.3195034813898048, "n_eff": 8.52699844020405}, {"n": 10, "D": 0.009811476734587408, "S": 0.012938960102180305, "retention": 1.3187576602580013, "n_eff": 9.41481557406664}, {"n": 11, "D": 0.010333674246125845, "S": 0.013619546281545065, "retention": 1.317977125769289, "n_eff": 10.299091546157797}, {"n": 12, "D": 0.010842769886586232, "S": 0.014222800708112767, "retention": 1.3117313063803029, "n_eff": 11.158238527852998}, {"n": 13, "D": 0.01134093784890394, "S": 0.014809437863869594, "retention": 1.3058389051396548, "n_eff": 11.99995136070422}, {"n": 14, "D": 0.011747724351828226, "S": 0.015257495639025285, "retention": 1.2987618011867001, "n_eff": 12.841933873463914}, {"n": 15, "D": 0.012115384714405021, "S": 0.01571171207921343, "retention": 1.2968397165739547, "n_eff": 13.680829670424668}, {"n": 16, "D": 0.01251034828074304, "S": 0.01610610736185176, "retention": 1.2874227799591806, "n_eff": 14.490280830670716}, {"n": 17, "D": 0.012895003898044738, "S": 0.016561945106951234, "retention": 1.2843691431115047, "n_eff": 15.296203725453294}, {"n": 18, "D": 0.013201974259570644, "S": 0.016872486872408624, "retention": 1.2780275541119979, "n_eff": 16.097517007240192}, {"n": 19, "D": 0.013530460389469345, "S": 0.017229823981584857, "retention": 1.2734100308216192, "n_eff": 16.87993567052341}, {"n": 20, "D": 0.01388052625532196, "S": 0.017606498959719295, "retention": 1.2684316600005532, "n_eff": 17.64983864122464}, {"n": 21, "D": 0.01423418955693128, "S": 0.01793203583186495, "retention": 1.259786218255961, "n_eff": 18.406831944390746}, {"n": 22, "D": 0.014571556889240896, "S": 0.018263563451260328, "retention": 1.2533707681397774, "n_eff": 19.166442016164677}, {"n": 23, "D": 0.01491375251863488, "S": 0.01855116987687832, "retention": 1.2438968565220894, "n_eff": 19.91637794775176}, {"n": 24, "D": 0.015170675710277682, "S": 0.01879851620547452, "retention": 1.239135063228534, "n_eff": 20.66087633946789}, {"n": 25, "D": 0.015487589318839074, "S": 0.019077346276753924, "retention": 1.2317828090617224, "n_eff": 21.39214318233008}, {"n": 26, "D": 0.015738067771602037, "S": 0.019307518209047924, "retention": 1.226803600622857, "n_eff": 22.112519726435597}, {"n": 27, "D": 0.016037784254076322, "S": 0.01958113225114981, "retention": 1.2209375023967464, "n_eff": 22.831081138384107}, {"n": 28, "D": 0.016317247142603318, "S": 0.019853555287720523, "retention": 1.2167221047896077, "n_eff": 23.532574668738278}, {"n": 29, "D": 0.016595118457709387, "S": 0.0201215198927165, "retention": 1.2124963099235304, "n_eff": 24.230511613035073}, {"n": 30, "D": 0.016880004723844558, "S": 0.020365565151056503, "retention": 1.2064904888497021, "n_eff": 24.914309774933407}, {"n": 31, "D": 0.017161412376329174, "S": 0.02060553465979936, "retention": 1.2006899087292304, "n_eff": 25.577859161337475}, {"n": 32, "D": 0.01740740500256982, "S": 0.020793244778486153, "retention": 1.1945057161257802, "n_eff": 26.245549123825644}, {"n": 33, "D": 0.017642893467623856, "S": 0.0209801317837407, "retention": 1.1891548187512977, "n_eff": 26.889610699160194}, {"n": 34, "D": 0.017924418617947916, "S": 0.021176579875694147, "retention": 1.1814374751597134, "n_eff": 27.554136751095626}, {"n": 35, "D": 0.01816683006464196, "S": 0.02137089013752545, "retention": 1.1763686929135502, "n_eff": 28.194565227652156}, {"n": 36, "D": 0.018410525063445978, "S": 0.021551019039501233, "retention": 1.1705814454086751, "n_eff": 28.818841558959864}, {"n": 37, "D": 0.018677021541527266, "S": 0.021771673261932304, "retention": 1.1656929994712626, "n_eff": 29.43777996638393}, {"n": 38, "D": 0.01894089774140945, "S": 0.021973694944806624, "retention": 1.1601189787729405, "n_eff": 30.0459420011274}, {"n": 39, "D": 0.019178593057097744, "S": 0.02215849960844964, "retention": 1.1553767026851363, "n_eff": 30.64902248172166}, {"n": 40, "D": 0.019416869734865293, "S": 0.022323630963309776, "retention": 1.149702875290194, "n_eff": 31.259887980331175}, {"n": 41, "D": 0.019669248854541688, "S": 0.022520670236840845, "retention": 1.1449684938853553, "n_eff": 31.837535006058136}, {"n": 42, "D": 0.019892970160188844, "S": 0.022686618859757146, "retention": 1.1404339662238643, "n_eff": 32.43522678403978}, {"n": 43, "D": 0.020103177523486917, "S": 0.022840296916288354, "retention": 1.1361535702305574, "n_eff": 33.01947004146005}, {"n": 44, "D": 0.020388734849958713, "S": 0.023052236941646247, "retention": 1.1306359669341095, "n_eff": 33.60339182377345}, {"n": 45, "D": 0.02059791713131642, "S": 0.023191872253365012, "retention": 1.125932884646129, "n_eff": 34.175665572877264}, {"n": 46, "D": 0.020827504608176596, "S": 0.023359215485662794, "retention": 1.1215561309487014, "n_eff": 34.74560405604911}, {"n": 47, "D": 0.02100814029206082, "S": 0.023499374999199425, "retention": 1.1185842569834734, "n_eff": 35.30364178599485}, {"n": 48, "D": 0.02122359831412995, "S": 0.023649263041152953, "retention": 1.1142909270671635, "n_eff": 35.85218379015505}, {"n": 49, "D": 0.021387265256630223, "S": 0.023763971792438464, "retention": 1.1111271828019922, "n_eff": 36.395144674027875}, {"n": 50, "D": 0.021622870325896444, "S": 0.023922961734184442, "retention": 1.1063730843140336, "n_eff": 36.91935761318073}, {"n": 51, "D": 0.02181038359858564, "S": 0.024057252052356322, "retention": 1.103018291430527, "n_eff": 37.44337089082216}, {"n": 52, "D": 0.022065289520223727, "S": 0.0242272672396195, "retention": 1.0979809359589066, "n_eff": 37.9553757479483}, {"n": 53, "D": 0.0222622263616244, "S": 0.02435788047695081, "retention": 1.0941349747004143, "n_eff": 38.48434007311175}, {"n": 54, "D": 0.022452611480939758, "S": 0.024484729576368637, "retention": 1.0905069816557402, "n_eff": 38.98292375237282}, {"n": 55, "D": 0.02268000892013058, "S": 0.02463701122956896, "retention": 1.0862875458440124, "n_eff": 39.477641150811}, {"n": 56, "D": 0.022884665557018485, "S": 0.024769409455914746, "retention": 1.0823583763634348, "n_eff": 39.97764846788948}, {"n": 57, "D": 0.023054319682499685, "S": 0.024884782715219076, "retention": 1.0793978333747527, "n_eff": 40.48212331666025}, {"n": 58, "D": 0.023244952305841723, "S": 0.02500939099315246, "retention": 1.075906315663522, "n_eff": 40.97081182851712}, {"n": 59, "D": 0.023449613677524517, "S": 0.025142044378783295, "retention": 1.0721730739163904, "n_eff": 41.45203943330991}, {"n": 60, "D": 0.02362374483044063, "S": 0.025259307787529425, "retention": 1.069233856394405, "n_eff": 41.93003052642265}, {"n": 61, "D": 0.02381112867717316, "S": 0.025383866290129266, "retention": 1.0660505276452448, "n_eff": 42.405141383409884}, {"n": 62, "D": 0.024003182879705882, "S": 0.02551222858094437, "retention": 1.0628685665897397, "n_eff": 42.87642008483748}, {"n": 63, "D": 0.02419516551085069, "S": 0.02564160064328421, "retention": 1.0597819895790688, "n_eff": 43.32716215571194}, {"n": 64, "D": 0.024365574457940617, "S": 0.025757479883459552, "retention": 1.0571259022815824, "n_eff": 43.78470080938676}], "nulls": [-0.0010786281366710337, -0.0010091096862303583, -0.0009695053445406554, -0.0009634870593770994, -0.0009099404817920487, -0.0008947872788320765, -0.0008261458820184586, -0.000790355199174142, -0.0007808178720341008, -0.0006941690963975233, -0.0006858909919962297, -0.0006739553883188254, -0.0006467649499279915, -0.0005808058234690883, -0.0005803873378342761, -0.000550498777245112, -0.0005428790983648124, -0.0004905379256905373, -0.0004890587729893259, -0.0004874575292124206, -0.00047107801750234657, -0.00047102611014859797, -0.0004645649012535724, -0.00045730144943778583, -0.000450788325922602, -0.0004161542349938596, -0.0003890162602990799, -0.0003692320005255212, -0.00036694471256049077, -0.00033986181307277263, -0.0003322290631357916, -0.0003220414540179295, -0.0002925892182366052, -0.0002694981049451428, -0.0002679002030514521, -0.000169742943656237, -0.00014793156915748895, -0.0001331236924684287, -0.00010981540886567664, -6.326881378959648e-05], "reals": [-0.0004889540462220676, -0.00033021380410658274, -3.84000597986045e-08, 0.00026225652124289844, 0.0007084364280822708, 0.0012055806776891664, 0.002538810816189452, 0.0025568086851903704, 0.0028913070621230386, 0.003211817712145626, 0.0033434213429297532, 0.0034148995042873054, 0.004313583680340072, 0.0055141577150290555, 0.006240927942662289, 0.006793892854124461, 0.008015652348702273, 0.008075434359679834, 0.008364306184678316, 0.008900603349347058, 0.01124721777623705, 0.01211022215498736, 0.013807051228549527, 0.02620864534083922], "gate_threshold": 0.0015, "n_real_accepted": 17, "best_null_shortfall": 0.0015632688137895965, "n_nominal": 24, "n_eff": 10.903400889588438, "n_eff_pool": 43.78470080938676, "n_pool": 64, "corr_median": 0.06754271110698809, "corr_max": 0.8020057805500665, "attestation": {"candidate": "yharm", "raw_gain": 0.02620864534083922, "trials_nominal": 64, "trials_effective": 43.78470080938676, "deflated_gain": 0.026145376527049624, "null_calibration": "0 of 64"}};
+/* ──────────────────────────────────────────────────────────────────────── */
+
+const SVGNS = "http://www.w3.org/2000/svg";
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const fmt = (v, d = 5) => (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(d);
+
+function el(tag, attrs, parent) {
+  const n = document.createElementNS(SVGNS, tag);
+  for (const k in attrs) n.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(n);
+  return n;
+}
+function clear(svg) { while (svg.firstChild) svg.removeChild(svg.firstChild); }
+function text(p, x, y, s, o = {}) {
+  const t = el("text", { x, y, fill: o.fill || css("--mut"),
+    "font-size": o.size || 12, "text-anchor": o.anchor || "start",
+    "font-weight": o.weight || 400,
+    "font-family": "ui-monospace, SFMono-Regular, Menlo, monospace" }, p);
+  t.textContent = s; return t;
+}
+
+/* deterministic PRNG so the illustration never changes under the reader */
+function mulberry32(a) {
+  return function () {
+    a |= 0; a = a + 0x6D2B79F5 | 0;
+    let t = Math.imul(a ^ a >>> 15, 1 | a);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+const NOISE = (() => {
+  const r = mulberry32(20260731), out = [];
+  for (let i = 0; i < 400; i++) {
+    let u = 0, v = 0;
+    while (u === 0) u = r();
+    while (v === 0) v = r();
+    out.push(Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v));
+  }
+  return out;
+})();
+
+/* ── panel 1 ───────────────────────────────────────────────────────────── */
+const P1 = { L: 52, R: 20, T: 22, B: 40, W: 760, H: 300 };
+function drawFig1(n) {
+  const svg = document.getElementById("fig1"); clear(svg);
+  const w = P1.W - P1.L - P1.R, h = P1.H - P1.T - P1.B;
+  const yMin = -3.6, yMax = 3.6;
+  const X = i => P1.L + (n === 1 ? w / 2 : (i / (n - 1)) * w);
+  const Y = v => P1.T + h - ((v - yMin) / (yMax - yMin)) * h;
+
+  el("line", { x1: P1.L, y1: Y(0), x2: P1.L + w, y2: Y(0),
+               stroke: css("--line"), "stroke-width": 1 }, svg);
+  for (const v of [-3, -2, -1, 1, 2, 3]) {
+    el("line", { x1: P1.L, y1: Y(v), x2: P1.L + w, y2: Y(v),
+                 stroke: css("--line"), "stroke-width": .5,
+                 "stroke-dasharray": "2 4" }, svg);
+    text(svg, P1.L - 8, Y(v) + 4, v > 0 ? "+" + v : String(v), { anchor: "end", size: 11 });
+  }
+
+  const draws = NOISE.slice(0, n);
+  const best = Math.max(...draws), bi = draws.indexOf(best);
+  draws.forEach((v, i) => {
+    el("circle", { cx: X(i), cy: Y(v), r: i === bi ? 4.5 : 2.4,
+      fill: i === bi ? css("--naive") : css("--null"),
+      opacity: i === bi ? 1 : .55 }, svg);
+  });
+
+  el("line", { x1: P1.L, y1: Y(best), x2: P1.L + w, y2: Y(best),
+               stroke: css("--naive"), "stroke-width": 2 }, svg);
+  text(svg, P1.L + w, Y(best) - 9, "best of " + n + " = " + best.toFixed(2),
+       { anchor: "end", fill: css("--naive"), size: 13, weight: 600 });
+
+  const eMax = Math.sqrt(2 * Math.log(Math.max(n, 1.001)));
+  el("line", { x1: P1.L, y1: Y(eMax), x2: P1.L + w, y2: Y(eMax),
+               stroke: css("--mut"), "stroke-width": 1, "stroke-dasharray": "5 4" }, svg);
+  text(svg, P1.L + 4, Y(eMax) - 7, "expected best ≈ √(2 ln N)", { size: 11 });
+
+  text(svg, P1.L, P1.H - 12, "each dot is one idea with zero real skill", { size: 11.5 });
+  text(svg, P1.L - 40, P1.T - 8, "score", { size: 11 });
+}
+
+/* ── panel 2 ───────────────────────────────────────────────────────────── */
+function drawFig2() {
+  const svg = document.getElementById("fig2"); clear(svg);
+  const L = 64, R = 26, W = 760;
+  const w = W - L - R;
+  const T1 = 18, H1 = 168;          // upper: the two gain curves
+  const T2 = 226, H2 = 74;          // lower: retention
+  const c = DATA.curve, n0 = c[0].n, nN = c[c.length - 1].n;
+  const X = n => L + ((n - n0) / (nN - n0)) * w;
+
+  /* upper panel */
+  const vals = c.flatMap(p => [p.D, p.S]);
+  const lo = 0, hi = Math.max(...vals) * 1.08;
+  const Y = v => T1 + H1 - ((v - lo) / (hi - lo)) * H1;
+  for (let i = 0; i <= 4; i++) {
+    const v = lo + (i / 4) * (hi - lo);
+    el("line", { x1: L, y1: Y(v), x2: L + w, y2: Y(v), stroke: css("--line"), "stroke-width": .5 }, svg);
+    text(svg, L - 8, Y(v) + 4, v.toFixed(3), { anchor: "end", size: 10.5 });
+  }
+  const line = (key, colour) => {
+    const d = c.map((p, i) => (i ? "L" : "M") + X(p.n).toFixed(1) + " " + Y(p[key]).toFixed(1)).join(" ");
+    el("path", { d, fill: "none", stroke: colour, "stroke-width": 2.4, "stroke-linejoin": "round" }, svg);
+  };
+  line("S", css("--sealed"));
+  line("D", css("--naive"));
+  const last = c[c.length - 1];
+  text(svg, X(last.n) - 4, Y(last.D) + 16, "what searching appears to buy",
+       { anchor: "end", size: 11.5, fill: css("--naive"), weight: 600 });
+  text(svg, X(last.n) - 4, Y(last.S) - 8, "what survived the seal",
+       { anchor: "end", size: 11.5, fill: css("--sealed"), weight: 600 });
+  text(svg, L - 52, T1 - 4, "lift", { size: 11 });
+
+  /* lower panel: retention */
+  const rv = c.map(p => p.retention);
+  const rlo = Math.min(1, Math.min(...rv)) - 0.03, rhi = Math.max(...rv) + 0.03;
+  const RY = v => T2 + H2 - ((v - rlo) / (rhi - rlo)) * H2;
+  el("line", { x1: L, y1: RY(1), x2: L + w, y2: RY(1), stroke: css("--line"),
+               "stroke-width": 1.2, "stroke-dasharray": "4 4" }, svg);
+  text(svg, L - 8, RY(1) + 4, "1.00", { anchor: "end", size: 10.5 });
+  text(svg, L - 8, RY(rhi) + 10, rhi.toFixed(2), { anchor: "end", size: 10.5 });
+  const rd = c.map((p, i) => (i ? "L" : "M") + X(p.n).toFixed(1) + " " + RY(p.retention).toFixed(1)).join(" ");
+  el("path", { d: rd, fill: "none", stroke: css("--defl"), "stroke-width": 2.4 }, svg);
+  text(svg, L - 52, T2 - 4, "retained", { size: 11 });
+  text(svg, X(c[0].n) + 6, RY(c[0].retention) - 8, c[0].retention.toFixed(2),
+       { size: 11.5, fill: css("--defl"), weight: 600 });
+  text(svg, X(last.n) - 4, RY(last.retention) - 10, last.retention.toFixed(2),
+       { anchor: "end", size: 11.5, fill: css("--defl"), weight: 600 });
+
+  for (const n of [2, 8, 16, 24, 32, 48, 64].filter(t => t <= nN)) {
+    text(svg, X(n), 322, String(n), { anchor: "middle", size: 11 });
+  }
+  text(svg, L + w / 2, 338, "candidates searched", { anchor: "middle", size: 11.5 });
+
+  document.getElementById("nOrd").textContent = DATA.n_orderings.toLocaleString();
+  document.getElementById("cap2").textContent =
+    "Both curves are measured inside their own fold set, against the average candidate in "
+    + "the same draw, so the longer training window the sealed folds enjoy cancels out and "
+    + "what is left is the effect of having selected.";
+  document.getElementById("gap2").innerHTML =
+    "On this data the search was <strong>clean</strong>. Searching " + last.n
+    + " candidates appeared to buy " + last.D.toFixed(4) + " and "
+    + last.S.toFixed(4) + " actually survived, a retention of <strong>"
+    + last.retention.toFixed(2) + "</strong>. The useful signal is the decline: retention falls "
+    + "monotonically from " + c[0].retention.toFixed(2) + " to " + last.retention.toFixed(2)
+    + " as the search widens. That decay is the selection cost, measured rather than assumed.";
+}
+
+/* ── panel 3 ───────────────────────────────────────────────────────────── */
+function drawFig3() {
+  const svg = document.getElementById("fig3"); clear(svg);
+  const L = 30, R = 24, T = 34, B = 52, W = 760, H = 260;
+  const w = W - L - R, h = H - T - B;
+  const nulls = DATA.nulls, reals = DATA.reals, thr = DATA.gate_threshold;
+
+  const all = nulls.concat(reals, [thr]);
+  const lo = Math.min(...all), hi = Math.max(...all);
+  const pad = (hi - lo) * 0.08;
+  const X = v => L + ((v - (lo - pad)) / ((hi + pad) - (lo - pad))) * w;
+
+  const yN = T + h * 0.32, yR = T + h * 0.74;
+  el("line", { x1: L, y1: yN, x2: L + w, y2: yN, stroke: css("--line"), "stroke-width": 1 }, svg);
+  el("line", { x1: L, y1: yR, x2: L + w, y2: yR, stroke: css("--line"), "stroke-width": 1 }, svg);
+
+  el("line", { x1: X(thr), y1: T - 6, x2: X(thr), y2: T + h + 6,
+               stroke: css("--accent"), "stroke-width": 1.6, "stroke-dasharray": "5 4" }, svg);
+  text(svg, X(thr), T - 12, "acceptance threshold", { anchor: "middle", size: 11.5, fill: css("--accent") });
+  text(svg, X(thr) + 8, T + h + 22, "← rejected", { size: 11 });
+  text(svg, X(thr) - 8, T + h + 22, "admitted →", { anchor: "end", size: 11 });
+
+  nulls.forEach(v => el("circle", { cx: X(v), cy: yN, r: 3.4, fill: css("--null"), opacity: .75 }, svg));
+  reals.forEach(v => el("circle", { cx: X(v), cy: yR, r: 3.8,
+    fill: v >= thr ? css("--sealed") : css("--null"),
+    opacity: v >= thr ? .95 : .5 }, svg));
+
+  text(svg, L, yN - 14, nulls.length + " matched nulls — none admitted",
+       { size: 12.5, fill: css("--null"), weight: 600 });
+  text(svg, L, yR - 14, reals.length + " real candidates — " + DATA.n_real_accepted + " admitted",
+       { size: 12.5, fill: css("--sealed"), weight: 600 });
+  text(svg, L + w / 2, H - 8, "development-fold gain (right is better)", { anchor: "middle", size: 11.5 });
+
+  document.getElementById("cap3").textContent =
+    "Every null lands on the wrong side of zero, because adding an uninformative "
+    + "column costs parameters and buys nothing. The best of them falls short of the "
+    + "threshold by " + Math.abs(DATA.best_null_shortfall).toFixed(4)
+    + ", which is what lets the gate quote a measured false-positive rate.";
+}
+
+/* ── panel 4 ───────────────────────────────────────────────────────────── */
+function drawFig4() {
+  const svg = document.getElementById("fig4"); clear(svg);
+  const L = 152, R = 150, T = 24, W = 760;
+  const w = W - L - R;
+  const maxN = DATA.n_pool;
+  const X = v => L + (v / maxN) * w;
+
+  const bar = (y, val, colour, label, sub, faint) => {
+    el("rect", { x: L, y, width: Math.max(X(val) - L, 1), height: 22, rx: 3,
+                 fill: colour, opacity: faint ? .35 : .9 }, svg);
+    text(svg, L - 12, y + 15, label, { anchor: "end", size: 12.5,
+         fill: css("--fg"), weight: 600 });
+    text(svg, X(val) + 10, y + 15, sub, { size: 12, fill: colour, weight: 600 });
+  };
+
+  bar(T, DATA.n_nominal, css("--null"),
+      "24 real, nominal", DATA.n_nominal + " tries", true);
+  bar(T + 30, DATA.n_eff, css("--accent"),
+      "24 real, effective", DATA.n_eff.toFixed(1) + "  (" +
+      Math.round(100 * DATA.n_eff / DATA.n_nominal) + "%)");
+  bar(T + 74, DATA.n_pool, css("--null"),
+      "+40 junk, nominal", DATA.n_pool + " tries", true);
+  bar(T + 104, DATA.n_eff_pool, css("--naive"),
+      "+40 junk, effective", DATA.n_eff_pool.toFixed(1) + "  (" +
+      Math.round(100 * DATA.n_eff_pool / DATA.n_pool) + "%)");
+
+  document.getElementById("cap4").textContent =
+    "Participation ratio of the eigenvalues of the correlation matrix of per-observation "
+    + "improvements. Among the 24 real candidates, median pairwise correlation is "
+    + DATA.corr_median.toFixed(2) + " and the maximum " + DATA.corr_max.toFixed(2)
+    + ", so counting attempts over-penalises by "
+    + (DATA.n_nominal / DATA.n_eff).toFixed(1) + "×. But adding forty worthless "
+    + "candidates RAISES the effective share from "
+    + Math.round(100 * DATA.n_eff / DATA.n_nominal) + "% to "
+    + Math.round(100 * DATA.n_eff_pool / DATA.n_pool)
+    + "%, because junk is mutually independent junk and each null contributes a fresh "
+    + "direction. Independence is not informativeness. Deflating by effective trials alone "
+    + "would let a search that wasted most of its attempts off lightly, which is why this "
+    + "is posed as an open question rather than a solved one.";
+}
+
+/* ── attestation mock ──────────────────────────────────────────────────── */
+function fillAttestation() {
+  const a = DATA.attestation;
+  document.getElementById("atCand").textContent = a.candidate;
+  document.getElementById("atRaw").textContent = fmt(a.raw_gain);
+  document.getElementById("atNom").textContent = a.trials_nominal;
+  document.getElementById("atEff").textContent = a.trials_effective.toFixed(1);
+  document.getElementById("atDef").textContent = fmt(a.deflated_gain);
+  document.getElementById("atNull").textContent = a.null_calibration;
+}
+
+/* ── wiring ────────────────────────────────────────────────────────────── */
+function drawAll() {
+  drawFig1(+document.getElementById("nSlider").value);
+  drawFig2(); drawFig3(); drawFig4();
+}
+const slider = document.getElementById("nSlider");
+slider.addEventListener("input", () => {
+  document.getElementById("nOut").textContent = slider.value;
+  drawFig1(+slider.value);
+});
+document.getElementById("themeBtn").addEventListener("click", () => {
+  const cur = document.documentElement.getAttribute("data-theme");
+  const dark = cur ? cur === "dark"
+    : matchMedia("(prefers-color-scheme: dark)").matches;
+  document.documentElement.setAttribute("data-theme", dark ? "light" : "dark");
+  drawAll();
+});
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", drawAll);
+fillAttestation();
+drawAll();
+</script>
+</body>
+</html>
