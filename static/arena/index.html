@@ -20,7 +20,21 @@ html,body{height:100%;margin:0}
 body{font-family:var(--mono);background:radial-gradient(1200px 600px at 80% -10%,#15203a 0%,var(--bg) 55%);
   color:var(--text);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
 #app{display:grid;grid-template-columns:232px 1fr;height:100vh}
-@media(max-width:860px){#app{grid-template-columns:1fr}#sidebar{display:none}}
+/* narrow screens: the sidebar becomes a scrolling strip, never disappears */
+@media(max-width:860px){
+  #app{grid-template-columns:1fr;grid-template-rows:auto 1fr;height:100vh}
+  #sidebar{flex-direction:row;align-items:center;gap:8px;padding:10px 12px;
+    border-right:none;border-bottom:1px solid var(--border);overflow-x:auto;overflow-y:hidden}
+  .brand{padding:0 10px 0 2px;flex:none}
+  .brand-sub{display:none}
+  #nav{flex-direction:row;gap:6px;overflow:visible;flex:none}
+  .nav-item{white-space:nowrap;flex:none;padding:7px 10px}
+  .nav-count{margin-left:6px}
+  .side-foot{display:none}
+  #topbar{padding:11px 14px}
+  #search{width:150px}
+  #view{padding:16px 14px 60px}
+}
 
 /* sidebar */
 #sidebar{background:linear-gradient(180deg,var(--bg2),var(--bg));border-right:1px solid var(--border);
