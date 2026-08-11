@@ -4,835 +4,600 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>A self-evolving agentic trading system — supporting material</title>
+<title>ARK · Arena — metered research console</title>
+<link rel="icon" href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'&gt;&lt;text y='14' font-size='14'&gt;⚡&lt;/text&gt;&lt;/svg&gt;">
 <style>
-  :root {
-    --bg: #ffffff; --fg: #16181d; --mut: #5b636e; --line: #d9dde3;
-    --card: #f7f8fa; --accent: #1d4e77;
-    --naive: #c2701c;      /* what you think you found */
-    --sealed: #1d6b5f;     /* what actually held up */
-    --defl: #6a4c93;       /* what the meter says */
-    --null: #9aa1aa;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #0f1216; --fg: #e6e9ee; --mut: #9aa3ae; --line: #262c34;
-      --card: #161b21; --accent: #7fb2dc;
-      --naive: #e0a05a; --sealed: #5fb8a6; --defl: #a98bd4; --null: #6b737d;
-    }
-  }
-  :root[data-theme="dark"] {
-    --bg: #0f1216; --fg: #e6e9ee; --mut: #9aa3ae; --line: #262c34;
-    --card: #161b21; --accent: #7fb2dc;
-    --naive: #e0a05a; --sealed: #5fb8a6; --defl: #a98bd4; --null: #6b737d;
-  }
-  :root[data-theme="light"] {
-    --bg: #ffffff; --fg: #16181d; --mut: #5b636e; --line: #d9dde3;
-    --card: #f7f8fa; --accent: #1d4e77;
-    --naive: #c2701c; --sealed: #1d6b5f; --defl: #6a4c93; --null: #9aa1aa;
-  }
+:root{
+  --bg:#000; --bg2:#070707; --panel:#0c0c0c; --panel2:#161106;
+  --border:#2a2a2a; --border2:#463818;
+  --text:#d8d2c4; --muted:#8a8170; --faint:#5d5647;
+  --accent:#ff8a00; --accent2:#ffb000;
+  --good:#33d17a; --warn:#ffb000; --bad:#ff453a;
+  --mono:ui-monospace,"SF Mono","JetBrains Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{font-family:var(--mono);background:radial-gradient(1200px 600px at 80% -10%,#15203a 0%,var(--bg) 55%);
+  color:var(--text);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+#app{display:grid;grid-template-columns:232px 1fr;height:100vh}
+@media(max-width:860px){#app{grid-template-columns:1fr}#sidebar{display:none}}
 
-  * { box-sizing: border-box; }
-  body {
-    margin: 0; background: var(--bg); color: var(--fg);
-    font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          "Helvetica Neue", Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-  }
-  .wrap { max-width: 820px; margin: 0 auto; padding: 0 20px 80px; }
+/* sidebar */
+#sidebar{background:linear-gradient(180deg,var(--bg2),var(--bg));border-right:1px solid var(--border);
+  display:flex;flex-direction:column;padding:18px 12px;overflow:hidden}
+.brand{display:flex;align-items:center;gap:10px;padding:6px 8px 18px}
+.brand-mark{width:34px;height:34px;display:grid;place-items:center;font-size:18px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:9px;color:#06231f}
+.brand-name{font-weight:700;letter-spacing:.14em;font-size:15px}
+.brand-sub{color:var(--faint);font-size:11px;letter-spacing:.08em}
+#nav{display:flex;flex-direction:column;gap:2px;flex:1;overflow:auto}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 11px;border-radius:9px;
+  color:var(--muted);cursor:pointer;user-select:none;font-size:13px;transition:background .15s,color .15s}
+.nav-item:hover{background:var(--panel);color:var(--text)}
+.nav-item.active{background:var(--panel2);color:var(--text)}
+.nav-item.locked{color:var(--faint)}
+.nav-ico{width:18px;text-align:center}
+.nav-count{margin-left:auto;font-size:11px;color:var(--faint)}
+.side-foot{padding-top:12px;border-top:1px solid var(--border)}
+.health{font-size:11px;color:var(--muted);white-space:pre-line}
+.health b{color:var(--accent);font-weight:600}
 
-  header { padding: 56px 0 28px; border-bottom: 1px solid var(--line); }
-  h1 { font-size: clamp(24px, 4.4vw, 34px); line-height: 1.18; margin: 0 0 12px;
-       letter-spacing: -0.02em; }
-  .lede { font-size: 17px; color: var(--mut); margin: 0 0 6px; max-width: 62ch; }
-  .byline { font-size: 14px; color: var(--mut); margin-top: 18px; }
-  .byline a { color: var(--accent); }
+/* main */
+#main{display:flex;flex-direction:column;min-width:0}
+#topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:14px 22px;border-bottom:1px solid var(--border);background:rgba(10,14,22,.7);
+  position:sticky;top:0;z-index:5;flex-wrap:wrap}
+#view-title{font-size:17px;font-weight:650}
+.top-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+#search{width:210px;padding:7px 11px;background:var(--panel);color:var(--text);
+  border:1px solid var(--border);border-radius:9px;font:12.5px var(--mono);outline:none}
+#search:focus{border-color:var(--accent2)}
+.pill{font-size:11px;color:var(--muted);padding:4px 9px;border:1px solid var(--border);
+  border-radius:999px;background:var(--panel);white-space:nowrap}
+.pill.live{color:var(--good);border-color:rgba(51,209,122,.35)}
+#view{padding:20px 22px 70px;overflow:auto}
 
-  section { padding: 40px 0 8px; border-bottom: 1px solid var(--line); }
-  section:last-of-type { border-bottom: none; }
-  h2 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.09em;
-       color: var(--accent); margin: 0 0 10px; font-weight: 600; }
-  h3 { font-size: 20px; margin: 0 0 10px; letter-spacing: -0.01em; }
-  p { margin: 0 0 14px; max-width: 68ch; }
-  .small { font-size: 14px; color: var(--mut); }
-
-  .tag { display: inline-block; font-size: 11px; letter-spacing: .07em;
-         text-transform: uppercase; padding: 3px 8px; border-radius: 3px;
-         border: 1px solid var(--line); color: var(--mut); margin-bottom: 10px; }
-  .tag.real { color: var(--sealed); border-color: var(--sealed); }
-
-  figure { margin: 20px 0 8px; }
-  .chart { width: 100%; overflow-x: auto; }
-  svg { display: block; max-width: 100%; height: auto; }
-  figcaption { font-size: 13.5px; color: var(--mut); margin-top: 10px;
-               max-width: 68ch; }
-
-  .ctl { display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
-         margin: 16px 0 4px; font-size: 14px; }
-  .ctl input[type=range] { flex: 1 1 240px; min-width: 180px; accent-color: var(--accent); }
-  .ctl output { font-variant-numeric: tabular-nums; font-weight: 600;
-                min-width: 5.5em; }
-
-  .legend { display: flex; gap: 18px; flex-wrap: wrap; font-size: 13.5px;
-            margin: 4px 0 0; color: var(--mut); }
-  .legend i { display: inline-block; width: 22px; height: 3px; border-radius: 2px;
-              vertical-align: middle; margin-right: 7px; }
-
-  table { width: 100%; border-collapse: collapse; margin: 18px 0; font-size: 14.5px; }
-  th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--line); }
-  th { font-size: 12px; text-transform: uppercase; letter-spacing: .06em;
-       color: var(--mut); font-weight: 600; }
-  td.n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
-  tbody tr:last-child td { border-bottom: none; }
-
-  .cards { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-           margin: 18px 0; }
-  .card { background: var(--card); border: 1px solid var(--line); border-radius: 8px;
-          padding: 14px 16px; }
-  .card h4 { margin: 0 0 6px; font-size: 15px; }
-  .card p { margin: 0; font-size: 14px; color: var(--mut); }
-
-  pre { background: var(--card); border: 1px solid var(--line); border-radius: 8px;
-        padding: 14px 16px; overflow-x: auto; font-size: 13px; line-height: 1.55;
-        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
-  .k { color: var(--accent); }
-
-  /* console */
-  .console { border: 1px solid var(--line); border-radius: 10px; overflow: hidden;
-             margin: 22px 0 10px; background: var(--card); }
-  .cbar { display: flex; align-items: center; gap: 10px; padding: 9px 14px;
-          border-bottom: 1px solid var(--line); font-size: 12.5px; color: var(--mut);
-          background: var(--bg); }
-  .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--sealed); flex: none; }
-  .cbody { display: grid; grid-template-columns: 232px 1fr; }
-  @media (max-width: 680px) { .cbody { grid-template-columns: 1fr; } }
-  .cleft { border-right: 1px solid var(--line); padding: 13px 14px; }
-  @media (max-width: 680px) { .cleft { border-right: none; border-bottom: 1px solid var(--line); } }
-  .cright { padding: 13px 15px; min-width: 0; }
-  .clabel { font-size: 10.5px; text-transform: uppercase; letter-spacing: .08em;
-            color: var(--mut); margin: 0 0 7px; font-weight: 600; }
-  .tier { margin-bottom: 9px; }
-  .tier b { font-size: 12px; font-weight: 600; }
-  .cells { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 4px; }
-  .cell { width: 13px; height: 13px; border-radius: 2.5px; background: var(--accent); }
-  .cell.book { opacity: .74; } .cell.strategy { opacity: .5; } .cell.watchlist { opacity: .32; }
-  .cell.market { opacity: .95; }
-  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 9px; margin-bottom: 11px; }
-  @media (max-width: 560px) { .stats { grid-template-columns: repeat(2, 1fr); } }
-  .stat { background: var(--bg); border: 1px solid var(--line); border-radius: 7px;
-          padding: 8px 10px; }
-  .stat .k { font-size: 10px; text-transform: uppercase; letter-spacing: .07em;
-             color: var(--mut); display: block; }
-  .stat .v { font-size: 19px; font-weight: 650; font-variant-numeric: tabular-nums;
-             letter-spacing: -.02em; display: block; margin-top: 1px; }
-  .btns { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 11px; }
-  button.act { font: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
-               border-radius: 7px; padding: 7px 13px; border: 1px solid var(--accent);
-               background: var(--accent); color: var(--bg); }
-  button.act.ghost { background: transparent; color: var(--accent); }
-  button.act:disabled { opacity: .4; cursor: not-allowed; }
-  .ledger { max-height: 232px; overflow-y: auto; border: 1px solid var(--line);
-            border-radius: 7px; background: var(--bg); }
-  .ledger table { margin: 0; font-size: 12.5px; }
-  .ledger td, .ledger th { padding: 5px 9px; }
-  .ledger thead th { position: sticky; top: 0; background: var(--bg); z-index: 1;
-                     font-size: 10px; }
-  .ledger .idcol { font-family: ui-monospace, Menlo, monospace; color: var(--mut); }
-  .pill { font-size: 10px; padding: 1px 6px; border-radius: 20px; border: 1px solid var(--line); }
-  .pill.null { color: var(--null); } .pill.real { color: var(--sealed); border-color: var(--sealed); }
-  .verdict { margin-top: 11px; font-size: 13.5px; padding: 10px 12px; border-radius: 7px;
-             background: var(--bg); border: 1px solid var(--line); }
-  .empty { padding: 26px 12px; text-align: center; color: var(--mut); font-size: 13px; }
-
-  footer { padding: 36px 0 0; font-size: 13.5px; color: var(--mut); }
-  .theme { position: fixed; top: 14px; right: 14px; background: var(--card);
-           border: 1px solid var(--line); color: var(--mut); border-radius: 6px;
-           padding: 6px 10px; font-size: 12px; cursor: pointer; }
+/* generic */
+.section-head{display:flex;align-items:baseline;gap:10px;margin:24px 0 11px}
+.section-head:first-child{margin-top:2px}
+.section-head h2{font-size:13px;font-weight:650;margin:0;letter-spacing:.05em;
+  text-transform:uppercase;color:var(--muted)}
+.section-head .cn{color:var(--faint);font-size:11.5px}
+p{margin:0 0 11px;max-width:78ch;color:var(--text)}
+p.mut{color:var(--muted);font-size:12.5px}
+a{color:var(--accent2)}
+.hero{background:linear-gradient(135deg,rgba(255,138,0,.07),rgba(255,176,0,.03));
+  border:1px solid var(--border);border-radius:16px;padding:18px 20px;margin-bottom:18px}
+.hero h1{margin:0 0 6px;font-size:18px}
+.hero p{margin:0;color:var(--muted);font-size:13px;max-width:78ch}
+.stat-row{display:flex;gap:11px;flex-wrap:wrap;margin-top:15px}
+.stat{background:var(--panel);border:1px solid var(--border);border-radius:12px;
+  padding:11px 15px;min-width:104px}
+.stat .n{font-size:20px;color:var(--accent);font-weight:600}
+.stat .l{color:var(--muted);font-size:11px;margin-top:2px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.card{background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--border);
+  border-radius:14px;padding:13px 15px;display:flex;flex-direction:column;gap:8px}
+.card:hover{border-color:var(--border2)}
+.card.featured{border-color:rgba(255,138,0,.35)}
+.card-top{display:flex;align-items:flex-start;gap:8px}
+.card-title{font-weight:650;font-size:13.5px}
+.card-key{font-size:11px;color:var(--faint)}
+.card-doc{color:var(--muted);font-size:12px}
+.badges{display:flex;flex-wrap:wrap;gap:5px;margin-left:auto}
+.badge{font-size:10.5px;padding:2px 7px;border-radius:6px;white-space:nowrap;
+  border:1px solid var(--border2);color:var(--muted);background:var(--panel2)}
+.badge.layer{color:var(--accent2)}
+.badge.warn{color:var(--warn);background:rgba(255,176,0,.07)}
+.badge.muted{color:var(--faint)}
+.badge.good{color:var(--good);border-color:rgba(51,209,122,.35)}
+.btn{background:var(--panel2);color:var(--text);border:1px solid var(--border2);
+  border-radius:9px;padding:7px 13px;font:13px var(--mono);cursor:pointer;transition:all .15s}
+.btn:hover{border-color:var(--accent2)}
+.btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1200;
+  border:none;font-weight:650}
+.btn:disabled{opacity:.42;cursor:default}
+.btn-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:12px 0}
+table.rt{width:100%;border-collapse:collapse;font-size:11.5px}
+table.rt th{text-align:left;color:var(--muted);padding:5px 8px;border-bottom:1px solid var(--border2);
+  position:sticky;top:0;background:var(--panel);font-weight:600}
+table.rt td{padding:5px 8px;border-bottom:1px solid var(--border);white-space:nowrap}
+table.rt td.num{color:var(--accent);text-align:right}
+.tablewrap{overflow:auto;max-height:300px;border-radius:8px;border:1px solid var(--border);
+  background:var(--panel)}
+.chartbox{background:var(--bg);border:1px solid var(--border);border-radius:11px;
+  padding:11px 12px 5px;margin:10px 0 14px}
+.chart-title{font-size:11.5px;color:var(--accent);margin-bottom:5px}
+svg{display:block;max-width:100%;height:auto}
+.warnbox{background:rgba(255,176,0,.07);border:1px solid rgba(255,176,0,.3);color:var(--warn);
+  border-radius:9px;padding:9px 12px;margin:10px 0;font-size:12px;white-space:pre-wrap}
+.lockbox{border:1px dashed var(--border2);border-radius:14px;padding:26px 22px;text-align:center;
+  color:var(--muted);background:var(--panel)}
+.lockbox .big{font-size:26px;margin-bottom:8px}
+.kvs{display:grid;grid-template-columns:minmax(120px,240px) 1fr;gap:2px 16px;font-size:12px}
+.kvs .k{color:var(--muted);padding:4px 0;border-bottom:1px solid var(--border)}
+.kvs .v{padding:4px 0;border-bottom:1px solid var(--border);word-break:break-word}
+.kvs .v.num{color:var(--accent)}
+.cells{display:flex;flex-wrap:wrap;gap:3px;margin-top:5px}
+.cell{width:13px;height:13px;border-radius:2.5px;background:var(--accent)}
+.cell.book{opacity:.7}.cell.strategy{opacity:.46}.cell.watchlist{opacity:.3}.cell.market{opacity:.95}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:11.5px;color:var(--muted);margin-top:8px}
+.legend i{display:inline-block;width:20px;height:3px;border-radius:2px;vertical-align:middle;margin-right:6px}
+.ctl{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:12px 0 2px;font-size:12.5px;color:var(--muted)}
+.ctl input[type=range]{flex:1 1 220px;min-width:170px;accent-color:var(--accent)}
+.ctl output{color:var(--accent);font-weight:650;min-width:4em}
 </style>
 </head>
 <body>
-<button class="theme" id="themeBtn">theme</button>
-<div class="wrap">
-
-<header>
-  <h1>An agentic system that reads a market, then acts in it, then gets better &mdash;
-  and how you would know it really did.</h1>
-  <p class="lede">Three layers. A working agentic analysis platform I built. The
-  problems that appear the moment such a system is allowed to act rather than only
-  advise. And the measurement that separates a system which learned from one which
-  merely fitted harder.</p>
-  <p class="byline">Jihao Xin &middot; KAUST &middot; supporting material for a research
-  proposal to ADIA Lab. Section three is measured on real data and every figure is
-  reproducible from the script named beside it.</p>
-</header>
-
-<!-- ─────────────────────────── CONSOLE ─────────────────────────── -->
-<section>
-  <h2>The system, running</h2>
-  <span class="tag real">real evaluations, replayed</span>
-  <h3>Search as hard as you like, then open the seal</h3>
-  <p>Every click runs one real evaluation: a candidate, its measured effect, and a ledger
-  row the agent cannot edit. The pool holds 24 genuine candidates and 40 matched nulls that
-  carry no information by construction. The best raw score climbs as you search, because
-  searching always finds something. The platform meanwhile counts how many <em>distinct</em>
-  things you tried and prices that in, and the seal is the only way to learn what the search
-  actually bought.</p>
-
-  <div class="console">
-    <div class="cbar"><span class="dot"></span>arena &middot; session replaying measured
-      results from <code>dev/prelim_harness.py</code> &middot; no vendor data, no keys</div>
-    <div class="cbody">
-      <div class="cleft">
-        <p class="clabel">skill catalogue</p>
-        <div id="catalog"></div>
-        <p class="clabel" style="margin-top:13px">contracts</p>
-        <p style="font-size:12px;color:var(--mut);margin:0" id="catmeta"></p>
-      </div>
-      <div class="cright">
-        <div class="stats">
-          <div class="stat"><span class="k">trials</span><span class="v" id="s_n">0</span></div>
-          <div class="stat"><span class="k">effective</span><span class="v" id="s_eff">0.0</span></div>
-          <div class="stat"><span class="k">best raw</span><span class="v" id="s_raw">—</span></div>
-          <div class="stat"><span class="k">margin over chance</span><span class="v" id="s_def">—</span></div>
-        </div>
-        <p style="font-size:12px;color:var(--mut);margin:-4px 0 10px" id="allow"></p>
-        <div class="btns">
-          <button class="act" id="b1">Evaluate one</button>
-          <button class="act ghost" id="b10">Evaluate ten</button>
-          <button class="act ghost" id="bseal" disabled>Open the seal</button>
-          <button class="act ghost" id="brst">Reset</button>
-        </div>
-        <div class="ledger" id="ledger"><div class="empty">The ledger is empty. Every
-          evaluation you run appears here, keyed so a retry costs nothing and a new
-          hypothesis costs a trial.</div></div>
-        <div class="verdict" id="verdict" style="display:none"></div>
+<div id="app">
+  <aside id="sidebar">
+    <div class="brand">
+      <div class="brand-mark">⚡</div>
+      <div class="brand-text">
+        <div class="brand-name">ARK</div>
+        <div class="brand-sub">arena · metered</div>
       </div>
     </div>
-  </div>
-  <p class="small"><b>Margin over chance</b> is the best score found minus the best a run of
-  matched nulls of the same effective size would reach. The allowance shown above the buttons
-  is that correction, and it falls as the search widens, which is the discount doing its work.
-  On this particular data it stays small, because an uninformative candidate reliably
-  <em>costs</em> something here rather than helping by luck, so a wide search cannot
-  manufacture a gain. That is itself the reading: this space is safe to explore. A noisier one
-  would not be, and the same instrument would say so.</p>
-  <p class="small">The seal is two folds of data no selection in this pool was ever allowed
-  to touch. In a live system it is the future, arriving on its own schedule.</p>
-</section>
+    <nav id="nav"></nav>
+    <div class="side-foot"><div id="health" class="health"></div></div>
+  </aside>
 
-<!-- ─────────────────────────── ONE ─────────────────────────── -->
-<section>
-  <h2>One &middot; the capability</h2>
-  <span class="tag real">built &middot; in daily use</span>
-  <h3>An agentic analysis platform, already running</h3>
-  <p>I built the agent layer of a live options and volatility research console that a
-  practising trader uses daily. Fifty-four skills in four tiers, each with a formal
-  contract rather than free-form text, discovered by a registry that turns every
-  exported function into a runnable action. Higher tiers compose lower ones, so a
-  single morning call fans out into a dozen grounded sub-answers.</p>
-  <figure>
-    <div class="chart"><svg id="fig0" viewBox="0 0 760 250" role="img"
-      aria-label="Fifty-four skills arranged in four tiers across four domains"></svg></div>
-    <figcaption>Structure only. The individual skills are the operator's own research
-    and are not listed here.</figcaption>
-  </figure>
-  <p>Two design choices matter for everything that follows. Every skill declares a
-  typed contract, which is what makes a fabricated field a load error rather than a
-  plausible sentence. And 49 of the 54 write a forensic row on every call into locked,
-  schema-checked, date-partitioned storage, already aggregated across the system. The
-  meter exists and is hardened. Today it counts what the research spends on vendor
-  APIs, not how many hypotheses were tried.</p>
-</section>
-
-<!-- ─────────────────────────── TWO ─────────────────────────── -->
-<section>
-  <h2>Two &middot; what breaks the moment it acts</h2>
-  <h3>Analysis is replayable. Action is not.</h3>
-  <div class="cards">
-    <div class="card"><h4>Idempotency</h4><p>A retried backtest costs nothing. A retried
-      order is a second position and a retried payment is a second payment. The key has
-      to come from the intent, never from the call.</p></div>
-    <div class="card"><h4>Hallucination</h4><p>A fabricated citation is embarrassing. A
-      fabricated fill price moves money. Constrain every tool output by schema and
-      reconcile every asserted fact before it can reach an order.</p></div>
-    <div class="card"><h4>Sandbox and seal</h4><p>Capability tokens bounding notional,
-      instruments and time, so a violation is structurally impossible. And what the
-      agent may observe of its own P&amp;L is a design parameter.</p></div>
-  </div>
-</section>
-
-<!-- ─────────────────────────── THREE ─────────────────────────── -->
-<section style="border-bottom:none;padding-bottom:0">
-  <h2>Three &middot; and how anyone could tell it improved</h2>
-  <h3>A system that appears to improve with use looks exactly like one that is overfitting harder</h3>
-  <p>So the hard half of self-evolution is the measurement, not the evolution. What
-  follows is that measurement, run end to end on real data.</p>
-</section>
-
-<!-- ─────────────────────────── 1 ─────────────────────────── -->
-<section>
-  <h2>3.1 &middot; the mechanism</h2>
-  <span class="tag">illustration, synthetic</span>
-  <h3>Search N useless ideas, report the best one</h3>
-  <p>Every dot is one idea with genuinely zero skill, scored on noise alone. The
-  bar is the best score you would report after trying that many. Nothing here has
-  any edge, and the reported number climbs anyway. That climb is the entire
-  problem, and it is the reason a trial count has to appear somewhere in the
-  final answer.</p>
-
-  <div class="ctl">
-    <label for="nSlider">ideas tried</label>
-    <input type="range" id="nSlider" min="1" max="400" value="1" step="1">
-    <output id="nOut">1</output>
-  </div>
-  <figure>
-    <div class="chart"><svg id="fig1" viewBox="0 0 760 300" role="img"
-      aria-label="Best score found rises with the number of useless ideas tried"></svg></div>
-    <figcaption>Standard normal scores, fixed seed, so the same slider position
-    always gives the same picture. The dashed line is the expected best of N,
-    which grows without limit, slowly.</figcaption>
-  </figure>
-</section>
-
-<!-- ─────────────────────────── 2 ─────────────────────────── -->
-<section>
-  <h2>3.2 &middot; the measurement</h2>
-  <span class="tag real">real data &middot; dev/prelim_harness.py</span>
-  <h3>What a search actually costs, checked against a sealed hold-out</h3>
-  <p>A pool of 64 candidates, 24 real and 40 matched nulls, on the ADIA Lab
-  forecast fusion data. Draw candidates in random order, keep the one that scores
-  best on the development folds, then open a sealed hold-out that no selection was
-  ever allowed to touch and see what the winner really delivered. Averaged over
-  <span id="nOrd">many</span> random orderings.</p>
-
-  <figure>
-    <div class="chart"><svg id="fig2" viewBox="0 0 760 340" role="img"
-      aria-label="Development gain versus sealed gain as the number of candidates grows"></svg></div>
-    <figcaption id="cap2"></figcaption>
-  </figure>
-  <div class="legend">
-    <span><i style="background:var(--naive)"></i>apparent lift from searching</span>
-    <span><i style="background:var(--sealed)"></i>lift that survived the seal</span>
-    <span><i style="background:var(--defl)"></i>retention, the ratio of the two</span>
-  </div>
-  <p class="small" id="gap2" style="margin-top:16px"></p>
-</section>
-
-<!-- ─────────────────────────── 3 ─────────────────────────── -->
-<section>
-  <h2>3.3 &middot; the calibration</h2>
-  <span class="tag real">real data &middot; dev/prelim.py, dev/prelim_hard_null.py</span>
-  <h3>An acceptance rule with a measured error rate, not an assumed one</h3>
-  <p>A null candidate is the same construction evaluated on a randomly chosen
-  other day from the same site. It keeps the column count, the marginal
-  distribution, the per-hour distribution and the within-day shape, and destroys
-  only the alignment to the target, so it carries no information by construction.
-  Put 64 of them through the identical gate and count how many get in.</p>
-
-  <figure>
-    <div class="chart"><svg id="fig3" viewBox="0 0 760 260" role="img"
-      aria-label="Null candidates all fall on the wrong side of the acceptance threshold"></svg></div>
-    <figcaption id="cap3"></figcaption>
-  </figure>
-</section>
-
-<!-- ─────────────────────────── 4 ─────────────────────────── -->
-<section>
-  <h2>3.4 &middot; nominal versus effective</h2>
-  <span class="tag real">real data &middot; dev/prelim.py</span>
-  <h3>Twenty-four tries is not twenty-four tries, and junk makes it worse</h3>
-  <p>Correcting a result by the raw number of attempts over-penalises a researcher
-  who examined one idea from twenty angles. The quantity the theory wants is the
-  number of <em>independent</em> attempts, read off the eigenvalues of the
-  correlation matrix of what each candidate actually improved.</p>
-  <figure>
-    <div class="chart"><svg id="fig4" viewBox="0 0 760 150" role="img"
-      aria-label="Nominal trial count versus effective trial count"></svg></div>
-    <figcaption id="cap4"></figcaption>
-  </figure>
-</section>
-
-<!-- ─────────────────────────── 5 ─────────────────────────── -->
-<section>
-  <h2>Four &middot; the system this becomes</h2>
-  <h3>Four parts, and why the agent must not own the denominator</h3>
-  <div class="cards">
-    <div class="card"><h4>Meter</h4><p>Every evaluation is an API call the platform
-      records, keyed so a crash-retry costs nothing and a nudged parameter costs a
-      trial. The party being graded never supplies its own denominator.</p></div>
-    <div class="card"><h4>Calibrator</h4><p>Manufactures matched nulls on demand and
-      measures what the acceptance rule's error rate actually is.</p></div>
-    <div class="card"><h4>Deflator</h4><p>Estimates N<sub>eff</sub> from the ledger
-      online and returns a discounted score. Never a raw one.</p></div>
-    <div class="card"><h4>Attestation</h4><p>Result, effective trial count, seal
-      schedule and a replayable record, signed and travelling with the agent.</p></div>
-  </div>
-  <p>The self-improvement harness rides on top. The agent may rewrite its own
-  search policy, but its fitness signal is the deflated score. That single
-  substitution is what separates improving from self-deceiving.</p>
-  <p>Two details decide whether the meter is real. Trial identity has to be an
-  idempotency key that absorbs a crash-retry without incrementing the count, yet
-  refuses to let a renamed variable buy a fresh one. And replay only means anything
-  if the data is pinned, because prices get adjusted and fundamentals get restated,
-  so every ledger row names the content-addressed snapshot it saw.</p>
-  <pre><span class="k">attestation</span> {
-  finding          "candidate <span id="atCand">…</span> improves panel-only MAE"
-  raw_gain         <span id="atRaw">…</span>
-  trials_nominal   <span id="atNom">…</span>
-  trials_effective <span id="atEff">…</span>     <span class="k">// measured, not declared</span>
-  deflated_gain    <span id="atDef">…</span>
-  null_calibration "<span id="atNull">…</span> of matched nulls admitted"
-  seals_opened     ["S1","S2"]  <span class="k">// after the design was frozen</span>
-  replay           sha256:… + ledger rows
-}</pre>
-</section>
-
-<footer>
-  <p>Scripts: <code>dev/prelim.py</code>, <code>dev/prelim_hard_null.py</code>,
-  <code>dev/prelim_harness.py</code>. Panels 2 to 4 are measurements on the ADIA Lab
-  forecast fusion data. Panel 1 is a synthetic illustration of the mechanism and is
-  labelled as such, deliberately, because a headline result should not live inside a
-  simulator its author wrote.</p>
-</footer>
-
+  <main id="main">
+    <header id="topbar">
+      <div id="view-title">Dashboard</div>
+      <div class="top-right">
+        <input id="search" type="search" placeholder="Search skills…" autocomplete="off">
+        <span class="pill" id="pill-mode">public deployment</span>
+        <span class="pill live" id="pill-health">● ledger online</span>
+      </div>
+    </header>
+    <section id="view"></section>
+  </main>
 </div>
 
 <script>
-/* ── injected measurements ─────────────────────────────────────────────── */
-const DATA = {"n_orderings": 4000, "curve": [{"n": 2, "D": 0.002015630219298367, "S": 0.002672726029379705, "retention": 1.3260001779046906, "n_eff": 1.9882374967055871}, {"n": 3, "D": 0.0036583301091156987, "S": 0.004847372695427915, "retention": 1.3250233168814924, "n_eff": 2.96251989128538}, {"n": 4, "D": 0.004971375524623938, "S": 0.0065721313750354395, "retention": 1.3219945551251817, "n_eff": 3.9234232916159146}, {"n": 5, "D": 0.006093328653366122, "S": 0.008086080010494162, "retention": 1.3270382200748665, "n_eff": 4.8694095540714795}, {"n": 6, "D": 0.007088966241256016, "S": 0.009396197605441413, "retention": 1.3254679576209412, "n_eff": 5.802455491782017}, {"n": 7, "D": 0.007928747388387851, "S": 0.010495506294043739, "retention": 1.3237281729286858, "n_eff": 6.719668312833433}, {"n": 8, "D": 0.008643392513914834, "S": 0.011420769326529669, "retention": 1.3213294789220307, "n_eff": 7.626197543500458}, {"n": 9, "D": 0.00929604302756341, "S": 0.01226616113801934, "retention": 1.3195034813898048, "n_eff": 8.52699844020405}, {"n": 10, "D": 0.009811476734587408, "S": 0.012938960102180305, "retention": 1.3187576602580013, "n_eff": 9.41481557406664}, {"n": 11, "D": 0.010333674246125845, "S": 0.013619546281545065, "retention": 1.317977125769289, "n_eff": 10.299091546157797}, {"n": 12, "D": 0.010842769886586232, "S": 0.014222800708112767, "retention": 1.3117313063803029, "n_eff": 11.158238527852998}, {"n": 13, "D": 0.01134093784890394, "S": 0.014809437863869594, "retention": 1.3058389051396548, "n_eff": 11.99995136070422}, {"n": 14, "D": 0.011747724351828226, "S": 0.015257495639025285, "retention": 1.2987618011867001, "n_eff": 12.841933873463914}, {"n": 15, "D": 0.012115384714405021, "S": 0.01571171207921343, "retention": 1.2968397165739547, "n_eff": 13.680829670424668}, {"n": 16, "D": 0.01251034828074304, "S": 0.01610610736185176, "retention": 1.2874227799591806, "n_eff": 14.490280830670716}, {"n": 17, "D": 0.012895003898044738, "S": 0.016561945106951234, "retention": 1.2843691431115047, "n_eff": 15.296203725453294}, {"n": 18, "D": 0.013201974259570644, "S": 0.016872486872408624, "retention": 1.2780275541119979, "n_eff": 16.097517007240192}, {"n": 19, "D": 0.013530460389469345, "S": 0.017229823981584857, "retention": 1.2734100308216192, "n_eff": 16.87993567052341}, {"n": 20, "D": 0.01388052625532196, "S": 0.017606498959719295, "retention": 1.2684316600005532, "n_eff": 17.64983864122464}, {"n": 21, "D": 0.01423418955693128, "S": 0.01793203583186495, "retention": 1.259786218255961, "n_eff": 18.406831944390746}, {"n": 22, "D": 0.014571556889240896, "S": 0.018263563451260328, "retention": 1.2533707681397774, "n_eff": 19.166442016164677}, {"n": 23, "D": 0.01491375251863488, "S": 0.01855116987687832, "retention": 1.2438968565220894, "n_eff": 19.91637794775176}, {"n": 24, "D": 0.015170675710277682, "S": 0.01879851620547452, "retention": 1.239135063228534, "n_eff": 20.66087633946789}, {"n": 25, "D": 0.015487589318839074, "S": 0.019077346276753924, "retention": 1.2317828090617224, "n_eff": 21.39214318233008}, {"n": 26, "D": 0.015738067771602037, "S": 0.019307518209047924, "retention": 1.226803600622857, "n_eff": 22.112519726435597}, {"n": 27, "D": 0.016037784254076322, "S": 0.01958113225114981, "retention": 1.2209375023967464, "n_eff": 22.831081138384107}, {"n": 28, "D": 0.016317247142603318, "S": 0.019853555287720523, "retention": 1.2167221047896077, "n_eff": 23.532574668738278}, {"n": 29, "D": 0.016595118457709387, "S": 0.0201215198927165, "retention": 1.2124963099235304, "n_eff": 24.230511613035073}, {"n": 30, "D": 0.016880004723844558, "S": 0.020365565151056503, "retention": 1.2064904888497021, "n_eff": 24.914309774933407}, {"n": 31, "D": 0.017161412376329174, "S": 0.02060553465979936, "retention": 1.2006899087292304, "n_eff": 25.577859161337475}, {"n": 32, "D": 0.01740740500256982, "S": 0.020793244778486153, "retention": 1.1945057161257802, "n_eff": 26.245549123825644}, {"n": 33, "D": 0.017642893467623856, "S": 0.0209801317837407, "retention": 1.1891548187512977, "n_eff": 26.889610699160194}, {"n": 34, "D": 0.017924418617947916, "S": 0.021176579875694147, "retention": 1.1814374751597134, "n_eff": 27.554136751095626}, {"n": 35, "D": 0.01816683006464196, "S": 0.02137089013752545, "retention": 1.1763686929135502, "n_eff": 28.194565227652156}, {"n": 36, "D": 0.018410525063445978, "S": 0.021551019039501233, "retention": 1.1705814454086751, "n_eff": 28.818841558959864}, {"n": 37, "D": 0.018677021541527266, "S": 0.021771673261932304, "retention": 1.1656929994712626, "n_eff": 29.43777996638393}, {"n": 38, "D": 0.01894089774140945, "S": 0.021973694944806624, "retention": 1.1601189787729405, "n_eff": 30.0459420011274}, {"n": 39, "D": 0.019178593057097744, "S": 0.02215849960844964, "retention": 1.1553767026851363, "n_eff": 30.64902248172166}, {"n": 40, "D": 0.019416869734865293, "S": 0.022323630963309776, "retention": 1.149702875290194, "n_eff": 31.259887980331175}, {"n": 41, "D": 0.019669248854541688, "S": 0.022520670236840845, "retention": 1.1449684938853553, "n_eff": 31.837535006058136}, {"n": 42, "D": 0.019892970160188844, "S": 0.022686618859757146, "retention": 1.1404339662238643, "n_eff": 32.43522678403978}, {"n": 43, "D": 0.020103177523486917, "S": 0.022840296916288354, "retention": 1.1361535702305574, "n_eff": 33.01947004146005}, {"n": 44, "D": 0.020388734849958713, "S": 0.023052236941646247, "retention": 1.1306359669341095, "n_eff": 33.60339182377345}, {"n": 45, "D": 0.02059791713131642, "S": 0.023191872253365012, "retention": 1.125932884646129, "n_eff": 34.175665572877264}, {"n": 46, "D": 0.020827504608176596, "S": 0.023359215485662794, "retention": 1.1215561309487014, "n_eff": 34.74560405604911}, {"n": 47, "D": 0.02100814029206082, "S": 0.023499374999199425, "retention": 1.1185842569834734, "n_eff": 35.30364178599485}, {"n": 48, "D": 0.02122359831412995, "S": 0.023649263041152953, "retention": 1.1142909270671635, "n_eff": 35.85218379015505}, {"n": 49, "D": 0.021387265256630223, "S": 0.023763971792438464, "retention": 1.1111271828019922, "n_eff": 36.395144674027875}, {"n": 50, "D": 0.021622870325896444, "S": 0.023922961734184442, "retention": 1.1063730843140336, "n_eff": 36.91935761318073}, {"n": 51, "D": 0.02181038359858564, "S": 0.024057252052356322, "retention": 1.103018291430527, "n_eff": 37.44337089082216}, {"n": 52, "D": 0.022065289520223727, "S": 0.0242272672396195, "retention": 1.0979809359589066, "n_eff": 37.9553757479483}, {"n": 53, "D": 0.0222622263616244, "S": 0.02435788047695081, "retention": 1.0941349747004143, "n_eff": 38.48434007311175}, {"n": 54, "D": 0.022452611480939758, "S": 0.024484729576368637, "retention": 1.0905069816557402, "n_eff": 38.98292375237282}, {"n": 55, "D": 0.02268000892013058, "S": 0.02463701122956896, "retention": 1.0862875458440124, "n_eff": 39.477641150811}, {"n": 56, "D": 0.022884665557018485, "S": 0.024769409455914746, "retention": 1.0823583763634348, "n_eff": 39.97764846788948}, {"n": 57, "D": 0.023054319682499685, "S": 0.024884782715219076, "retention": 1.0793978333747527, "n_eff": 40.48212331666025}, {"n": 58, "D": 0.023244952305841723, "S": 0.02500939099315246, "retention": 1.075906315663522, "n_eff": 40.97081182851712}, {"n": 59, "D": 0.023449613677524517, "S": 0.025142044378783295, "retention": 1.0721730739163904, "n_eff": 41.45203943330991}, {"n": 60, "D": 0.02362374483044063, "S": 0.025259307787529425, "retention": 1.069233856394405, "n_eff": 41.93003052642265}, {"n": 61, "D": 0.02381112867717316, "S": 0.025383866290129266, "retention": 1.0660505276452448, "n_eff": 42.405141383409884}, {"n": 62, "D": 0.024003182879705882, "S": 0.02551222858094437, "retention": 1.0628685665897397, "n_eff": 42.87642008483748}, {"n": 63, "D": 0.02419516551085069, "S": 0.02564160064328421, "retention": 1.0597819895790688, "n_eff": 43.32716215571194}, {"n": 64, "D": 0.024365574457940617, "S": 0.025757479883459552, "retention": 1.0571259022815824, "n_eff": 43.78470080938676}], "nulls": [-0.0010786281366710337, -0.0010091096862303583, -0.0009695053445406554, -0.0009634870593770994, -0.0009099404817920487, -0.0008947872788320765, -0.0008261458820184586, -0.000790355199174142, -0.0007808178720341008, -0.0006941690963975233, -0.0006858909919962297, -0.0006739553883188254, -0.0006467649499279915, -0.0005808058234690883, -0.0005803873378342761, -0.000550498777245112, -0.0005428790983648124, -0.0004905379256905373, -0.0004890587729893259, -0.0004874575292124206, -0.00047107801750234657, -0.00047102611014859797, -0.0004645649012535724, -0.00045730144943778583, -0.000450788325922602, -0.0004161542349938596, -0.0003890162602990799, -0.0003692320005255212, -0.00036694471256049077, -0.00033986181307277263, -0.0003322290631357916, -0.0003220414540179295, -0.0002925892182366052, -0.0002694981049451428, -0.0002679002030514521, -0.000169742943656237, -0.00014793156915748895, -0.0001331236924684287, -0.00010981540886567664, -6.326881378959648e-05], "reals": [-0.0004889540462220676, -0.00033021380410658274, -3.84000597986045e-08, 0.00026225652124289844, 0.0007084364280822708, 0.0012055806776891664, 0.002538810816189452, 0.0025568086851903704, 0.0028913070621230386, 0.003211817712145626, 0.0033434213429297532, 0.0034148995042873054, 0.004313583680340072, 0.0055141577150290555, 0.006240927942662289, 0.006793892854124461, 0.008015652348702273, 0.008075434359679834, 0.008364306184678316, 0.008900603349347058, 0.01124721777623705, 0.01211022215498736, 0.013807051228549527, 0.02620864534083922], "gate_threshold": 0.0015, "n_real_accepted": 17, "best_null_shortfall": 0.0015632688137895965, "n_nominal": 24, "n_eff": 10.903400889588438, "n_eff_pool": 43.78470080938676, "n_pool": 64, "corr_median": 0.06754271110698809, "corr_max": 0.8020057805500665, "cands": [{"i": 0, "kind": "real", "from": "disp", "dev": 0.003415, "sealed": 0.006019, "cols": null}, {"i": 1, "kind": "real", "from": "seas", "dev": 0.004314, "sealed": 0.001702, "cols": null}, {"i": 2, "kind": "real", "from": "persist", "dev": 0.003343, "sealed": 0.003552, "cols": null}, {"i": 3, "kind": "real", "from": "disp_dev", "dev": 0.002891, "sealed": 0.007237, "cols": null}, {"i": 4, "kind": "real", "from": "change_nl", "dev": 0.001206, "sealed": 0.000776, "cols": null}, {"i": 5, "kind": "real", "from": "amp", "dev": 0.008364, "sealed": 0.0183, "cols": null}, {"i": 6, "kind": "real", "from": "amp_dev", "dev": 0.013807, "sealed": 0.02011, "cols": null}, {"i": 7, "kind": "real", "from": "absdev", "dev": 0.008016, "sealed": 0.010154, "cols": null}, {"i": 8, "kind": "real", "from": "hinge", "dev": 0.003212, "sealed": 0.005485, "cols": null}, {"i": 9, "kind": "real", "from": "sgnsq", "dev": -0.000489, "sealed": 0.000124, "cols": null}, {"i": 10, "kind": "real", "from": "persist_ix", "dev": 0.005514, "sealed": 0.010285, "cols": null}, {"i": 11, "kind": "real", "from": "ycurve", "dev": 0.008901, "sealed": 0.016902, "cols": null}, {"i": 12, "kind": "real", "from": "yslope", "dev": 0.006794, "sealed": 0.008659, "cols": null}, {"i": 13, "kind": "real", "from": "ycurv2", "dev": 0.002557, "sealed": 0.002835, "cols": null}, {"i": 14, "kind": "real", "from": "yphase", "dev": 0.008075, "sealed": 0.007414, "cols": null}, {"i": 15, "kind": "real", "from": "cluster", "dev": -0.0, "sealed": -0.0, "cols": null}, {"i": 16, "kind": "real", "from": "seas_wt", "dev": 0.011247, "sealed": 0.010403, "cols": null}, {"i": 17, "kind": "real", "from": "quant", "dev": 0.000262, "sealed": 0.000309, "cols": null}, {"i": 18, "kind": "real", "from": "asym", "dev": -0.00033, "sealed": 0.000132, "cols": null}, {"i": 19, "kind": "real", "from": "indep", "dev": 0.006241, "sealed": 0.00801, "cols": null}, {"i": 20, "kind": "real", "from": "normdev", "dev": 0.000708, "sealed": 0.000927, "cols": null}, {"i": 21, "kind": "real", "from": "change_ix", "dev": 0.002539, "sealed": 0.004258, "cols": null}, {"i": 22, "kind": "real", "from": "amp_hi", "dev": 0.01211, "sealed": 0.021784, "cols": null}, {"i": 23, "kind": "real", "from": "yharm", "dev": 0.026209, "sealed": 0.028551, "cols": null}, {"i": 24, "kind": "null", "from": "disp", "dev": -0.000647, "sealed": -0.000434, "cols": null}, {"i": 25, "kind": "null", "from": "seas", "dev": -0.001009, "sealed": -0.000538, "cols": null}, {"i": 26, "kind": "null", "from": "persist", "dev": -0.000694, "sealed": -0.000322, "cols": null}, {"i": 27, "kind": "null", "from": "disp_dev", "dev": -0.00097, "sealed": -0.0006, "cols": null}, {"i": 28, "kind": "null", "from": "change_nl", "dev": -0.000269, "sealed": -0.000185, "cols": null}, {"i": 29, "kind": "null", "from": "amp", "dev": -0.000487, "sealed": -0.000223, "cols": null}, {"i": 30, "kind": "null", "from": "amp_dev", "dev": -0.00079, "sealed": -0.000651, "cols": null}, {"i": 31, "kind": "null", "from": "absdev", "dev": -0.000332, "sealed": -0.000362, "cols": null}, {"i": 32, "kind": "null", "from": "hinge", "dev": -0.000457, "sealed": -0.00044, "cols": null}, {"i": 33, "kind": "null", "from": "sgnsq", "dev": -6.3e-05, "sealed": -0.000147, "cols": null}, {"i": 34, "kind": "null", "from": "persist_ix", "dev": -0.00011, "sealed": -0.000338, "cols": null}, {"i": 35, "kind": "null", "from": "ycurve", "dev": -0.000369, "sealed": -0.000135, "cols": null}, {"i": 36, "kind": "null", "from": "yslope", "dev": -0.00034, "sealed": -0.000317, "cols": null}, {"i": 37, "kind": "null", "from": "ycurv2", "dev": -0.000133, "sealed": -0.000137, "cols": null}, {"i": 38, "kind": "null", "from": "yphase", "dev": -0.000489, "sealed": -0.000334, "cols": null}, {"i": 39, "kind": "null", "from": "cluster", "dev": -0.00091, "sealed": -0.00053, "cols": null}, {"i": 40, "kind": "null", "from": "seas_wt", "dev": -0.000895, "sealed": -0.000569, "cols": null}, {"i": 41, "kind": "null", "from": "quant", "dev": -0.000674, "sealed": -0.00024, "cols": null}, {"i": 42, "kind": "null", "from": "asym", "dev": -0.000471, "sealed": -0.000192, "cols": null}, {"i": 43, "kind": "null", "from": "indep", "dev": -0.00055, "sealed": -0.000205, "cols": null}, {"i": 44, "kind": "null", "from": "normdev", "dev": -0.00058, "sealed": -0.000299, "cols": null}, {"i": 45, "kind": "null", "from": "change_ix", "dev": -0.000148, "sealed": -0.000346, "cols": null}, {"i": 46, "kind": "null", "from": "amp_hi", "dev": -0.000416, "sealed": -0.000282, "cols": null}, {"i": 47, "kind": "null", "from": "yharm", "dev": -0.000826, "sealed": -0.001073, "cols": null}, {"i": 48, "kind": "null", "from": "disp", "dev": -0.000471, "sealed": -0.000449, "cols": null}, {"i": 49, "kind": "null", "from": "seas", "dev": -0.000963, "sealed": -0.001589, "cols": null}, {"i": 50, "kind": "null", "from": "persist", "dev": -0.000781, "sealed": -0.000296, "cols": null}, {"i": 51, "kind": "null", "from": "disp_dev", "dev": -0.000268, "sealed": -0.000872, "cols": null}, {"i": 52, "kind": "null", "from": "change_nl", "dev": -0.000367, "sealed": -0.000202, "cols": null}, {"i": 53, "kind": "null", "from": "amp", "dev": -0.000543, "sealed": -0.00042, "cols": null}, {"i": 54, "kind": "null", "from": "amp_dev", "dev": -0.000686, "sealed": -0.000655, "cols": null}, {"i": 55, "kind": "null", "from": "absdev", "dev": -0.000451, "sealed": -0.000298, "cols": null}, {"i": 56, "kind": "null", "from": "hinge", "dev": -0.000465, "sealed": -0.000495, "cols": null}, {"i": 57, "kind": "null", "from": "sgnsq", "dev": -0.000389, "sealed": -0.000112, "cols": null}, {"i": 58, "kind": "null", "from": "persist_ix", "dev": -0.000322, "sealed": -0.000379, "cols": null}, {"i": 59, "kind": "null", "from": "ycurve", "dev": -0.000293, "sealed": 0.00019, "cols": null}, {"i": 60, "kind": "null", "from": "yslope", "dev": -0.000581, "sealed": -0.000252, "cols": null}, {"i": 61, "kind": "null", "from": "ycurv2", "dev": -0.00017, "sealed": -6.2e-05, "cols": null}, {"i": 62, "kind": "null", "from": "yphase", "dev": -0.000491, "sealed": 4.8e-05, "cols": null}, {"i": 63, "kind": "null", "from": "cluster", "dev": -0.001079, "sealed": -0.00043, "cols": null}], "corr": [[1.0, -0.0175, 0.023, 0.4315, 0.1113, 0.2917, 0.203, 0.7259, 0.6643, 0.0784, 0.11, 0.0918, 0.0361, 0.0171, 0.0433, 0.0038, 0.3019, 0.0566, 0.1852, 0.6542, 0.1016, 0.1232, 0.4843, 0.0576, 0.0106, 0.0123, 0.0142, 0.014, 0.0147, 0.0126, 0.0107, 0.0187, -0.004, 0.0185, 0.0077, 0.0118, 0.0105, 0.014, 0.0179, 0.0193, 0.0094, 0.0053, 0.0285, 0.0109, 0.0094, 0.0074, 0.0122, 0.022, 0.0152, 0.0391, 0.0151, 0.0096, 0.0136, 0.0039, 0.0096, 0.008, 0.0191, 0.0176, 0.0053, 0.0109, 0.0117, 0.0062, 0.0177, 0.0197], [-0.0175, 1.0, 0.1154, 0.0124, 0.0187, 0.1073, 0.0961, 0.0061, -0.0075, 0.0484, 0.0971, 0.1132, 0.1098, 0.0611, 0.0749, -0.0007, 0.4175, 0.0699, 0.0262, -0.0179, 0.0606, 0.0435, 0.0485, 0.1753, 0.0223, 0.0222, 0.0155, 0.0215, 0.0136, 0.0012, 0.0185, 0.0097, 0.0205, 0.0074, 0.0218, 0.0134, 0.0123, 0.0053, 0.0112, 0.0069, 0.0141, 0.0249, 0.0134, 0.0061, 0.0241, 0.0172, 0.0022, 0.0137, 0.0157, 0.0104, 0.0228, 0.013, 0.0147, 0.0112, 0.0216, 0.0091, 0.0208, 0.0144, 0.0064, 0.016, 0.0158, 0.0116, 0.0169, 0.0288], [0.023, 0.1154, 1.0, 0.0609, 0.0318, 0.1639, 0.1411, 0.022, 0.0331, 0.0357, 0.6442, 0.1415, 0.078, 0.0576, 0.1363, 0.0073, 0.0417, 0.0168, 0.0119, 0.0223, 0.0503, 0.0689, 0.1129, 0.3437, 0.0121, 0.0143, 0.0159, 0.0062, 0.0079, 0.0094, 0.0087, 0.0134, 0.0021, 0.013, 0.0077, 0.0061, 0.0095, 0.0088, 0.0145, 0.0098, 0.016, 0.0053, 0.015, 0.0121, 0.0105, 0.0188, 0.0078, 0.015, 0.0058, 0.0164, 0.0176, 0.0155, 0.0086, 0.0157, 0.014, 0.0089, 0.0173, 0.0033, 0.0106, 0.0116, 0.006, 0.008, 0.0095, 0.0152], [0.4315, 0.0124, 0.0609, 1.0, 0.1274, 0.2471, 0.1398, 0.3781, 0.6617, 0.4436, 0.1303, 0.1181, 0.0611, 0.0262, 0.0636, 0.0108, 0.1795, 0.0274, 0.0757, 0.3271, 0.4792, 0.3838, 0.2288, 0.0846, 0.0128, 0.0205, 0.0233, 0.0102, 0.0107, 0.0112, 0.016, 0.0174, -0.0033, 0.0193, 0.0135, 0.0096, 0.0115, 0.0108, 0.0172, 0.014, 0.0206, 0.0183, 0.0237, 0.0173, 0.0002, 0.0098, 0.0085, 0.0182, 0.0133, 0.0388, 0.0119, 0.0192, 0.0174, 0.01, 0.0094, 0.0023, 0.0156, 0.0101, 0.0131, 0.0032, 0.0143, 0.0059, 0.0118, 0.028], [0.1113, 0.0187, 0.0318, 0.1274, 1.0, 0.0801, 0.0661, 0.0673, 0.1134, 0.0468, 0.0415, 0.0576, 0.0252, 0.0202, 0.0382, -0.0039, 0.0194, 0.0215, 0.0273, 0.0474, 0.0545, 0.469, 0.0611, 0.0372, 0.009, 0.0152, 0.0196, 0.0072, 0.0091, 0.0174, 0.0177, 0.01, 0.0038, 0.0148, 0.0133, 0.0042, 0.0104, 0.0113, 0.0089, 0.0158, 0.0237, 0.0032, 0.0162, 0.0091, 0.0137, 0.0117, 0.0035, 0.0189, 0.0186, 0.0281, 0.0149, 0.013, 0.0137, 0.0176, 0.013, 0.004, 0.0012, 0.0067, 0.0058, 0.0177, 0.0125, 0.0125, 0.0178, 0.0136], [0.2917, 0.1073, 0.1639, 0.2471, 0.0801, 1.0, 0.7404, 0.2114, 0.2841, 0.0727, 0.4639, 0.802, 0.2724, 0.0713, 0.1771, 0.0037, 0.1012, 0.0046, 0.0224, 0.2339, 0.0824, 0.323, 0.7543, 0.4466, 0.0033, 0.0151, 0.0112, 0.005, 0.012, 0.0026, 0.0104, 0.0136, 0.0004, 0.0153, 0.0082, 0.0037, 0.0131, 0.0131, 0.0161, 0.009, 0.0094, 0.0119, 0.0187, 0.007, 0.0072, 0.0152, 0.0057, 0.0111, 0.0068, 0.0318, 0.0158, 0.0229, 0.0093, 0.0142, 0.0051, 0.0003, 0.0183, 0.008, 0.007, 0.0058, 0.0099, 0.0082, 0.0158, 0.0142], [0.203, 0.0961, 0.1411, 0.1398, 0.0661, 0.7404, 1.0, 0.22, 0.1662, 0.0606, 0.3813, 0.6414, 0.2467, 0.0735, 0.1619, -0.0064, 0.2062, 0.025, 0.0303, 0.2216, 0.0885, 0.279, 0.6696, 0.4046, -0.0007, 0.0156, 0.0173, 0.0044, 0.0086, 0.0061, 0.0141, 0.0106, 0.0036, 0.0123, 0.0067, 0.0077, 0.0104, 0.0091, 0.0158, 0.0066, 0.005, 0.0113, 0.0178, 0.0219, 0.0073, 0.0145, 0.0049, 0.0092, 0.0055, 0.0271, 0.0125, 0.0216, 0.0068, 0.012, 0.004, 0.0052, 0.0166, 0.0108, 0.0049, 0.0087, 0.0064, 0.0063, 0.0106, 0.0214], [0.7259, 0.0061, 0.022, 0.3781, 0.0673, 0.2114, 0.22, 1.0, 0.5547, 0.0745, 0.0591, 0.0677, 0.0364, 0.0204, 0.0527, -0.0007, 0.4217, 0.0607, 0.0328, 0.7764, 0.0966, 0.0656, 0.5444, 0.0727, 0.0136, 0.0082, 0.0129, 0.015, 0.0102, 0.0159, 0.0145, 0.0165, 0.002, 0.0153, 0.0097, 0.0139, 0.0098, 0.0097, 0.0169, 0.0193, 0.0097, 0.0014, 0.0268, 0.0133, 0.009, 0.0039, 0.0088, 0.0174, 0.0094, 0.0405, 0.0143, 0.0116, 0.0151, 0.0004, 0.0091, 0.0114, 0.0111, 0.0229, 0.0049, 0.0101, 0.0106, 0.0062, 0.009, 0.0209], [0.6643, -0.0075, 0.0331, 0.6617, 0.1134, 0.2841, 0.1662, 0.5547, 1.0, 0.2645, 0.1226, 0.1077, 0.0614, 0.0299, 0.0499, -0.0007, 0.2291, -0.0091, 0.0917, 0.5025, 0.2905, 0.1821, 0.374, 0.0644, 0.0111, 0.0185, 0.0196, 0.0109, 0.0083, 0.0142, 0.0111, 0.0177, -0.0003, 0.0236, 0.0128, 0.0103, 0.0109, 0.0117, 0.0105, 0.0155, 0.0125, 0.0108, 0.027, 0.0122, 0.0055, 0.0025, 0.0115, 0.0172, 0.0144, 0.0395, 0.0125, 0.0142, 0.011, 0.0073, 0.0062, 0.0014, 0.0129, 0.0112, 0.0092, 0.0082, 0.0111, 0.0068, 0.0174, 0.0165], [0.0784, 0.0484, 0.0357, 0.4436, 0.0468, 0.0727, 0.0606, 0.0745, 0.2645, 1.0, 0.0598, 0.0728, 0.0538, 0.0237, 0.0445, -0.0057, 0.0828, 0.0483, 0.1908, 0.0423, 0.5553, 0.2304, 0.0356, 0.0458, 0.0125, 0.0121, 0.0119, -0.0008, 0.0073, 0.0133, 0.0131, 0.0096, 0.0054, 0.0082, 0.0202, 0.0103, 0.0098, 0.0092, 0.0181, 0.0179, 0.0214, 0.0132, 0.0191, 0.0191, 0.0087, 0.0116, 0.0111, 0.0204, 0.0166, 0.0199, 0.0127, 0.022, 0.0108, 0.0124, 0.0144, 0.0067, 0.0187, 0.0108, 0.0078, 0.0002, 0.0162, 0.0075, 0.016, 0.021], [0.11, 0.0971, 0.6442, 0.1303, 0.0415, 0.4639, 0.3813, 0.0591, 0.1226, 0.0598, 1.0, 0.3839, 0.1549, 0.0605, 0.1306, 0.0229, 0.0458, 0.0335, 0.0054, 0.0764, 0.0736, 0.207, 0.3926, 0.3615, 0.0049, 0.0135, 0.0136, 0.0053, 0.0075, 0.0093, 0.0082, 0.0131, 0.0042, 0.012, 0.0081, 0.0073, 0.012, 0.008, 0.0161, 0.008, 0.0089, 0.0091, 0.0176, 0.0097, 0.0101, 0.0164, 0.0037, 0.01, 0.0032, 0.0209, 0.0167, 0.0227, 0.0097, 0.0181, 0.0074, 0.0076, 0.0128, -0.0003, 0.0087, 0.0104, 0.0034, 0.0085, 0.0106, 0.0172], [0.0918, 0.1132, 0.1415, 0.1181, 0.0576, 0.802, 0.6414, 0.0677, 0.1077, 0.0728, 0.3839, 1.0, 0.2768, 0.0773, 0.1558, -0.0028, 0.0603, -0.0002, 0.0293, 0.0952, 0.0865, 0.2774, 0.5814, 0.4516, 0.0006, 0.018, 0.0113, 0.0096, 0.0121, 0.0014, 0.0156, 0.0139, 0.0026, 0.016, 0.0125, 0.0054, 0.0127, 0.0106, 0.0154, 0.013, 0.0084, 0.0153, 0.016, 0.0064, 0.0101, 0.0158, 0.0032, 0.0105, 0.008, 0.0262, 0.0181, 0.019, 0.0072, 0.0114, 0.0088, -0.0026, 0.012, 0.0084, 0.0077, 0.0066, 0.0103, 0.0118, 0.0174, 0.0178], [0.0361, 0.1098, 0.078, 0.0611, 0.0252, 0.2724, 0.2467, 0.0364, 0.0614, 0.0538, 0.1549, 0.2768, 1.0, 0.5383, 0.2319, -0.0032, 0.0558, 0.0168, 0.0286, 0.0397, 0.054, 0.0867, 0.2203, 0.3652, 0.0053, 0.0154, 0.0173, 0.0133, 0.0056, 0.0044, 0.0087, 0.014, 0.0099, 0.0054, 0.0124, 0.0039, 0.0114, 0.011, 0.012, 0.017, 0.0156, 0.0056, 0.0154, 0.0094, 0.0115, 0.0138, 0.0084, 0.0168, 0.0114, 0.0183, 0.0126, 0.0139, 0.0092, 0.0083, 0.0102, 0.0084, 0.0103, 0.0025, 0.0008, 0.0049, 0.011, 0.0093, 0.0172, 0.0177], [0.0171, 0.0611, 0.0576, 0.0262, 0.0202, 0.0713, 0.0735, 0.0204, 0.0299, 0.0237, 0.0605, 0.0773, 0.5383, 1.0, 0.0339, -0.003, 0.0382, 0.0188, 0.0145, 0.0206, 0.0278, 0.0383, 0.0608, 0.0907, 0.009, 0.0127, 0.0105, 0.011, 0.0076, 0.0052, 0.0122, 0.0128, 0.007, 0.0085, 0.011, 0.0073, 0.0098, 0.0067, 0.0121, 0.0123, 0.0123, 0.0086, 0.0102, 0.0049, 0.0086, 0.0114, 0.011, 0.0091, 0.0074, 0.0122, 0.009, 0.0082, 0.0116, 0.0074, 0.0088, 0.0078, 0.0069, 0.0038, 0.004, 0.0087, 0.0103, 0.0082, 0.0123, 0.0123], [0.0433, 0.0749, 0.1363, 0.0636, 0.0382, 0.1771, 0.1619, 0.0527, 0.0499, 0.0445, 0.1306, 0.1558, 0.2319, 0.0339, 1.0, -0.0012, 0.0529, 0.0252, 0.0196, 0.0425, 0.0541, 0.0787, 0.1479, 0.4643, 0.0121, 0.0142, 0.0156, 0.0102, 0.01, 0.0048, 0.0065, 0.0137, 0.0049, 0.0119, 0.0109, 0.0079, 0.0095, 0.0081, 0.0115, 0.0125, 0.0251, 0.0095, 0.0213, 0.015, 0.0107, 0.0158, 0.01, 0.0184, 0.0112, 0.0251, 0.0061, 0.0057, 0.0074, 0.0048, 0.0073, 0.0131, 0.0086, -0.0046, 0.0066, 0.0094, 0.0122, 0.0091, 0.0178, 0.0103], [0.0038, -0.0007, 0.0073, 0.0108, -0.0039, 0.0037, -0.0064, -0.0007, -0.0007, -0.0057, 0.0229, -0.0028, -0.0032, -0.003, -0.0012, 1.0, 0.0032, -0.0043, -0.0003, 0.0006, -0.0076, 0.0077, 0.001, 0.0025, -0.0033, -0.0043, 0.0012, -0.0053, 0.0046, -0.0052, -0.0018, -0.0101, 0.0013, 0.0022, -0.0037, 0.0015, 0.0033, -0.0013, -0.0018, -0.0008, -0.002, -0.0032, 0.0055, -0.002, -0.001, 0.0044, 0.001, 0.0007, 0.0014, -0.0029, 0.0002, -0.0032, -0.0014, -0.0007, -0.0068, -0.0015, -0.0021, 0.0002, -0.0022, -0.0017, 0.0014, -0.0022, -0.0055, -0.0019], [0.3019, 0.4175, 0.0417, 0.1795, 0.0194, 0.1012, 0.2062, 0.4217, 0.2291, 0.0828, 0.0458, 0.0603, 0.0558, 0.0382, 0.0529, 0.0032, 1.0, 0.0613, 0.0359, 0.3822, 0.1214, 0.0498, 0.2277, 0.0991, 0.0168, 0.0095, 0.0097, 0.0136, 0.0135, 0.0154, 0.0089, 0.0086, 0.0172, 0.0052, 0.0186, 0.0268, 0.0097, 0.0065, 0.0086, 0.0124, 0.0069, 0.0128, 0.0233, 0.0114, 0.0162, 0.0062, 0.0059, 0.0048, 0.0147, 0.0221, 0.0192, 0.0095, 0.0087, 0.0063, 0.0133, 0.0041, 0.0177, 0.0187, 0.0034, 0.0015, 0.0129, 0.0059, 0.0087, 0.0259], [0.0566, 0.0699, 0.0168, 0.0274, 0.0215, 0.0046, 0.025, 0.0607, -0.0091, 0.0483, 0.0335, -0.0002, 0.0168, 0.0188, 0.0252, -0.0043, 0.0613, 1.0, 0.1408, -0.0415, 0.0423, 0.0309, -0.0113, 0.0371, 0.0171, 0.0162, 0.013, 0.0134, 0.0135, 0.0198, 0.0195, 0.0076, 0.0068, 0.002, 0.0135, 0.0097, 0.0117, 0.0117, 0.0142, 0.0198, 0.0135, 0.0106, 0.0181, 0.0234, 0.0231, 0.0126, 0.0163, 0.0115, 0.0192, 0.0187, 0.0192, 0.0088, 0.0123, 0.0119, 0.0156, 0.0153, 0.0217, 0.0118, 0.007, 0.0104, 0.0167, 0.0083, 0.0143, 0.026], [0.1852, 0.0262, 0.0119, 0.0757, 0.0273, 0.0224, 0.0303, 0.0328, 0.0917, 0.1908, 0.0054, 0.0293, 0.0286, 0.0145, 0.0196, -0.0003, 0.0359, 0.1408, 1.0, 0.028, 0.1285, 0.0438, 0.0157, 0.0212, 0.0129, 0.0207, 0.0139, 0.0164, 0.0167, 0.0154, 0.0212, 0.0136, 0.006, 0.0117, 0.02, 0.0206, 0.0134, 0.0087, 0.0209, 0.0217, 0.0208, 0.0163, 0.0188, 0.0106, 0.0157, 0.018, 0.0137, 0.0285, 0.0204, 0.0185, 0.0225, 0.0142, 0.0186, 0.0194, 0.0178, 0.0202, 0.0209, 0.0066, 0.0173, 0.0138, 0.0165, 0.0117, 0.019, 0.014], [0.6542, -0.0179, 0.0223, 0.3271, 0.0474, 0.2339, 0.2216, 0.7764, 0.5025, 0.0423, 0.0764, 0.0952, 0.0397, 0.0206, 0.0425, 0.0006, 0.3822, -0.0415, 0.028, 1.0, 0.0499, 0.05, 0.5235, 0.0666, 0.013, 0.0052, 0.0138, 0.0144, 0.0121, 0.0148, 0.012, 0.0153, 0.0058, 0.0144, 0.0108, 0.0131, 0.0109, 0.0101, 0.0188, 0.0182, 0.0149, 0.0043, 0.0284, 0.0066, 0.0064, 0.0038, 0.0088, 0.0162, 0.0087, 0.0361, 0.0133, 0.0092, 0.012, 0.002, 0.0154, 0.0147, 0.0129, 0.023, 0.0059, 0.0125, 0.0108, 0.0075, 0.0104, 0.0154], [0.1016, 0.0606, 0.0503, 0.4792, 0.0545, 0.0824, 0.0885, 0.0966, 0.2905, 0.5553, 0.0736, 0.0865, 0.054, 0.0278, 0.0541, -0.0076, 0.1214, 0.0423, 0.1285, 0.0499, 1.0, 0.1871, 0.0315, 0.0592, 0.0137, 0.0202, 0.012, 0.003, 0.0141, 0.0217, 0.0179, 0.0139, 0.0005, 0.0107, 0.0194, 0.0127, 0.0157, 0.0089, 0.0222, 0.0241, 0.033, 0.0111, 0.021, 0.0202, 0.0099, 0.0136, 0.0138, 0.0195, 0.0148, 0.0299, 0.0181, 0.0184, 0.0159, 0.0202, 0.024, 0.0049, 0.0209, 0.0183, 0.0118, 0.0011, 0.0186, 0.0077, 0.0087, 0.0296], [0.1232, 0.0435, 0.0689, 0.3838, 0.469, 0.323, 0.279, 0.0656, 0.1821, 0.2304, 0.207, 0.2774, 0.0867, 0.0383, 0.0787, 0.0077, 0.0498, 0.0309, 0.0438, 0.05, 0.1871, 1.0, 0.2505, 0.1279, 0.0074, 0.0257, 0.0205, 0.0041, 0.0103, 0.0103, 0.0189, 0.0107, -0.0023, 0.0187, 0.0147, 0.0139, 0.0075, 0.0098, 0.0136, 0.0113, 0.0193, 0.015, 0.0137, 0.0069, 0.004, 0.015, 0.002, 0.0121, 0.0089, 0.0268, 0.0113, 0.0176, 0.0125, 0.0095, 0.0163, 0.003, 0.0033, 0.0005, 0.0091, 0.0044, 0.0096, 0.0154, 0.0229, 0.0136], [0.4843, 0.0485, 0.1129, 0.2288, 0.0611, 0.7543, 0.6696, 0.5444, 0.374, 0.0356, 0.3926, 0.5814, 0.2203, 0.0608, 0.1479, 0.001, 0.2277, -0.0113, 0.0157, 0.5235, 0.0315, 0.2505, 1.0, 0.3611, 0.0046, 0.0065, 0.0098, 0.005, 0.0105, 0.0086, 0.0095, 0.0135, -0.0015, 0.0164, 0.0067, 0.0061, 0.0075, 0.0115, 0.0096, 0.0085, 0.0029, 0.0031, 0.0223, 0.0061, 0.0069, 0.0151, 0.0068, 0.0158, 0.0042, 0.0323, 0.0131, 0.0168, 0.0084, 0.0067, 0.0063, 0.0024, 0.0145, 0.0094, 0.0043, 0.0094, 0.0097, 0.0065, 0.0126, 0.0158], [0.0576, 0.1753, 0.3437, 0.0846, 0.0372, 0.4466, 0.4046, 0.0727, 0.0644, 0.0458, 0.3615, 0.4516, 0.3652, 0.0907, 0.4643, 0.0025, 0.0991, 0.0371, 0.0212, 0.0666, 0.0592, 0.1279, 0.3611, 1.0, 0.0066, 0.015, 0.011, 0.0091, 0.0124, 0.0001, 0.0123, 0.0149, 0.0092, 0.0145, 0.0129, -0.0019, 0.0072, 0.0077, 0.0113, 0.0171, 0.02, -0.0024, 0.0201, 0.0147, 0.0141, 0.018, 0.0015, 0.0161, 0.009, 0.0172, 0.014, 0.0163, 0.0042, 0.0025, 0.0066, 0.0083, 0.0164, 0.0026, -0.0005, 0.0124, 0.0103, 0.0105, 0.021, 0.0219], [0.0106, 0.0223, 0.0121, 0.0128, 0.009, 0.0033, -0.0007, 0.0136, 0.0111, 0.0125, 0.0049, 0.0006, 0.0053, 0.009, 0.0121, -0.0033, 0.0168, 0.0171, 0.0129, 0.013, 0.0137, 0.0074, 0.0046, 0.0066, 1.0, 0.0268, 0.0154, 0.0097, 0.0085, 0.0133, 0.0205, 0.0221, 0.01, 0.0079, 0.0082, 0.0049, 0.0135, 0.0119, 0.0096, 0.0138, 0.0075, 0.0234, 0.0161, 0.0176, 0.0211, 0.0097, 0.0184, 0.0153, 0.0144, 0.0283, 0.0209, 0.0174, 0.0179, 0.014, 0.0087, 0.0075, 0.0149, 0.0138, 0.0102, 0.0187, 0.0162, 0.0132, 0.0195, 0.013], [0.0123, 0.0222, 0.0143, 0.0205, 0.0152, 0.0151, 0.0156, 0.0082, 0.0185, 0.0121, 0.0135, 0.018, 0.0154, 0.0127, 0.0142, -0.0043, 0.0095, 0.0162, 0.0207, 0.0052, 0.0202, 0.0257, 0.0065, 0.015, 0.0268, 1.0, 0.0313, 0.0202, 0.0064, 0.0201, 0.0225, 0.0221, 0.015, 0.01, 0.0168, 0.0073, 0.0153, 0.0137, 0.0197, 0.0109, 0.0173, 0.0152, 0.0321, 0.0108, 0.0238, 0.0126, 0.0106, 0.0221, 0.0079, 0.0269, 0.0279, 0.0212, 0.0187, 0.0246, 0.0201, 0.017, 0.0129, 0.0174, 0.0155, 0.0263, 0.0152, 0.0142, 0.0198, 0.0183], [0.0142, 0.0155, 0.0159, 0.0233, 0.0196, 0.0112, 0.0173, 0.0129, 0.0196, 0.0119, 0.0136, 0.0113, 0.0173, 0.0105, 0.0156, 0.0012, 0.0097, 0.013, 0.0139, 0.0138, 0.012, 0.0205, 0.0098, 0.011, 0.0154, 0.0313, 1.0, 0.0164, 0.0079, 0.0126, 0.0148, 0.0127, 0.0147, 0.0061, 0.0144, 0.0167, 0.012, 0.0134, 0.0166, 0.0205, 0.0059, 0.017, 0.0218, 0.0187, 0.0135, 0.0118, 0.0086, 0.0196, 0.0121, 0.0273, 0.0149, 0.0301, 0.0205, 0.0134, 0.0173, 0.0182, 0.0205, 0.0093, 0.0112, 0.0244, 0.0159, 0.0114, 0.0182, 0.0183], [0.014, 0.0215, 0.0062, 0.0102, 0.0072, 0.005, 0.0044, 0.015, 0.0109, -0.0008, 0.0053, 0.0096, 0.0133, 0.011, 0.0102, -0.0053, 0.0136, 0.0134, 0.0164, 0.0144, 0.003, 0.0041, 0.005, 0.0091, 0.0097, 0.0202, 0.0164, 1.0, 0.0058, 0.0098, 0.0062, 0.0094, 0.0062, 0.0112, 0.0109, 0.0144, 0.0093, 0.004, 0.0103, 0.0157, 0.0153, 0.0309, 0.0099, 0.0043, 0.016, 0.0121, 0.022, 0.0203, 0.0157, 0.0238, 0.0136, 0.0155, 0.0153, 0.0172, 0.016, 0.0175, 0.0105, 0.0099, 0.0079, 0.021, 0.0211, 0.014, 0.0084, 0.0145], [0.0147, 0.0136, 0.0079, 0.0107, 0.0091, 0.012, 0.0086, 0.0102, 0.0083, 0.0073, 0.0075, 0.0121, 0.0056, 0.0076, 0.01, 0.0046, 0.0135, 0.0135, 0.0167, 0.0121, 0.0141, 0.0103, 0.0105, 0.0124, 0.0085, 0.0064, 0.0079, 0.0058, 1.0, 0.012, 0.0088, 0.0105, 0.0108, 0.0076, 0.0099, 0.0131, 0.0081, 0.0101, 0.0056, 0.0141, 0.0169, 0.0123, 0.0203, 0.0073, 0.0155, 0.0136, 0.0108, 0.0131, 0.018, 0.0107, 0.0147, 0.01, 0.0192, 0.013, 0.0136, 0.011, 0.0038, 0.0062, 0.0083, 0.0102, 0.0116, 0.0109, 0.0107, 0.0055], [0.0126, 0.0012, 0.0094, 0.0112, 0.0174, 0.0026, 0.0061, 0.0159, 0.0142, 0.0133, 0.0093, 0.0014, 0.0044, 0.0052, 0.0048, -0.0052, 0.0154, 0.0198, 0.0154, 0.0148, 0.0217, 0.0103, 0.0086, 0.0001, 0.0133, 0.0201, 0.0126, 0.0098, 0.012, 1.0, 0.0227, 0.0194, 0.0095, 0.0075, 0.0159, 0.0123, 0.0122, 0.0114, 0.0193, 0.0195, 0.0183, 0.0158, 0.0133, 0.0186, 0.022, 0.0041, 0.0108, 0.0254, 0.0154, 0.0167, 0.019, 0.0142, 0.0161, 0.0124, 0.0171, 0.0129, 0.0103, 0.0118, 0.0137, 0.0097, 0.015, 0.0133, 0.0187, 0.0143], [0.0107, 0.0185, 0.0087, 0.016, 0.0177, 0.0104, 0.0141, 0.0145, 0.0111, 0.0131, 0.0082, 0.0156, 0.0087, 0.0122, 0.0065, -0.0018, 0.0089, 0.0195, 0.0212, 0.012, 0.0179, 0.0189, 0.0095, 0.0123, 0.0205, 0.0225, 0.0148, 0.0062, 0.0088, 0.0227, 1.0, 0.022, 0.0181, 0.0095, 0.0107, 0.0133, 0.0127, 0.0062, 0.0052, 0.0194, 0.0109, 0.0193, 0.022, 0.0142, 0.0149, 0.0166, 0.0088, 0.0243, 0.0238, 0.0167, 0.0194, 0.0177, 0.0172, 0.0217, 0.0191, 0.01, 0.0167, 0.0175, 0.01, 0.0243, 0.0188, 0.011, 0.0218, 0.0173], [0.0187, 0.0097, 0.0134, 0.0174, 0.01, 0.0136, 0.0106, 0.0165, 0.0177, 0.0096, 0.0131, 0.0139, 0.014, 0.0128, 0.0137, -0.0101, 0.0086, 0.0076, 0.0136, 0.0153, 0.0139, 0.0107, 0.0135, 0.0149, 0.0221, 0.0221, 0.0127, 0.0094, 0.0105, 0.0194, 0.022, 1.0, 0.004, 0.0087, 0.0194, 0.012, 0.0185, 0.0039, 0.0132, 0.0177, 0.0228, 0.014, 0.0135, 0.0183, 0.0159, 0.0088, 0.0106, 0.0232, 0.0191, 0.0207, 0.0173, 0.0125, 0.0177, 0.0124, 0.0201, 0.0063, 0.0028, 0.0071, 0.0151, 0.0188, 0.0117, 0.0093, 0.0219, 0.0202], [-0.004, 0.0205, 0.0021, -0.0033, 0.0038, 0.0004, 0.0036, 0.002, -0.0003, 0.0054, 0.0042, 0.0026, 0.0099, 0.007, 0.0049, 0.0013, 0.0172, 0.0068, 0.006, 0.0058, 0.0005, -0.0023, -0.0015, 0.0092, 0.01, 0.015, 0.0147, 0.0062, 0.0108, 0.0095, 0.0181, 0.004, 1.0, 0.0097, 0.0126, 0.0133, 0.0108, 0.0087, 0.0097, 0.0165, 0.0095, 0.0108, 0.0157, 0.0087, 0.0063, 0.0117, 0.0088, 0.0199, 0.0175, 0.0177, 0.0046, 0.0085, 0.0156, 0.0212, 0.0127, 0.0022, 0.0173, 0.0059, 0.0039, 0.0236, 0.0114, 0.0055, 0.0122, 0.0159], [0.0185, 0.0074, 0.013, 0.0193, 0.0148, 0.0153, 0.0123, 0.0153, 0.0236, 0.0082, 0.012, 0.016, 0.0054, 0.0085, 0.0119, 0.0022, 0.0052, 0.002, 0.0117, 0.0144, 0.0107, 0.0187, 0.0164, 0.0145, 0.0079, 0.01, 0.0061, 0.0112, 0.0076, 0.0075, 0.0095, 0.0087, 0.0097, 1.0, 0.0151, 0.0094, 0.0094, 0.007, 0.0121, 0.0114, 0.014, 0.0066, 0.007, 0.0101, 0.0199, 0.009, 0.0088, 0.0061, 0.0002, 0.0047, 0.0115, 0.0063, 0.0154, 0.0062, 0.0051, 0.0091, 0.0091, 0.0041, 0.0139, 0.0136, 0.0068, 0.0052, 0.0155, 0.0128], [0.0077, 0.0218, 0.0077, 0.0135, 0.0133, 0.0082, 0.0067, 0.0097, 0.0128, 0.0202, 0.0081, 0.0125, 0.0124, 0.011, 0.0109, -0.0037, 0.0186, 0.0135, 0.02, 0.0108, 0.0194, 0.0147, 0.0067, 0.0129, 0.0082, 0.0168, 0.0144, 0.0109, 0.0099, 0.0159, 0.0107, 0.0194, 0.0126, 0.0151, 1.0, 0.0255, 0.0127, 0.0081, 0.0032, 0.0141, 0.0265, 0.0241, 0.023, 0.0228, 0.0168, 0.0061, 0.0142, 0.0135, 0.019, 0.0136, 0.0191, 0.0129, 0.0175, 0.018, 0.018, 0.018, 0.0064, 0.0235, 0.0053, 0.0124, 0.0176, 0.0079, 0.0107, 0.0211], [0.0118, 0.0134, 0.0061, 0.0096, 0.0042, 0.0037, 0.0077, 0.0139, 0.0103, 0.0103, 0.0073, 0.0054, 0.0039, 0.0073, 0.0079, 0.0015, 0.0268, 0.0097, 0.0206, 0.0131, 0.0127, 0.0139, 0.0061, -0.0019, 0.0049, 0.0073, 0.0167, 0.0144, 0.0131, 0.0123, 0.0133, 0.012, 0.0133, 0.0094, 0.0255, 1.0, 0.0109, 0.0081, 0.0104, 0.0196, 0.0169, 0.0201, 0.0205, 0.0096, 0.0141, 0.0168, 0.0128, 0.0146, 0.0147, 0.0077, 0.0206, 0.0206, 0.0221, 0.0182, 0.0165, 0.0121, 0.0084, -0.0014, 0.0109, 0.0204, 0.0163, 0.0106, 0.0031, 0.0185], [0.0105, 0.0123, 0.0095, 0.0115, 0.0104, 0.0131, 0.0104, 0.0098, 0.0109, 0.0098, 0.012, 0.0127, 0.0114, 0.0098, 0.0095, 0.0033, 0.0097, 0.0117, 0.0134, 0.0109, 0.0157, 0.0075, 0.0075, 0.0072, 0.0135, 0.0153, 0.012, 0.0093, 0.0081, 0.0122, 0.0127, 0.0185, 0.0108, 0.0094, 0.0127, 0.0109, 1.0, 0.0063, 0.0121, 0.0156, 0.0149, 0.0125, 0.0157, 0.0114, 0.0141, 0.014, 0.0104, 0.0181, 0.0128, 0.0148, 0.019, 0.0087, 0.0147, 0.0121, 0.0144, 0.0104, 0.0149, 0.0096, 0.0142, 0.0152, 0.0163, 0.0156, 0.0142, 0.0096], [0.014, 0.0053, 0.0088, 0.0108, 0.0113, 0.0131, 0.0091, 0.0097, 0.0117, 0.0092, 0.008, 0.0106, 0.011, 0.0067, 0.0081, -0.0013, 0.0065, 0.0117, 0.0087, 0.0101, 0.0089, 0.0098, 0.0115, 0.0077, 0.0119, 0.0137, 0.0134, 0.004, 0.0101, 0.0114, 0.0062, 0.0039, 0.0087, 0.007, 0.0081, 0.0081, 0.0063, 1.0, 0.0065, 0.0117, 0.02, 0.0119, 0.0097, 0.009, 0.0085, 0.0141, 0.0092, 0.0094, 0.0079, 0.0049, 0.0113, 0.0099, 0.0096, 0.0143, 0.0151, 0.0114, 0.0111, 0.0007, 0.0074, 0.0057, 0.0041, 0.0043, 0.0125, 0.0113], [0.0179, 0.0112, 0.0145, 0.0172, 0.0089, 0.0161, 0.0158, 0.0169, 0.0105, 0.0181, 0.0161, 0.0154, 0.012, 0.0121, 0.0115, -0.0018, 0.0086, 0.0142, 0.0209, 0.0188, 0.0222, 0.0136, 0.0096, 0.0113, 0.0096, 0.0197, 0.0166, 0.0103, 0.0056, 0.0193, 0.0052, 0.0132, 0.0097, 0.0121, 0.0032, 0.0104, 0.0121, 0.0065, 1.0, 0.0072, 0.0139, 0.0108, 0.0245, 0.0139, 0.0163, 0.0195, 0.0107, 0.0037, 0.0173, 0.0135, 0.0162, 0.0256, 0.0176, 0.0129, 0.0104, 0.0117, 0.0082, 0.0062, 0.0109, 0.0115, 0.0078, 0.0036, 0.0008, 0.0107], [0.0193, 0.0069, 0.0098, 0.014, 0.0158, 0.009, 0.0066, 0.0193, 0.0155, 0.0179, 0.008, 0.013, 0.017, 0.0123, 0.0125, -0.0008, 0.0124, 0.0198, 0.0217, 0.0182, 0.0241, 0.0113, 0.0085, 0.0171, 0.0138, 0.0109, 0.0205, 0.0157, 0.0141, 0.0195, 0.0194, 0.0177, 0.0165, 0.0114, 0.0141, 0.0196, 0.0156, 0.0117, 0.0072, 1.0, 0.03, 0.0091, 0.0235, 0.0133, 0.013, 0.0128, 0.0149, 0.0222, 0.0198, 0.0205, 0.0284, 0.0229, 0.0202, 0.0235, 0.0167, 0.0119, 0.0164, 0.002, 0.011, 0.0223, 0.0149, 0.011, 0.0164, 0.0228], [0.0094, 0.0141, 0.016, 0.0206, 0.0237, 0.0094, 0.005, 0.0097, 0.0125, 0.0214, 0.0089, 0.0084, 0.0156, 0.0123, 0.0251, -0.002, 0.0069, 0.0135, 0.0208, 0.0149, 0.033, 0.0193, 0.0029, 0.02, 0.0075, 0.0173, 0.0059, 0.0153, 0.0169, 0.0183, 0.0109, 0.0228, 0.0095, 0.014, 0.0265, 0.0169, 0.0149, 0.02, 0.0139, 0.03, 1.0, 0.0191, 0.0178, 0.0165, 0.0204, 0.0172, 0.0107, 0.0234, 0.019, 0.0173, 0.0177, 0.0169, 0.0188, 0.0235, 0.0142, 0.0181, 0.0115, 0.0108, 0.0161, 0.0249, 0.0144, 0.0123, 0.0118, 0.017], [0.0053, 0.0249, 0.0053, 0.0183, 0.0032, 0.0119, 0.0113, 0.0014, 0.0108, 0.0132, 0.0091, 0.0153, 0.0056, 0.0086, 0.0095, -0.0032, 0.0128, 0.0106, 0.0163, 0.0043, 0.0111, 0.015, 0.0031, -0.0024, 0.0234, 0.0152, 0.017, 0.0309, 0.0123, 0.0158, 0.0193, 0.014, 0.0108, 0.0066, 0.0241, 0.0201, 0.0125, 0.0119, 0.0108, 0.0091, 0.0191, 1.0, 0.0131, 0.0147, 0.0134, 0.019, 0.0116, 0.0163, 0.0139, 0.0203, 0.02, 0.0184, 0.0207, 0.0184, 0.017, 0.0159, 0.0064, 0.0125, 0.0122, 0.0186, 0.0134, 0.0089, 0.0177, 0.0148], [0.0285, 0.0134, 0.015, 0.0237, 0.0162, 0.0187, 0.0178, 0.0268, 0.027, 0.0191, 0.0176, 0.016, 0.0154, 0.0102, 0.0213, 0.0055, 0.0233, 0.0181, 0.0188, 0.0284, 0.021, 0.0137, 0.0223, 0.0201, 0.0161, 0.0321, 0.0218, 0.0099, 0.0203, 0.0133, 0.022, 0.0135, 0.0157, 0.007, 0.023, 0.0205, 0.0157, 0.0097, 0.0245, 0.0235, 0.0178, 0.0131, 1.0, 0.0227, 0.0138, 0.0153, 0.017, 0.0253, 0.0189, 0.0063, 0.0155, 0.0137, 0.022, 0.0113, 0.0144, 0.0126, 0.0157, 0.0168, 0.0133, 0.0104, 0.0203, 0.0097, 0.0092, 0.0208], [0.0109, 0.0061, 0.0121, 0.0173, 0.0091, 0.007, 0.0219, 0.0133, 0.0122, 0.0191, 0.0097, 0.0064, 0.0094, 0.0049, 0.015, -0.002, 0.0114, 0.0234, 0.0106, 0.0066, 0.0202, 0.0069, 0.0061, 0.0147, 0.0176, 0.0108, 0.0187, 0.0043, 0.0073, 0.0186, 0.0142, 0.0183, 0.0087, 0.0101, 0.0228, 0.0096, 0.0114, 0.009, 0.0139, 0.0133, 0.0165, 0.0147, 0.0227, 1.0, 0.0195, 0.0161, 0.0173, 0.0154, 0.0158, 0.0246, 0.0132, 0.0054, 0.0136, 0.0148, 0.0146, 0.0091, 0.0098, 0.0189, 0.0174, 0.0254, 0.0167, 0.0109, 0.011, 0.0168], [0.0094, 0.0241, 0.0105, 0.0002, 0.0137, 0.0072, 0.0073, 0.009, 0.0055, 0.0087, 0.0101, 0.0101, 0.0115, 0.0086, 0.0107, -0.001, 0.0162, 0.0231, 0.0157, 0.0064, 0.0099, 0.004, 0.0069, 0.0141, 0.0211, 0.0238, 0.0135, 0.016, 0.0155, 0.022, 0.0149, 0.0159, 0.0063, 0.0199, 0.0168, 0.0141, 0.0141, 0.0085, 0.0163, 0.013, 0.0204, 0.0134, 0.0138, 0.0195, 1.0, 0.0196, 0.0142, 0.0217, 0.0099, 0.0206, 0.0212, 0.0231, 0.0172, 0.0231, 0.0111, 0.0164, 0.0108, 0.0111, 0.0155, 0.0266, 0.0205, 0.0112, 0.0215, 0.0201], [0.0074, 0.0172, 0.0188, 0.0098, 0.0117, 0.0152, 0.0145, 0.0039, 0.0025, 0.0116, 0.0164, 0.0158, 0.0138, 0.0114, 0.0158, 0.0044, 0.0062, 0.0126, 0.018, 0.0038, 0.0136, 0.015, 0.0151, 0.018, 0.0097, 0.0126, 0.0118, 0.0121, 0.0136, 0.0041, 0.0166, 0.0088, 0.0117, 0.009, 0.0061, 0.0168, 0.014, 0.0141, 0.0195, 0.0128, 0.0172, 0.019, 0.0153, 0.0161, 0.0196, 1.0, 0.0073, 0.0073, 0.0147, 0.0196, 0.0136, 0.0144, 0.0202, 0.0102, 0.0058, 0.0122, 0.0078, 0.0156, 0.0135, 0.0164, 0.0103, 0.006, 0.0107, 0.0096], [0.0122, 0.0022, 0.0078, 0.0085, 0.0035, 0.0057, 0.0049, 0.0088, 0.0115, 0.0111, 0.0037, 0.0032, 0.0084, 0.011, 0.01, 0.001, 0.0059, 0.0163, 0.0137, 0.0088, 0.0138, 0.002, 0.0068, 0.0015, 0.0184, 0.0106, 0.0086, 0.022, 0.0108, 0.0108, 0.0088, 0.0106, 0.0088, 0.0088, 0.0142, 0.0128, 0.0104, 0.0092, 0.0107, 0.0149, 0.0107, 0.0116, 0.017, 0.0173, 0.0142, 0.0073, 1.0, 0.0097, 0.0136, 0.017, 0.018, 0.0115, 0.0157, 0.0181, 0.0136, 0.0104, 0.0127, 0.0068, 0.0115, 0.0153, 0.0131, 0.0086, 0.0178, 0.0134], [0.022, 0.0137, 0.015, 0.0182, 0.0189, 0.0111, 0.0092, 0.0174, 0.0172, 0.0204, 0.01, 0.0105, 0.0168, 0.0091, 0.0184, 0.0007, 0.0048, 0.0115, 0.0285, 0.0162, 0.0195, 0.0121, 0.0158, 0.0161, 0.0153, 0.0221, 0.0196, 0.0203, 0.0131, 0.0254, 0.0243, 0.0232, 0.0199, 0.0061, 0.0135, 0.0146, 0.0181, 0.0094, 0.0037, 0.0222, 0.0234, 0.0163, 0.0253, 0.0154, 0.0217, 0.0073, 0.0097, 1.0, 0.0206, 0.0184, 0.0279, 0.0195, 0.0204, 0.0208, 0.0193, 0.0273, 0.0196, 0.0051, 0.0137, 0.0178, 0.0211, 0.0121, 0.0156, 0.0121], [0.0152, 0.0157, 0.0058, 0.0133, 0.0186, 0.0068, 0.0055, 0.0094, 0.0144, 0.0166, 0.0032, 0.008, 0.0114, 0.0074, 0.0112, 0.0014, 0.0147, 0.0192, 0.0204, 0.0087, 0.0148, 0.0089, 0.0042, 0.009, 0.0144, 0.0079, 0.0121, 0.0157, 0.018, 0.0154, 0.0238, 0.0191, 0.0175, 0.0002, 0.019, 0.0147, 0.0128, 0.0079, 0.0173, 0.0198, 0.019, 0.0139, 0.0189, 0.0158, 0.0099, 0.0147, 0.0136, 0.0206, 1.0, 0.0185, 0.0215, 0.0159, 0.0204, 0.0198, 0.0283, 0.0251, 0.0148, 0.0078, 0.0113, 0.0151, 0.0199, 0.011, 0.0174, 0.0216], [0.0391, 0.0104, 0.0164, 0.0388, 0.0281, 0.0318, 0.0271, 0.0405, 0.0395, 0.0199, 0.0209, 0.0262, 0.0183, 0.0122, 0.0251, -0.0029, 0.0221, 0.0187, 0.0185, 0.0361, 0.0299, 0.0268, 0.0323, 0.0172, 0.0283, 0.0269, 0.0273, 0.0238, 0.0107, 0.0167, 0.0167, 0.0207, 0.0177, 0.0047, 0.0136, 0.0077, 0.0148, 0.0049, 0.0135, 0.0205, 0.0173, 0.0203, 0.0063, 0.0246, 0.0206, 0.0196, 0.017, 0.0184, 0.0185, 1.0, 0.0218, 0.014, 0.0159, 0.0145, 0.0242, 0.0193, 0.0101, 0.0039, 0.0147, 0.0166, 0.0182, 0.0168, 0.0082, 0.0226], [0.0151, 0.0228, 0.0176, 0.0119, 0.0149, 0.0158, 0.0125, 0.0143, 0.0125, 0.0127, 0.0167, 0.0181, 0.0126, 0.009, 0.0061, 0.0002, 0.0192, 0.0192, 0.0225, 0.0133, 0.0181, 0.0113, 0.0131, 0.014, 0.0209, 0.0279, 0.0149, 0.0136, 0.0147, 0.019, 0.0194, 0.0173, 0.0046, 0.0115, 0.0191, 0.0206, 0.019, 0.0113, 0.0162, 0.0284, 0.0177, 0.02, 0.0155, 0.0132, 0.0212, 0.0136, 0.018, 0.0279, 0.0215, 0.0218, 1.0, 0.0247, 0.0247, 0.0195, 0.0205, 0.0285, 0.0083, 0.014, 0.0148, 0.0226, 0.0178, 0.0147, 0.0182, 0.0218], [0.0096, 0.013, 0.0155, 0.0192, 0.013, 0.0229, 0.0216, 0.0116, 0.0142, 0.022, 0.0227, 0.019, 0.0139, 0.0082, 0.0057, -0.0032, 0.0095, 0.0088, 0.0142, 0.0092, 0.0184, 0.0176, 0.0168, 0.0163, 0.0174, 0.0212, 0.0301, 0.0155, 0.01, 0.0142, 0.0177, 0.0125, 0.0085, 0.0063, 0.0129, 0.0206, 0.0087, 0.0099, 0.0256, 0.0229, 0.0169, 0.0184, 0.0137, 0.0054, 0.0231, 0.0144, 0.0115, 0.0195, 0.0159, 0.014, 0.0247, 1.0, 0.0218, 0.0138, 0.014, 0.0112, -0.0025, 0.01, 0.0143, 0.0186, 0.0127, 0.0062, 0.0126, 0.011], [0.0136, 0.0147, 0.0086, 0.0174, 0.0137, 0.0093, 0.0068, 0.0151, 0.011, 0.0108, 0.0097, 0.0072, 0.0092, 0.0116, 0.0074, -0.0014, 0.0087, 0.0123, 0.0186, 0.012, 0.0159, 0.0125, 0.0084, 0.0042, 0.0179, 0.0187, 0.0205, 0.0153, 0.0192, 0.0161, 0.0172, 0.0177, 0.0156, 0.0154, 0.0175, 0.0221, 0.0147, 0.0096, 0.0176, 0.0202, 0.0188, 0.0207, 0.022, 0.0136, 0.0172, 0.0202, 0.0157, 0.0204, 0.0204, 0.0159, 0.0247, 0.0218, 1.0, 0.0214, 0.0166, 0.0132, 0.0146, 0.0078, 0.0157, 0.0191, 0.0162, 0.0105, 0.0209, 0.0157], [0.0039, 0.0112, 0.0157, 0.01, 0.0176, 0.0142, 0.012, 0.0004, 0.0073, 0.0124, 0.0181, 0.0114, 0.0083, 0.0074, 0.0048, -0.0007, 0.0063, 0.0119, 0.0194, 0.002, 0.0202, 0.0095, 0.0067, 0.0025, 0.014, 0.0246, 0.0134, 0.0172, 0.013, 0.0124, 0.0217, 0.0124, 0.0212, 0.0062, 0.018, 0.0182, 0.0121, 0.0143, 0.0129, 0.0235, 0.0235, 0.0184, 0.0113, 0.0148, 0.0231, 0.0102, 0.0181, 0.0208, 0.0198, 0.0145, 0.0195, 0.0138, 0.0214, 1.0, 0.0141, 0.0156, 0.0185, 0.0003, 0.0086, 0.013, 0.0161, 0.0131, 0.0207, 0.0119], [0.0096, 0.0216, 0.014, 0.0094, 0.013, 0.0051, 0.004, 0.0091, 0.0062, 0.0144, 0.0074, 0.0088, 0.0102, 0.0088, 0.0073, -0.0068, 0.0133, 0.0156, 0.0178, 0.0154, 0.024, 0.0163, 0.0063, 0.0066, 0.0087, 0.0201, 0.0173, 0.016, 0.0136, 0.0171, 0.0191, 0.0201, 0.0127, 0.0051, 0.018, 0.0165, 0.0144, 0.0151, 0.0104, 0.0167, 0.0142, 0.017, 0.0144, 0.0146, 0.0111, 0.0058, 0.0136, 0.0193, 0.0283, 0.0242, 0.0205, 0.014, 0.0166, 0.0141, 1.0, 0.0179, 0.0107, 0.0104, 0.0257, 0.0186, 0.0163, 0.0124, 0.0142, 0.0158], [0.008, 0.0091, 0.0089, 0.0023, 0.004, 0.0003, 0.0052, 0.0114, 0.0014, 0.0067, 0.0076, -0.0026, 0.0084, 0.0078, 0.0131, -0.0015, 0.0041, 0.0153, 0.0202, 0.0147, 0.0049, 0.003, 0.0024, 0.0083, 0.0075, 0.017, 0.0182, 0.0175, 0.011, 0.0129, 0.01, 0.0063, 0.0022, 0.0091, 0.018, 0.0121, 0.0104, 0.0114, 0.0117, 0.0119, 0.0181, 0.0159, 0.0126, 0.0091, 0.0164, 0.0122, 0.0104, 0.0273, 0.0251, 0.0193, 0.0285, 0.0112, 0.0132, 0.0156, 0.0179, 1.0, 0.0101, 0.0016, 0.0071, 0.0102, 0.0132, 0.0083, 0.0079, 0.0214], [0.0191, 0.0208, 0.0173, 0.0156, 0.0012, 0.0183, 0.0166, 0.0111, 0.0129, 0.0187, 0.0128, 0.012, 0.0103, 0.0069, 0.0086, -0.0021, 0.0177, 0.0217, 0.0209, 0.0129, 0.0209, 0.0033, 0.0145, 0.0164, 0.0149, 0.0129, 0.0205, 0.0105, 0.0038, 0.0103, 0.0167, 0.0028, 0.0173, 0.0091, 0.0064, 0.0084, 0.0149, 0.0111, 0.0082, 0.0164, 0.0115, 0.0064, 0.0157, 0.0098, 0.0108, 0.0078, 0.0127, 0.0196, 0.0148, 0.0101, 0.0083, -0.0025, 0.0146, 0.0185, 0.0107, 0.0101, 1.0, 0.0351, 0.0153, 0.0116, 0.0127, 0.0059, 0.0092, 0.0189], [0.0176, 0.0144, 0.0033, 0.0101, 0.0067, 0.008, 0.0108, 0.0229, 0.0112, 0.0108, -0.0003, 0.0084, 0.0025, 0.0038, -0.0046, 0.0002, 0.0187, 0.0118, 0.0066, 0.023, 0.0183, 0.0005, 0.0094, 0.0026, 0.0138, 0.0174, 0.0093, 0.0099, 0.0062, 0.0118, 0.0175, 0.0071, 0.0059, 0.0041, 0.0235, -0.0014, 0.0096, 0.0007, 0.0062, 0.002, 0.0108, 0.0125, 0.0168, 0.0189, 0.0111, 0.0156, 0.0068, 0.0051, 0.0078, 0.0039, 0.014, 0.01, 0.0078, 0.0003, 0.0104, 0.0016, 0.0351, 1.0, 0.006, 0.01, 0.0083, 0.0059, 0.0099, 0.0214], [0.0053, 0.0064, 0.0106, 0.0131, 0.0058, 0.007, 0.0049, 0.0049, 0.0092, 0.0078, 0.0087, 0.0077, 0.0008, 0.004, 0.0066, -0.0022, 0.0034, 0.007, 0.0173, 0.0059, 0.0118, 0.0091, 0.0043, -0.0005, 0.0102, 0.0155, 0.0112, 0.0079, 0.0083, 0.0137, 0.01, 0.0151, 0.0039, 0.0139, 0.0053, 0.0109, 0.0142, 0.0074, 0.0109, 0.011, 0.0161, 0.0122, 0.0133, 0.0174, 0.0155, 0.0135, 0.0115, 0.0137, 0.0113, 0.0147, 0.0148, 0.0143, 0.0157, 0.0086, 0.0257, 0.0071, 0.0153, 0.006, 1.0, 0.022, 0.0162, 0.0038, 0.0183, 0.0092], [0.0109, 0.016, 0.0116, 0.0032, 0.0177, 0.0058, 0.0087, 0.0101, 0.0082, 0.0002, 0.0104, 0.0066, 0.0049, 0.0087, 0.0094, -0.0017, 0.0015, 0.0104, 0.0138, 0.0125, 0.0011, 0.0044, 0.0094, 0.0124, 0.0187, 0.0263, 0.0244, 0.021, 0.0102, 0.0097, 0.0243, 0.0188, 0.0236, 0.0136, 0.0124, 0.0204, 0.0152, 0.0057, 0.0115, 0.0223, 0.0249, 0.0186, 0.0104, 0.0254, 0.0266, 0.0164, 0.0153, 0.0178, 0.0151, 0.0166, 0.0226, 0.0186, 0.0191, 0.013, 0.0186, 0.0102, 0.0116, 0.01, 0.022, 1.0, 0.0174, 0.0094, 0.0146, 0.0222], [0.0117, 0.0158, 0.006, 0.0143, 0.0125, 0.0099, 0.0064, 0.0106, 0.0111, 0.0162, 0.0034, 0.0103, 0.011, 0.0103, 0.0122, 0.0014, 0.0129, 0.0167, 0.0165, 0.0108, 0.0186, 0.0096, 0.0097, 0.0103, 0.0162, 0.0152, 0.0159, 0.0211, 0.0116, 0.015, 0.0188, 0.0117, 0.0114, 0.0068, 0.0176, 0.0163, 0.0163, 0.0041, 0.0078, 0.0149, 0.0144, 0.0134, 0.0203, 0.0167, 0.0205, 0.0103, 0.0131, 0.0211, 0.0199, 0.0182, 0.0178, 0.0127, 0.0162, 0.0161, 0.0163, 0.0132, 0.0127, 0.0083, 0.0162, 0.0174, 1.0, 0.009, 0.0145, 0.0188], [0.0062, 0.0116, 0.008, 0.0059, 0.0125, 0.0082, 0.0063, 0.0062, 0.0068, 0.0075, 0.0085, 0.0118, 0.0093, 0.0082, 0.0091, -0.0022, 0.0059, 0.0083, 0.0117, 0.0075, 0.0077, 0.0154, 0.0065, 0.0105, 0.0132, 0.0142, 0.0114, 0.014, 0.0109, 0.0133, 0.011, 0.0093, 0.0055, 0.0052, 0.0079, 0.0106, 0.0156, 0.0043, 0.0036, 0.011, 0.0123, 0.0089, 0.0097, 0.0109, 0.0112, 0.006, 0.0086, 0.0121, 0.011, 0.0168, 0.0147, 0.0062, 0.0105, 0.0131, 0.0124, 0.0083, 0.0059, 0.0059, 0.0038, 0.0094, 0.009, 1.0, 0.0107, 0.0068], [0.0177, 0.0169, 0.0095, 0.0118, 0.0178, 0.0158, 0.0106, 0.009, 0.0174, 0.016, 0.0106, 0.0174, 0.0172, 0.0123, 0.0178, -0.0055, 0.0087, 0.0143, 0.019, 0.0104, 0.0087, 0.0229, 0.0126, 0.021, 0.0195, 0.0198, 0.0182, 0.0084, 0.0107, 0.0187, 0.0218, 0.0219, 0.0122, 0.0155, 0.0107, 0.0031, 0.0142, 0.0125, 0.0008, 0.0164, 0.0118, 0.0177, 0.0092, 0.011, 0.0215, 0.0107, 0.0178, 0.0156, 0.0174, 0.0082, 0.0182, 0.0126, 0.0209, 0.0207, 0.0142, 0.0079, 0.0092, 0.0099, 0.0183, 0.0146, 0.0145, 0.0107, 1.0, -0.0008], [0.0197, 0.0288, 0.0152, 0.028, 0.0136, 0.0142, 0.0214, 0.0209, 0.0165, 0.021, 0.0172, 0.0178, 0.0177, 0.0123, 0.0103, -0.0019, 0.0259, 0.026, 0.014, 0.0154, 0.0296, 0.0136, 0.0158, 0.0219, 0.013, 0.0183, 0.0183, 0.0145, 0.0055, 0.0143, 0.0173, 0.0202, 0.0159, 0.0128, 0.0211, 0.0185, 0.0096, 0.0113, 0.0107, 0.0228, 0.017, 0.0148, 0.0208, 0.0168, 0.0201, 0.0096, 0.0134, 0.0121, 0.0216, 0.0226, 0.0218, 0.011, 0.0157, 0.0119, 0.0158, 0.0214, 0.0189, 0.0214, 0.0092, 0.0222, 0.0188, 0.0068, -0.0008, 1.0]], "null_ref": [-0.0013178038851673346, -0.0011842241773190043, -0.001170678928984925, -0.0011056359303946994, -0.0009218826709194161, -0.0009081129990431425, -0.0008793445021983981, -0.0008552899816181014, -0.0007853282589522781, -0.0007775900079833864, -0.0007285830007113248, -0.0007196697999765078, -0.0006736995990614947, -0.0006145325826454329, -0.000591791707369449, -0.0005619521844562048, -0.0005429239610414971, -0.0005265553275026758, -0.0005072877855090141, -0.0004863410326716444, -0.0004845191627653733, -0.00046871087341271434, -0.0004305673381941322, -0.00042727496745875726, -0.00042080551569423363, -0.00038337900297547023, -0.00036120472730094555, -0.00035833193893552995, -0.00035237817327682386, -0.00034232453247629024, -0.0003057064439595525, -0.0002461961037161231, -0.00022621697486813197, -0.00022118287383676716, -0.00020617877259021533, -0.00020594147573205213, -0.00019186923572545034, -0.0001690957914952662, -0.00016716914243475323, -8.378348399595836e-05], "catalog": [{"domain": "book", "tier": "atoms", "flags": [], "ledger": false, "typed": true}, {"domain": "book", "tier": "atoms", "flags": ["parked"], "ledger": true, "typed": true}, {"domain": "book", "tier": "atoms", "flags": [], "ledger": true, "typed": true}, {"domain": "book", "tier": "atoms", "flags": [], "ledger": false, "typed": true}, {"domain": "book", "tier": "atoms", "flags": [], "ledger": true, "typed": true}, {"domain": "book", "tier": "atoms", "flags": [], "ledger": true, "typed": false}, {"domain": "book", "tier": "atoms", "flags": [], "ledger": false, "typed": true}, {"domain": "book", "tier": "molecules", "flags": [], "ledger": true, "typed": true}, {"domain": "book", "tier": "molecules", "flags": ["parked"], "ledger": true, "typed": true}, {"domain": "book", "tier": "molecules", "flags": [], "ledger": true, "typed": true}, {"domain": "book", "tier": "molecules", "flags": [], "ledger": true, "typed": true}, {"domain": "book", "tier": "molecules", "flags": ["dark"], "ledger": true, "typed": true}, {"domain": "book", "tier": "molecules", "flags": ["featured"], "ledger": true, "typed": true}, {"domain": "book", "tier": "molecules", "flags": [], "ledger": true, "typed": true}, {"domain": "book", "tier": "molecules", "flags": [], "ledger": true, "typed": true}, {"domain": "book", "tier": "molecules", "flags": ["dark"], "ledger": true, "typed": true}, {"domain": "book", "tier": "molecules", "flags": ["mutating", "featured"], "ledger": true, "typed": true}, {"domain": "book", "tier": "compounds", "flags": ["slow"], "ledger": true, "typed": true}, {"domain": "book", "tier": "compounds", "flags": ["slow", "featured"], "ledger": true, "typed": true}, {"domain": "book", "tier": "compounds", "flags": ["dark"], "ledger": true, "typed": true}, {"domain": "book", "tier": "compounds", "flags": ["featured"], "ledger": true, "typed": true}, {"domain": "book", "tier": "compounds", "flags": [], "ledger": true, "typed": true}, {"domain": "book", "tier": "compounds", "flags": [], "ledger": true, "typed": true}, {"domain": "book", "tier": "compounds", "flags": ["parked"], "ledger": true, "typed": true}, {"domain": "market", "tier": "atoms", "flags": ["dark"], "ledger": true, "typed": true}, {"domain": "market", "tier": "atoms", "flags": [], "ledger": true, "typed": true}, {"domain": "market", "tier": "atoms", "flags": [], "ledger": true, "typed": true}, {"domain": "market", "tier": "atoms", "flags": ["featured"], "ledger": false, "typed": true}, {"domain": "market", "tier": "atoms", "flags": [], "ledger": true, "typed": true}, {"domain": "market", "tier": "atoms", "flags": [], "ledger": true, "typed": true}, {"domain": "market", "tier": "atoms", "flags": [], "ledger": true, "typed": false}, {"domain": "market", "tier": "atoms", "flags": [], "ledger": true, "typed": true}, {"domain": "market", "tier": "atoms", "flags": [], "ledger": false, "typed": false}, {"domain": "market", "tier": "atoms", "flags": [], "ledger": true, "typed": true}, {"domain": "market", "tier": "atoms", "flags": [], "ledger": true, "typed": true}, {"domain": "market", "tier": "atoms", "flags": [], "ledger": true, "typed": true}, {"domain": "market", "tier": "molecules", "flags": [], "ledger": true, "typed": true}, {"domain": "market", "tier": "molecules", "flags": [], "ledger": true, "typed": true}, {"domain": "market", "tier": "molecules", "flags": [], "ledger": true, "typed": true}, {"domain": "market", "tier": "molecules", "flags": [], "ledger": true, "typed": true}, {"domain": "market", "tier": "molecules", "flags": [], "ledger": true, "typed": true}, {"domain": "market", "tier": "molecules", "flags": [], "ledger": true, "typed": true}, {"domain": "market", "tier": "molecules", "flags": [], "ledger": true, "typed": true}, {"domain": "market", "tier": "molecules", "flags": [], "ledger": true, "typed": true}, {"domain": "market", "tier": "molecules", "flags": [], "ledger": true, "typed": true}, {"domain": "market", "tier": "compounds", "flags": ["slow"], "ledger": true, "typed": true}, {"domain": "market", "tier": "compounds", "flags": ["slow", "featured"], "ledger": true, "typed": true}, {"domain": "market", "tier": "compounds", "flags": ["slow"], "ledger": true, "typed": true}, {"domain": "market", "tier": "meta_compounds", "flags": ["slow", "featured"], "ledger": true, "typed": true}, {"domain": "strategy", "tier": "atoms", "flags": [], "ledger": true, "typed": true}, {"domain": "strategy", "tier": "molecules", "flags": ["slow"], "ledger": true, "typed": true}, {"domain": "strategy", "tier": "compounds", "flags": ["slow", "featured"], "ledger": true, "typed": true}, {"domain": "watchlist", "tier": "atoms", "flags": ["mutating"], "ledger": true, "typed": true}, {"domain": "watchlist", "tier": "molecules", "flags": ["mutating"], "ledger": true, "typed": true}], "baseline": {"dev": 1.1732236252129926, "sealed": 1.2213411589008343}, "arch": {"total": 54, "routes": 75, "forensic": 49, "ledgers": 20, "domains": ["market", "book", "strategy", "watchlist"], "tiers": [{"name": "atoms", "total": 21, "by_domain": {"market": 12, "book": 7, "strategy": 1, "watchlist": 1}}, {"name": "molecules", "total": 21, "by_domain": {"market": 9, "book": 10, "strategy": 1, "watchlist": 1}}, {"name": "compounds", "total": 11, "by_domain": {"market": 3, "book": 7, "strategy": 1}}, {"name": "meta", "total": 1, "by_domain": {"market": 1}}]}, "attestation": {"candidate": "yharm", "raw_gain": 0.02620864534083922, "trials_nominal": 64, "trials_effective": 43.78470080938676, "deflated_gain": 0.026145376527049624, "null_calibration": "0 of 64"}};
-/* ──────────────────────────────────────────────────────────────────────── */
+const DATA = {"n_orderings": 4000, "curve": [{"n": 2, "D": 0.002015630219298367, "S": 0.002672726029379705, "retention": 1.3260001779046906, "n_eff": 1.9882374967055871}, {"n": 3, "D": 0.0036583301091156987, "S": 0.004847372695427915, "retention": 1.3250233168814924, "n_eff": 2.96251989128538}, {"n": 4, "D": 0.004971375524623938, "S": 0.0065721313750354395, "retention": 1.3219945551251817, "n_eff": 3.9234232916159146}, {"n": 5, "D": 0.006093328653366122, "S": 0.008086080010494162, "retention": 1.3270382200748665, "n_eff": 4.8694095540714795}, {"n": 6, "D": 0.007088966241256016, "S": 0.009396197605441413, "retention": 1.3254679576209412, "n_eff": 5.802455491782017}, {"n": 7, "D": 0.007928747388387851, "S": 0.010495506294043739, "retention": 1.3237281729286858, "n_eff": 6.719668312833433}, {"n": 8, "D": 0.008643392513914834, "S": 0.011420769326529669, "retention": 1.3213294789220307, "n_eff": 7.626197543500458}, {"n": 9, "D": 0.00929604302756341, "S": 0.01226616113801934, "retention": 1.3195034813898048, "n_eff": 8.52699844020405}, {"n": 10, "D": 0.009811476734587408, "S": 0.012938960102180305, "retention": 1.3187576602580013, "n_eff": 9.41481557406664}, {"n": 11, "D": 0.010333674246125845, "S": 0.013619546281545065, "retention": 1.317977125769289, "n_eff": 10.299091546157797}, {"n": 12, "D": 0.010842769886586232, "S": 0.014222800708112767, "retention": 1.3117313063803029, "n_eff": 11.158238527852998}, {"n": 13, "D": 0.01134093784890394, "S": 0.014809437863869594, "retention": 1.3058389051396548, "n_eff": 11.99995136070422}, {"n": 14, "D": 0.011747724351828226, "S": 0.015257495639025285, "retention": 1.2987618011867001, "n_eff": 12.841933873463914}, {"n": 15, "D": 0.012115384714405021, "S": 0.01571171207921343, "retention": 1.2968397165739547, "n_eff": 13.680829670424668}, {"n": 16, "D": 0.01251034828074304, "S": 0.01610610736185176, "retention": 1.2874227799591806, "n_eff": 14.490280830670716}, {"n": 17, "D": 0.012895003898044738, "S": 0.016561945106951234, "retention": 1.2843691431115047, "n_eff": 15.296203725453294}, {"n": 18, "D": 0.013201974259570644, "S": 0.016872486872408624, "retention": 1.2780275541119979, "n_eff": 16.097517007240192}, {"n": 19, "D": 0.013530460389469345, "S": 0.017229823981584857, "retention": 1.2734100308216192, "n_eff": 16.87993567052341}, {"n": 20, "D": 0.01388052625532196, "S": 0.017606498959719295, "retention": 1.2684316600005532, "n_eff": 17.64983864122464}, {"n": 21, "D": 0.01423418955693128, "S": 0.01793203583186495, "retention": 1.259786218255961, "n_eff": 18.406831944390746}, {"n": 22, "D": 0.014571556889240896, "S": 0.018263563451260328, "retention": 1.2533707681397774, "n_eff": 19.166442016164677}, {"n": 23, "D": 0.01491375251863488, "S": 0.01855116987687832, "retention": 1.2438968565220894, "n_eff": 19.91637794775176}, {"n": 24, "D": 0.015170675710277682, "S": 0.01879851620547452, "retention": 1.239135063228534, "n_eff": 20.66087633946789}, {"n": 25, "D": 0.015487589318839074, "S": 0.019077346276753924, "retention": 1.2317828090617224, "n_eff": 21.39214318233008}, {"n": 26, "D": 0.015738067771602037, "S": 0.019307518209047924, "retention": 1.226803600622857, "n_eff": 22.112519726435597}, {"n": 27, "D": 0.016037784254076322, "S": 0.01958113225114981, "retention": 1.2209375023967464, "n_eff": 22.831081138384107}, {"n": 28, "D": 0.016317247142603318, "S": 0.019853555287720523, "retention": 1.2167221047896077, "n_eff": 23.532574668738278}, {"n": 29, "D": 0.016595118457709387, "S": 0.0201215198927165, "retention": 1.2124963099235304, "n_eff": 24.230511613035073}, {"n": 30, "D": 0.016880004723844558, "S": 0.020365565151056503, "retention": 1.2064904888497021, "n_eff": 24.914309774933407}, {"n": 31, "D": 0.017161412376329174, "S": 0.02060553465979936, "retention": 1.2006899087292304, "n_eff": 25.577859161337475}, {"n": 32, "D": 0.01740740500256982, "S": 0.020793244778486153, "retention": 1.1945057161257802, "n_eff": 26.245549123825644}, {"n": 33, "D": 0.017642893467623856, "S": 0.0209801317837407, "retention": 1.1891548187512977, "n_eff": 26.889610699160194}, {"n": 34, "D": 0.017924418617947916, "S": 0.021176579875694147, "retention": 1.1814374751597134, "n_eff": 27.554136751095626}, {"n": 35, "D": 0.01816683006464196, "S": 0.02137089013752545, "retention": 1.1763686929135502, "n_eff": 28.194565227652156}, {"n": 36, "D": 0.018410525063445978, "S": 0.021551019039501233, "retention": 1.1705814454086751, "n_eff": 28.818841558959864}, {"n": 37, "D": 0.018677021541527266, "S": 0.021771673261932304, "retention": 1.1656929994712626, "n_eff": 29.43777996638393}, {"n": 38, "D": 0.01894089774140945, "S": 0.021973694944806624, "retention": 1.1601189787729405, "n_eff": 30.0459420011274}, {"n": 39, "D": 0.019178593057097744, "S": 0.02215849960844964, "retention": 1.1553767026851363, "n_eff": 30.64902248172166}, {"n": 40, "D": 0.019416869734865293, "S": 0.022323630963309776, "retention": 1.149702875290194, "n_eff": 31.259887980331175}, {"n": 41, "D": 0.019669248854541688, "S": 0.022520670236840845, "retention": 1.1449684938853553, "n_eff": 31.837535006058136}, {"n": 42, "D": 0.019892970160188844, "S": 0.022686618859757146, "retention": 1.1404339662238643, "n_eff": 32.43522678403978}, {"n": 43, "D": 0.020103177523486917, "S": 0.022840296916288354, "retention": 1.1361535702305574, "n_eff": 33.01947004146005}, {"n": 44, "D": 0.020388734849958713, "S": 0.023052236941646247, "retention": 1.1306359669341095, "n_eff": 33.60339182377345}, {"n": 45, "D": 0.02059791713131642, "S": 0.023191872253365012, "retention": 1.125932884646129, "n_eff": 34.175665572877264}, {"n": 46, "D": 0.020827504608176596, "S": 0.023359215485662794, "retention": 1.1215561309487014, "n_eff": 34.74560405604911}, {"n": 47, "D": 0.02100814029206082, "S": 0.023499374999199425, "retention": 1.1185842569834734, "n_eff": 35.30364178599485}, {"n": 48, "D": 0.02122359831412995, "S": 0.023649263041152953, "retention": 1.1142909270671635, "n_eff": 35.85218379015505}, {"n": 49, "D": 0.021387265256630223, "S": 0.023763971792438464, "retention": 1.1111271828019922, "n_eff": 36.395144674027875}, {"n": 50, "D": 0.021622870325896444, "S": 0.023922961734184442, "retention": 1.1063730843140336, "n_eff": 36.91935761318073}, {"n": 51, "D": 0.02181038359858564, "S": 0.024057252052356322, "retention": 1.103018291430527, "n_eff": 37.44337089082216}, {"n": 52, "D": 0.022065289520223727, "S": 0.0242272672396195, "retention": 1.0979809359589066, "n_eff": 37.9553757479483}, {"n": 53, "D": 0.0222622263616244, "S": 0.02435788047695081, "retention": 1.0941349747004143, "n_eff": 38.48434007311175}, {"n": 54, "D": 0.022452611480939758, "S": 0.024484729576368637, "retention": 1.0905069816557402, "n_eff": 38.98292375237282}, {"n": 55, "D": 0.02268000892013058, "S": 0.02463701122956896, "retention": 1.0862875458440124, "n_eff": 39.477641150811}, {"n": 56, "D": 0.022884665557018485, "S": 0.024769409455914746, "retention": 1.0823583763634348, "n_eff": 39.97764846788948}, {"n": 57, "D": 0.023054319682499685, "S": 0.024884782715219076, "retention": 1.0793978333747527, "n_eff": 40.48212331666025}, {"n": 58, "D": 0.023244952305841723, "S": 0.02500939099315246, "retention": 1.075906315663522, "n_eff": 40.97081182851712}, {"n": 59, "D": 0.023449613677524517, "S": 0.025142044378783295, "retention": 1.0721730739163904, "n_eff": 41.45203943330991}, {"n": 60, "D": 0.02362374483044063, "S": 0.025259307787529425, "retention": 1.069233856394405, "n_eff": 41.93003052642265}, {"n": 61, "D": 0.02381112867717316, "S": 0.025383866290129266, "retention": 1.0660505276452448, "n_eff": 42.405141383409884}, {"n": 62, "D": 0.024003182879705882, "S": 0.02551222858094437, "retention": 1.0628685665897397, "n_eff": 42.87642008483748}, {"n": 63, "D": 0.02419516551085069, "S": 0.02564160064328421, "retention": 1.0597819895790688, "n_eff": 43.32716215571194}, {"n": 64, "D": 0.024365574457940617, "S": 0.025757479883459552, "retention": 1.0571259022815824, "n_eff": 43.78470080938676}], "nulls": [-0.0010786281366710337, -0.0010091096862303583, -0.0009695053445406554, -0.0009634870593770994, -0.0009099404817920487, -0.0008947872788320765, -0.0008261458820184586, -0.000790355199174142, -0.0007808178720341008, -0.0006941690963975233, -0.0006858909919962297, -0.0006739553883188254, -0.0006467649499279915, -0.0005808058234690883, -0.0005803873378342761, -0.000550498777245112, -0.0005428790983648124, -0.0004905379256905373, -0.0004890587729893259, -0.0004874575292124206, -0.00047107801750234657, -0.00047102611014859797, -0.0004645649012535724, -0.00045730144943778583, -0.000450788325922602, -0.0004161542349938596, -0.0003890162602990799, -0.0003692320005255212, -0.00036694471256049077, -0.00033986181307277263, -0.0003322290631357916, -0.0003220414540179295, -0.0002925892182366052, -0.0002694981049451428, -0.0002679002030514521, -0.000169742943656237, -0.00014793156915748895, -0.0001331236924684287, -0.00010981540886567664, -6.326881378959648e-05], "reals": [-0.0004889540462220676, -0.00033021380410658274, -3.84000597986045e-08, 0.00026225652124289844, 0.0007084364280822708, 0.0012055806776891664, 0.002538810816189452, 0.0025568086851903704, 0.0028913070621230386, 0.003211817712145626, 0.0033434213429297532, 0.0034148995042873054, 0.004313583680340072, 0.0055141577150290555, 0.006240927942662289, 0.006793892854124461, 0.008015652348702273, 0.008075434359679834, 0.008364306184678316, 0.008900603349347058, 0.01124721777623705, 0.01211022215498736, 0.013807051228549527, 0.02620864534083922], "gate_threshold": 0.0015, "n_real_accepted": 17, "best_null_shortfall": 0.0015632688137895965, "n_nominal": 24, "n_eff": 10.903400889588438, "n_eff_pool": 43.78470080938676, "n_pool": 64, "corr_median": 0.06754271110698809, "corr_max": 0.8020057805500665, "cands": [{"i": 0, "kind": "real", "from": "disp", "dev": 0.003415, "sealed": 0.006019, "cols": null}, {"i": 1, "kind": "real", "from": "seas", "dev": 0.004314, "sealed": 0.001702, "cols": null}, {"i": 2, "kind": "real", "from": "persist", "dev": 0.003343, "sealed": 0.003552, "cols": null}, {"i": 3, "kind": "real", "from": "disp_dev", "dev": 0.002891, "sealed": 0.007237, "cols": null}, {"i": 4, "kind": "real", "from": "change_nl", "dev": 0.001206, "sealed": 0.000776, "cols": null}, {"i": 5, "kind": "real", "from": "amp", "dev": 0.008364, "sealed": 0.0183, "cols": null}, {"i": 6, "kind": "real", "from": "amp_dev", "dev": 0.013807, "sealed": 0.02011, "cols": null}, {"i": 7, "kind": "real", "from": "absdev", "dev": 0.008016, "sealed": 0.010154, "cols": null}, {"i": 8, "kind": "real", "from": "hinge", "dev": 0.003212, "sealed": 0.005485, "cols": null}, {"i": 9, "kind": "real", "from": "sgnsq", "dev": -0.000489, "sealed": 0.000124, "cols": null}, {"i": 10, "kind": "real", "from": "persist_ix", "dev": 0.005514, "sealed": 0.010285, "cols": null}, {"i": 11, "kind": "real", "from": "ycurve", "dev": 0.008901, "sealed": 0.016902, "cols": null}, {"i": 12, "kind": "real", "from": "yslope", "dev": 0.006794, "sealed": 0.008659, "cols": null}, {"i": 13, "kind": "real", "from": "ycurv2", "dev": 0.002557, "sealed": 0.002835, "cols": null}, {"i": 14, "kind": "real", "from": "yphase", "dev": 0.008075, "sealed": 0.007414, "cols": null}, {"i": 15, "kind": "real", "from": "cluster", "dev": -0.0, "sealed": -0.0, "cols": null}, {"i": 16, "kind": "real", "from": "seas_wt", "dev": 0.011247, "sealed": 0.010403, "cols": null}, {"i": 17, "kind": "real", "from": "quant", "dev": 0.000262, "sealed": 0.000309, "cols": null}, {"i": 18, "kind": "real", "from": "asym", "dev": -0.00033, "sealed": 0.000132, "cols": null}, {"i": 19, "kind": "real", "from": "indep", "dev": 0.006241, "sealed": 0.00801, "cols": null}, {"i": 20, "kind": "real", "from": "normdev", "dev": 0.000708, "sealed": 0.000927, "cols": null}, {"i": 21, "kind": "real", "from": "change_ix", "dev": 0.002539, "sealed": 0.004258, "cols": null}, {"i": 22, "kind": "real", "from": "amp_hi", "dev": 0.01211, "sealed": 0.021784, "cols": null}, {"i": 23, "kind": "real", "from": "yharm", "dev": 0.026209, "sealed": 0.028551, "cols": null}, {"i": 24, "kind": "null", "from": "disp", "dev": -0.000647, "sealed": -0.000434, "cols": null}, {"i": 25, "kind": "null", "from": "seas", "dev": -0.001009, "sealed": -0.000538, "cols": null}, {"i": 26, "kind": "null", "from": "persist", "dev": -0.000694, "sealed": -0.000322, "cols": null}, {"i": 27, "kind": "null", "from": "disp_dev", "dev": -0.00097, "sealed": -0.0006, "cols": null}, {"i": 28, "kind": "null", "from": "change_nl", "dev": -0.000269, "sealed": -0.000185, "cols": null}, {"i": 29, "kind": "null", "from": "amp", "dev": -0.000487, "sealed": -0.000223, "cols": null}, {"i": 30, "kind": "null", "from": "amp_dev", "dev": -0.00079, "sealed": -0.000651, "cols": null}, {"i": 31, "kind": "null", "from": "absdev", "dev": -0.000332, "sealed": -0.000362, "cols": null}, {"i": 32, "kind": "null", "from": "hinge", "dev": -0.000457, "sealed": -0.00044, "cols": null}, {"i": 33, "kind": "null", "from": "sgnsq", "dev": -6.3e-05, "sealed": -0.000147, "cols": null}, {"i": 34, "kind": "null", "from": "persist_ix", "dev": -0.00011, "sealed": -0.000338, "cols": null}, {"i": 35, "kind": "null", "from": "ycurve", "dev": -0.000369, "sealed": -0.000135, "cols": null}, {"i": 36, "kind": "null", "from": "yslope", "dev": -0.00034, "sealed": -0.000317, "cols": null}, {"i": 37, "kind": "null", "from": "ycurv2", "dev": -0.000133, "sealed": -0.000137, "cols": null}, {"i": 38, "kind": "null", "from": "yphase", "dev": -0.000489, "sealed": -0.000334, "cols": null}, {"i": 39, "kind": "null", "from": "cluster", "dev": -0.00091, "sealed": -0.00053, "cols": null}, {"i": 40, "kind": "null", "from": "seas_wt", "dev": -0.000895, "sealed": -0.000569, "cols": null}, {"i": 41, "kind": "null", "from": "quant", "dev": -0.000674, "sealed": -0.00024, "cols": null}, {"i": 42, "kind": "null", "from": "asym", "dev": -0.000471, "sealed": -0.000192, "cols": null}, {"i": 43, "kind": "null", "from": "indep", "dev": -0.00055, "sealed": -0.000205, "cols": null}, {"i": 44, "kind": "null", "from": "normdev", "dev": -0.00058, "sealed": -0.000299, "cols": null}, {"i": 45, "kind": "null", "from": "change_ix", "dev": -0.000148, "sealed": -0.000346, "cols": null}, {"i": 46, "kind": "null", "from": "amp_hi", "dev": -0.000416, "sealed": -0.000282, "cols": null}, {"i": 47, "kind": "null", "from": "yharm", "dev": -0.000826, "sealed": -0.001073, "cols": null}, {"i": 48, "kind": "null", "from": "disp", "dev": -0.000471, "sealed": -0.000449, "cols": null}, {"i": 49, "kind": "null", "from": "seas", "dev": -0.000963, "sealed": -0.001589, "cols": null}, {"i": 50, "kind": "null", "from": "persist", "dev": -0.000781, "sealed": -0.000296, "cols": null}, {"i": 51, "kind": "null", "from": "disp_dev", "dev": -0.000268, "sealed": -0.000872, "cols": null}, {"i": 52, "kind": "null", "from": "change_nl", "dev": -0.000367, "sealed": -0.000202, "cols": null}, {"i": 53, "kind": "null", "from": "amp", "dev": -0.000543, "sealed": -0.00042, "cols": null}, {"i": 54, "kind": "null", "from": "amp_dev", "dev": -0.000686, "sealed": -0.000655, "cols": null}, {"i": 55, "kind": "null", "from": "absdev", "dev": -0.000451, "sealed": -0.000298, "cols": null}, {"i": 56, "kind": "null", "from": "hinge", "dev": -0.000465, "sealed": -0.000495, "cols": null}, {"i": 57, "kind": "null", "from": "sgnsq", "dev": -0.000389, "sealed": -0.000112, "cols": null}, {"i": 58, "kind": "null", "from": "persist_ix", "dev": -0.000322, "sealed": -0.000379, "cols": null}, {"i": 59, "kind": "null", "from": "ycurve", "dev": -0.000293, "sealed": 0.00019, "cols": null}, {"i": 60, "kind": "null", "from": "yslope", "dev": -0.000581, "sealed": -0.000252, "cols": null}, {"i": 61, "kind": "null", "from": "ycurv2", "dev": -0.00017, "sealed": -6.2e-05, "cols": null}, {"i": 62, "kind": "null", "from": "yphase", "dev": -0.000491, "sealed": 4.8e-05, "cols": null}, {"i": 63, "kind": "null", "from": "cluster", "dev": -0.001079, "sealed": -0.00043, "cols": null}], "corr": [[1.0, -0.0175, 0.023, 0.4315, 0.1113, 0.2917, 0.203, 0.7259, 0.6643, 0.0784, 0.11, 0.0918, 0.0361, 0.0171, 0.0433, 0.0038, 0.3019, 0.0566, 0.1852, 0.6542, 0.1016, 0.1232, 0.4843, 0.0576, 0.0106, 0.0123, 0.0142, 0.014, 0.0147, 0.0126, 0.0107, 0.0187, -0.004, 0.0185, 0.0077, 0.0118, 0.0105, 0.014, 0.0179, 0.0193, 0.0094, 0.0053, 0.0285, 0.0109, 0.0094, 0.0074, 0.0122, 0.022, 0.0152, 0.0391, 0.0151, 0.0096, 0.0136, 0.0039, 0.0096, 0.008, 0.0191, 0.0176, 0.0053, 0.0109, 0.0117, 0.0062, 0.0177, 0.0197], [-0.0175, 1.0, 0.1154, 0.0124, 0.0187, 0.1073, 0.0961, 0.0061, -0.0075, 0.0484, 0.0971, 0.1132, 0.1098, 0.0611, 0.0749, -0.0007, 0.4175, 0.0699, 0.0262, -0.0179, 0.0606, 0.0435, 0.0485, 0.1753, 0.0223, 0.0222, 0.0155, 0.0215, 0.0136, 0.0012, 0.0185, 0.0097, 0.0205, 0.0074, 0.0218, 0.0134, 0.0123, 0.0053, 0.0112, 0.0069, 0.0141, 0.0249, 0.0134, 0.0061, 0.0241, 0.0172, 0.0022, 0.0137, 0.0157, 0.0104, 0.0228, 0.013, 0.0147, 0.0112, 0.0216, 0.0091, 0.0208, 0.0144, 0.0064, 0.016, 0.0158, 0.0116, 0.0169, 0.0288], [0.023, 0.1154, 1.0, 0.0609, 0.0318, 0.1639, 0.1411, 0.022, 0.0331, 0.0357, 0.6442, 0.1415, 0.078, 0.0576, 0.1363, 0.0073, 0.0417, 0.0168, 0.0119, 0.0223, 0.0503, 0.0689, 0.1129, 0.3437, 0.0121, 0.0143, 0.0159, 0.0062, 0.0079, 0.0094, 0.0087, 0.0134, 0.0021, 0.013, 0.0077, 0.0061, 0.0095, 0.0088, 0.0145, 0.0098, 0.016, 0.0053, 0.015, 0.0121, 0.0105, 0.0188, 0.0078, 0.015, 0.0058, 0.0164, 0.0176, 0.0155, 0.0086, 0.0157, 0.014, 0.0089, 0.0173, 0.0033, 0.0106, 0.0116, 0.006, 0.008, 0.0095, 0.0152], [0.4315, 0.0124, 0.0609, 1.0, 0.1274, 0.2471, 0.1398, 0.3781, 0.6617, 0.4436, 0.1303, 0.1181, 0.0611, 0.0262, 0.0636, 0.0108, 0.1795, 0.0274, 0.0757, 0.3271, 0.4792, 0.3838, 0.2288, 0.0846, 0.0128, 0.0205, 0.0233, 0.0102, 0.0107, 0.0112, 0.016, 0.0174, -0.0033, 0.0193, 0.0135, 0.0096, 0.0115, 0.0108, 0.0172, 0.014, 0.0206, 0.0183, 0.0237, 0.0173, 0.0002, 0.0098, 0.0085, 0.0182, 0.0133, 0.0388, 0.0119, 0.0192, 0.0174, 0.01, 0.0094, 0.0023, 0.0156, 0.0101, 0.0131, 0.0032, 0.0143, 0.0059, 0.0118, 0.028], [0.1113, 0.0187, 0.0318, 0.1274, 1.0, 0.0801, 0.0661, 0.0673, 0.1134, 0.0468, 0.0415, 0.0576, 0.0252, 0.0202, 0.0382, -0.0039, 0.0194, 0.0215, 0.0273, 0.0474, 0.0545, 0.469, 0.0611, 0.0372, 0.009, 0.0152, 0.0196, 0.0072, 0.0091, 0.0174, 0.0177, 0.01, 0.0038, 0.0148, 0.0133, 0.0042, 0.0104, 0.0113, 0.0089, 0.0158, 0.0237, 0.0032, 0.0162, 0.0091, 0.0137, 0.0117, 0.0035, 0.0189, 0.0186, 0.0281, 0.0149, 0.013, 0.0137, 0.0176, 0.013, 0.004, 0.0012, 0.0067, 0.0058, 0.0177, 0.0125, 0.0125, 0.0178, 0.0136], [0.2917, 0.1073, 0.1639, 0.2471, 0.0801, 1.0, 0.7404, 0.2114, 0.2841, 0.0727, 0.4639, 0.802, 0.2724, 0.0713, 0.1771, 0.0037, 0.1012, 0.0046, 0.0224, 0.2339, 0.0824, 0.323, 0.7543, 0.4466, 0.0033, 0.0151, 0.0112, 0.005, 0.012, 0.0026, 0.0104, 0.0136, 0.0004, 0.0153, 0.0082, 0.0037, 0.0131, 0.0131, 0.0161, 0.009, 0.0094, 0.0119, 0.0187, 0.007, 0.0072, 0.0152, 0.0057, 0.0111, 0.0068, 0.0318, 0.0158, 0.0229, 0.0093, 0.0142, 0.0051, 0.0003, 0.0183, 0.008, 0.007, 0.0058, 0.0099, 0.0082, 0.0158, 0.0142], [0.203, 0.0961, 0.1411, 0.1398, 0.0661, 0.7404, 1.0, 0.22, 0.1662, 0.0606, 0.3813, 0.6414, 0.2467, 0.0735, 0.1619, -0.0064, 0.2062, 0.025, 0.0303, 0.2216, 0.0885, 0.279, 0.6696, 0.4046, -0.0007, 0.0156, 0.0173, 0.0044, 0.0086, 0.0061, 0.0141, 0.0106, 0.0036, 0.0123, 0.0067, 0.0077, 0.0104, 0.0091, 0.0158, 0.0066, 0.005, 0.0113, 0.0178, 0.0219, 0.0073, 0.0145, 0.0049, 0.0092, 0.0055, 0.0271, 0.0125, 0.0216, 0.0068, 0.012, 0.004, 0.0052, 0.0166, 0.0108, 0.0049, 0.0087, 0.0064, 0.0063, 0.0106, 0.0214], [0.7259, 0.0061, 0.022, 0.3781, 0.0673, 0.2114, 0.22, 1.0, 0.5547, 0.0745, 0.0591, 0.0677, 0.0364, 0.0204, 0.0527, -0.0007, 0.4217, 0.0607, 0.0328, 0.7764, 0.0966, 0.0656, 0.5444, 0.0727, 0.0136, 0.0082, 0.0129, 0.015, 0.0102, 0.0159, 0.0145, 0.0165, 0.002, 0.0153, 0.0097, 0.0139, 0.0098, 0.0097, 0.0169, 0.0193, 0.0097, 0.0014, 0.0268, 0.0133, 0.009, 0.0039, 0.0088, 0.0174, 0.0094, 0.0405, 0.0143, 0.0116, 0.0151, 0.0004, 0.0091, 0.0114, 0.0111, 0.0229, 0.0049, 0.0101, 0.0106, 0.0062, 0.009, 0.0209], [0.6643, -0.0075, 0.0331, 0.6617, 0.1134, 0.2841, 0.1662, 0.5547, 1.0, 0.2645, 0.1226, 0.1077, 0.0614, 0.0299, 0.0499, -0.0007, 0.2291, -0.0091, 0.0917, 0.5025, 0.2905, 0.1821, 0.374, 0.0644, 0.0111, 0.0185, 0.0196, 0.0109, 0.0083, 0.0142, 0.0111, 0.0177, -0.0003, 0.0236, 0.0128, 0.0103, 0.0109, 0.0117, 0.0105, 0.0155, 0.0125, 0.0108, 0.027, 0.0122, 0.0055, 0.0025, 0.0115, 0.0172, 0.0144, 0.0395, 0.0125, 0.0142, 0.011, 0.0073, 0.0062, 0.0014, 0.0129, 0.0112, 0.0092, 0.0082, 0.0111, 0.0068, 0.0174, 0.0165], [0.0784, 0.0484, 0.0357, 0.4436, 0.0468, 0.0727, 0.0606, 0.0745, 0.2645, 1.0, 0.0598, 0.0728, 0.0538, 0.0237, 0.0445, -0.0057, 0.0828, 0.0483, 0.1908, 0.0423, 0.5553, 0.2304, 0.0356, 0.0458, 0.0125, 0.0121, 0.0119, -0.0008, 0.0073, 0.0133, 0.0131, 0.0096, 0.0054, 0.0082, 0.0202, 0.0103, 0.0098, 0.0092, 0.0181, 0.0179, 0.0214, 0.0132, 0.0191, 0.0191, 0.0087, 0.0116, 0.0111, 0.0204, 0.0166, 0.0199, 0.0127, 0.022, 0.0108, 0.0124, 0.0144, 0.0067, 0.0187, 0.0108, 0.0078, 0.0002, 0.0162, 0.0075, 0.016, 0.021], [0.11, 0.0971, 0.6442, 0.1303, 0.0415, 0.4639, 0.3813, 0.0591, 0.1226, 0.0598, 1.0, 0.3839, 0.1549, 0.0605, 0.1306, 0.0229, 0.0458, 0.0335, 0.0054, 0.0764, 0.0736, 0.207, 0.3926, 0.3615, 0.0049, 0.0135, 0.0136, 0.0053, 0.0075, 0.0093, 0.0082, 0.0131, 0.0042, 0.012, 0.0081, 0.0073, 0.012, 0.008, 0.0161, 0.008, 0.0089, 0.0091, 0.0176, 0.0097, 0.0101, 0.0164, 0.0037, 0.01, 0.0032, 0.0209, 0.0167, 0.0227, 0.0097, 0.0181, 0.0074, 0.0076, 0.0128, -0.0003, 0.0087, 0.0104, 0.0034, 0.0085, 0.0106, 0.0172], [0.0918, 0.1132, 0.1415, 0.1181, 0.0576, 0.802, 0.6414, 0.0677, 0.1077, 0.0728, 0.3839, 1.0, 0.2768, 0.0773, 0.1558, -0.0028, 0.0603, -0.0002, 0.0293, 0.0952, 0.0865, 0.2774, 0.5814, 0.4516, 0.0006, 0.018, 0.0113, 0.0096, 0.0121, 0.0014, 0.0156, 0.0139, 0.0026, 0.016, 0.0125, 0.0054, 0.0127, 0.0106, 0.0154, 0.013, 0.0084, 0.0153, 0.016, 0.0064, 0.0101, 0.0158, 0.0032, 0.0105, 0.008, 0.0262, 0.0181, 0.019, 0.0072, 0.0114, 0.0088, -0.0026, 0.012, 0.0084, 0.0077, 0.0066, 0.0103, 0.0118, 0.0174, 0.0178], [0.0361, 0.1098, 0.078, 0.0611, 0.0252, 0.2724, 0.2467, 0.0364, 0.0614, 0.0538, 0.1549, 0.2768, 1.0, 0.5383, 0.2319, -0.0032, 0.0558, 0.0168, 0.0286, 0.0397, 0.054, 0.0867, 0.2203, 0.3652, 0.0053, 0.0154, 0.0173, 0.0133, 0.0056, 0.0044, 0.0087, 0.014, 0.0099, 0.0054, 0.0124, 0.0039, 0.0114, 0.011, 0.012, 0.017, 0.0156, 0.0056, 0.0154, 0.0094, 0.0115, 0.0138, 0.0084, 0.0168, 0.0114, 0.0183, 0.0126, 0.0139, 0.0092, 0.0083, 0.0102, 0.0084, 0.0103, 0.0025, 0.0008, 0.0049, 0.011, 0.0093, 0.0172, 0.0177], [0.0171, 0.0611, 0.0576, 0.0262, 0.0202, 0.0713, 0.0735, 0.0204, 0.0299, 0.0237, 0.0605, 0.0773, 0.5383, 1.0, 0.0339, -0.003, 0.0382, 0.0188, 0.0145, 0.0206, 0.0278, 0.0383, 0.0608, 0.0907, 0.009, 0.0127, 0.0105, 0.011, 0.0076, 0.0052, 0.0122, 0.0128, 0.007, 0.0085, 0.011, 0.0073, 0.0098, 0.0067, 0.0121, 0.0123, 0.0123, 0.0086, 0.0102, 0.0049, 0.0086, 0.0114, 0.011, 0.0091, 0.0074, 0.0122, 0.009, 0.0082, 0.0116, 0.0074, 0.0088, 0.0078, 0.0069, 0.0038, 0.004, 0.0087, 0.0103, 0.0082, 0.0123, 0.0123], [0.0433, 0.0749, 0.1363, 0.0636, 0.0382, 0.1771, 0.1619, 0.0527, 0.0499, 0.0445, 0.1306, 0.1558, 0.2319, 0.0339, 1.0, -0.0012, 0.0529, 0.0252, 0.0196, 0.0425, 0.0541, 0.0787, 0.1479, 0.4643, 0.0121, 0.0142, 0.0156, 0.0102, 0.01, 0.0048, 0.0065, 0.0137, 0.0049, 0.0119, 0.0109, 0.0079, 0.0095, 0.0081, 0.0115, 0.0125, 0.0251, 0.0095, 0.0213, 0.015, 0.0107, 0.0158, 0.01, 0.0184, 0.0112, 0.0251, 0.0061, 0.0057, 0.0074, 0.0048, 0.0073, 0.0131, 0.0086, -0.0046, 0.0066, 0.0094, 0.0122, 0.0091, 0.0178, 0.0103], [0.0038, -0.0007, 0.0073, 0.0108, -0.0039, 0.0037, -0.0064, -0.0007, -0.0007, -0.0057, 0.0229, -0.0028, -0.0032, -0.003, -0.0012, 1.0, 0.0032, -0.0043, -0.0003, 0.0006, -0.0076, 0.0077, 0.001, 0.0025, -0.0033, -0.0043, 0.0012, -0.0053, 0.0046, -0.0052, -0.0018, -0.0101, 0.0013, 0.0022, -0.0037, 0.0015, 0.0033, -0.0013, -0.0018, -0.0008, -0.002, -0.0032, 0.0055, -0.002, -0.001, 0.0044, 0.001, 0.0007, 0.0014, -0.0029, 0.0002, -0.0032, -0.0014, -0.0007, -0.0068, -0.0015, -0.0021, 0.0002, -0.0022, -0.0017, 0.0014, -0.0022, -0.0055, -0.0019], [0.3019, 0.4175, 0.0417, 0.1795, 0.0194, 0.1012, 0.2062, 0.4217, 0.2291, 0.0828, 0.0458, 0.0603, 0.0558, 0.0382, 0.0529, 0.0032, 1.0, 0.0613, 0.0359, 0.3822, 0.1214, 0.0498, 0.2277, 0.0991, 0.0168, 0.0095, 0.0097, 0.0136, 0.0135, 0.0154, 0.0089, 0.0086, 0.0172, 0.0052, 0.0186, 0.0268, 0.0097, 0.0065, 0.0086, 0.0124, 0.0069, 0.0128, 0.0233, 0.0114, 0.0162, 0.0062, 0.0059, 0.0048, 0.0147, 0.0221, 0.0192, 0.0095, 0.0087, 0.0063, 0.0133, 0.0041, 0.0177, 0.0187, 0.0034, 0.0015, 0.0129, 0.0059, 0.0087, 0.0259], [0.0566, 0.0699, 0.0168, 0.0274, 0.0215, 0.0046, 0.025, 0.0607, -0.0091, 0.0483, 0.0335, -0.0002, 0.0168, 0.0188, 0.0252, -0.0043, 0.0613, 1.0, 0.1408, -0.0415, 0.0423, 0.0309, -0.0113, 0.0371, 0.0171, 0.0162, 0.013, 0.0134, 0.0135, 0.0198, 0.0195, 0.0076, 0.0068, 0.002, 0.0135, 0.0097, 0.0117, 0.0117, 0.0142, 0.0198, 0.0135, 0.0106, 0.0181, 0.0234, 0.0231, 0.0126, 0.0163, 0.0115, 0.0192, 0.0187, 0.0192, 0.0088, 0.0123, 0.0119, 0.0156, 0.0153, 0.0217, 0.0118, 0.007, 0.0104, 0.0167, 0.0083, 0.0143, 0.026], [0.1852, 0.0262, 0.0119, 0.0757, 0.0273, 0.0224, 0.0303, 0.0328, 0.0917, 0.1908, 0.0054, 0.0293, 0.0286, 0.0145, 0.0196, -0.0003, 0.0359, 0.1408, 1.0, 0.028, 0.1285, 0.0438, 0.0157, 0.0212, 0.0129, 0.0207, 0.0139, 0.0164, 0.0167, 0.0154, 0.0212, 0.0136, 0.006, 0.0117, 0.02, 0.0206, 0.0134, 0.0087, 0.0209, 0.0217, 0.0208, 0.0163, 0.0188, 0.0106, 0.0157, 0.018, 0.0137, 0.0285, 0.0204, 0.0185, 0.0225, 0.0142, 0.0186, 0.0194, 0.0178, 0.0202, 0.0209, 0.0066, 0.0173, 0.0138, 0.0165, 0.0117, 0.019, 0.014], [0.6542, -0.0179, 0.0223, 0.3271, 0.0474, 0.2339, 0.2216, 0.7764, 0.5025, 0.0423, 0.0764, 0.0952, 0.0397, 0.0206, 0.0425, 0.0006, 0.3822, -0.0415, 0.028, 1.0, 0.0499, 0.05, 0.5235, 0.0666, 0.013, 0.0052, 0.0138, 0.0144, 0.0121, 0.0148, 0.012, 0.0153, 0.0058, 0.0144, 0.0108, 0.0131, 0.0109, 0.0101, 0.0188, 0.0182, 0.0149, 0.0043, 0.0284, 0.0066, 0.0064, 0.0038, 0.0088, 0.0162, 0.0087, 0.0361, 0.0133, 0.0092, 0.012, 0.002, 0.0154, 0.0147, 0.0129, 0.023, 0.0059, 0.0125, 0.0108, 0.0075, 0.0104, 0.0154], [0.1016, 0.0606, 0.0503, 0.4792, 0.0545, 0.0824, 0.0885, 0.0966, 0.2905, 0.5553, 0.0736, 0.0865, 0.054, 0.0278, 0.0541, -0.0076, 0.1214, 0.0423, 0.1285, 0.0499, 1.0, 0.1871, 0.0315, 0.0592, 0.0137, 0.0202, 0.012, 0.003, 0.0141, 0.0217, 0.0179, 0.0139, 0.0005, 0.0107, 0.0194, 0.0127, 0.0157, 0.0089, 0.0222, 0.0241, 0.033, 0.0111, 0.021, 0.0202, 0.0099, 0.0136, 0.0138, 0.0195, 0.0148, 0.0299, 0.0181, 0.0184, 0.0159, 0.0202, 0.024, 0.0049, 0.0209, 0.0183, 0.0118, 0.0011, 0.0186, 0.0077, 0.0087, 0.0296], [0.1232, 0.0435, 0.0689, 0.3838, 0.469, 0.323, 0.279, 0.0656, 0.1821, 0.2304, 0.207, 0.2774, 0.0867, 0.0383, 0.0787, 0.0077, 0.0498, 0.0309, 0.0438, 0.05, 0.1871, 1.0, 0.2505, 0.1279, 0.0074, 0.0257, 0.0205, 0.0041, 0.0103, 0.0103, 0.0189, 0.0107, -0.0023, 0.0187, 0.0147, 0.0139, 0.0075, 0.0098, 0.0136, 0.0113, 0.0193, 0.015, 0.0137, 0.0069, 0.004, 0.015, 0.002, 0.0121, 0.0089, 0.0268, 0.0113, 0.0176, 0.0125, 0.0095, 0.0163, 0.003, 0.0033, 0.0005, 0.0091, 0.0044, 0.0096, 0.0154, 0.0229, 0.0136], [0.4843, 0.0485, 0.1129, 0.2288, 0.0611, 0.7543, 0.6696, 0.5444, 0.374, 0.0356, 0.3926, 0.5814, 0.2203, 0.0608, 0.1479, 0.001, 0.2277, -0.0113, 0.0157, 0.5235, 0.0315, 0.2505, 1.0, 0.3611, 0.0046, 0.0065, 0.0098, 0.005, 0.0105, 0.0086, 0.0095, 0.0135, -0.0015, 0.0164, 0.0067, 0.0061, 0.0075, 0.0115, 0.0096, 0.0085, 0.0029, 0.0031, 0.0223, 0.0061, 0.0069, 0.0151, 0.0068, 0.0158, 0.0042, 0.0323, 0.0131, 0.0168, 0.0084, 0.0067, 0.0063, 0.0024, 0.0145, 0.0094, 0.0043, 0.0094, 0.0097, 0.0065, 0.0126, 0.0158], [0.0576, 0.1753, 0.3437, 0.0846, 0.0372, 0.4466, 0.4046, 0.0727, 0.0644, 0.0458, 0.3615, 0.4516, 0.3652, 0.0907, 0.4643, 0.0025, 0.0991, 0.0371, 0.0212, 0.0666, 0.0592, 0.1279, 0.3611, 1.0, 0.0066, 0.015, 0.011, 0.0091, 0.0124, 0.0001, 0.0123, 0.0149, 0.0092, 0.0145, 0.0129, -0.0019, 0.0072, 0.0077, 0.0113, 0.0171, 0.02, -0.0024, 0.0201, 0.0147, 0.0141, 0.018, 0.0015, 0.0161, 0.009, 0.0172, 0.014, 0.0163, 0.0042, 0.0025, 0.0066, 0.0083, 0.0164, 0.0026, -0.0005, 0.0124, 0.0103, 0.0105, 0.021, 0.0219], [0.0106, 0.0223, 0.0121, 0.0128, 0.009, 0.0033, -0.0007, 0.0136, 0.0111, 0.0125, 0.0049, 0.0006, 0.0053, 0.009, 0.0121, -0.0033, 0.0168, 0.0171, 0.0129, 0.013, 0.0137, 0.0074, 0.0046, 0.0066, 1.0, 0.0268, 0.0154, 0.0097, 0.0085, 0.0133, 0.0205, 0.0221, 0.01, 0.0079, 0.0082, 0.0049, 0.0135, 0.0119, 0.0096, 0.0138, 0.0075, 0.0234, 0.0161, 0.0176, 0.0211, 0.0097, 0.0184, 0.0153, 0.0144, 0.0283, 0.0209, 0.0174, 0.0179, 0.014, 0.0087, 0.0075, 0.0149, 0.0138, 0.0102, 0.0187, 0.0162, 0.0132, 0.0195, 0.013], [0.0123, 0.0222, 0.0143, 0.0205, 0.0152, 0.0151, 0.0156, 0.0082, 0.0185, 0.0121, 0.0135, 0.018, 0.0154, 0.0127, 0.0142, -0.0043, 0.0095, 0.0162, 0.0207, 0.0052, 0.0202, 0.0257, 0.0065, 0.015, 0.0268, 1.0, 0.0313, 0.0202, 0.0064, 0.0201, 0.0225, 0.0221, 0.015, 0.01, 0.0168, 0.0073, 0.0153, 0.0137, 0.0197, 0.0109, 0.0173, 0.0152, 0.0321, 0.0108, 0.0238, 0.0126, 0.0106, 0.0221, 0.0079, 0.0269, 0.0279, 0.0212, 0.0187, 0.0246, 0.0201, 0.017, 0.0129, 0.0174, 0.0155, 0.0263, 0.0152, 0.0142, 0.0198, 0.0183], [0.0142, 0.0155, 0.0159, 0.0233, 0.0196, 0.0112, 0.0173, 0.0129, 0.0196, 0.0119, 0.0136, 0.0113, 0.0173, 0.0105, 0.0156, 0.0012, 0.0097, 0.013, 0.0139, 0.0138, 0.012, 0.0205, 0.0098, 0.011, 0.0154, 0.0313, 1.0, 0.0164, 0.0079, 0.0126, 0.0148, 0.0127, 0.0147, 0.0061, 0.0144, 0.0167, 0.012, 0.0134, 0.0166, 0.0205, 0.0059, 0.017, 0.0218, 0.0187, 0.0135, 0.0118, 0.0086, 0.0196, 0.0121, 0.0273, 0.0149, 0.0301, 0.0205, 0.0134, 0.0173, 0.0182, 0.0205, 0.0093, 0.0112, 0.0244, 0.0159, 0.0114, 0.0182, 0.0183], [0.014, 0.0215, 0.0062, 0.0102, 0.0072, 0.005, 0.0044, 0.015, 0.0109, -0.0008, 0.0053, 0.0096, 0.0133, 0.011, 0.0102, -0.0053, 0.0136, 0.0134, 0.0164, 0.0144, 0.003, 0.0041, 0.005, 0.0091, 0.0097, 0.0202, 0.0164, 1.0, 0.0058, 0.0098, 0.0062, 0.0094, 0.0062, 0.0112, 0.0109, 0.0144, 0.0093, 0.004, 0.0103, 0.0157, 0.0153, 0.0309, 0.0099, 0.0043, 0.016, 0.0121, 0.022, 0.0203, 0.0157, 0.0238, 0.0136, 0.0155, 0.0153, 0.0172, 0.016, 0.0175, 0.0105, 0.0099, 0.0079, 0.021, 0.0211, 0.014, 0.0084, 0.0145], [0.0147, 0.0136, 0.0079, 0.0107, 0.0091, 0.012, 0.0086, 0.0102, 0.0083, 0.0073, 0.0075, 0.0121, 0.0056, 0.0076, 0.01, 0.0046, 0.0135, 0.0135, 0.0167, 0.0121, 0.0141, 0.0103, 0.0105, 0.0124, 0.0085, 0.0064, 0.0079, 0.0058, 1.0, 0.012, 0.0088, 0.0105, 0.0108, 0.0076, 0.0099, 0.0131, 0.0081, 0.0101, 0.0056, 0.0141, 0.0169, 0.0123, 0.0203, 0.0073, 0.0155, 0.0136, 0.0108, 0.0131, 0.018, 0.0107, 0.0147, 0.01, 0.0192, 0.013, 0.0136, 0.011, 0.0038, 0.0062, 0.0083, 0.0102, 0.0116, 0.0109, 0.0107, 0.0055], [0.0126, 0.0012, 0.0094, 0.0112, 0.0174, 0.0026, 0.0061, 0.0159, 0.0142, 0.0133, 0.0093, 0.0014, 0.0044, 0.0052, 0.0048, -0.0052, 0.0154, 0.0198, 0.0154, 0.0148, 0.0217, 0.0103, 0.0086, 0.0001, 0.0133, 0.0201, 0.0126, 0.0098, 0.012, 1.0, 0.0227, 0.0194, 0.0095, 0.0075, 0.0159, 0.0123, 0.0122, 0.0114, 0.0193, 0.0195, 0.0183, 0.0158, 0.0133, 0.0186, 0.022, 0.0041, 0.0108, 0.0254, 0.0154, 0.0167, 0.019, 0.0142, 0.0161, 0.0124, 0.0171, 0.0129, 0.0103, 0.0118, 0.0137, 0.0097, 0.015, 0.0133, 0.0187, 0.0143], [0.0107, 0.0185, 0.0087, 0.016, 0.0177, 0.0104, 0.0141, 0.0145, 0.0111, 0.0131, 0.0082, 0.0156, 0.0087, 0.0122, 0.0065, -0.0018, 0.0089, 0.0195, 0.0212, 0.012, 0.0179, 0.0189, 0.0095, 0.0123, 0.0205, 0.0225, 0.0148, 0.0062, 0.0088, 0.0227, 1.0, 0.022, 0.0181, 0.0095, 0.0107, 0.0133, 0.0127, 0.0062, 0.0052, 0.0194, 0.0109, 0.0193, 0.022, 0.0142, 0.0149, 0.0166, 0.0088, 0.0243, 0.0238, 0.0167, 0.0194, 0.0177, 0.0172, 0.0217, 0.0191, 0.01, 0.0167, 0.0175, 0.01, 0.0243, 0.0188, 0.011, 0.0218, 0.0173], [0.0187, 0.0097, 0.0134, 0.0174, 0.01, 0.0136, 0.0106, 0.0165, 0.0177, 0.0096, 0.0131, 0.0139, 0.014, 0.0128, 0.0137, -0.0101, 0.0086, 0.0076, 0.0136, 0.0153, 0.0139, 0.0107, 0.0135, 0.0149, 0.0221, 0.0221, 0.0127, 0.0094, 0.0105, 0.0194, 0.022, 1.0, 0.004, 0.0087, 0.0194, 0.012, 0.0185, 0.0039, 0.0132, 0.0177, 0.0228, 0.014, 0.0135, 0.0183, 0.0159, 0.0088, 0.0106, 0.0232, 0.0191, 0.0207, 0.0173, 0.0125, 0.0177, 0.0124, 0.0201, 0.0063, 0.0028, 0.0071, 0.0151, 0.0188, 0.0117, 0.0093, 0.0219, 0.0202], [-0.004, 0.0205, 0.0021, -0.0033, 0.0038, 0.0004, 0.0036, 0.002, -0.0003, 0.0054, 0.0042, 0.0026, 0.0099, 0.007, 0.0049, 0.0013, 0.0172, 0.0068, 0.006, 0.0058, 0.0005, -0.0023, -0.0015, 0.0092, 0.01, 0.015, 0.0147, 0.0062, 0.0108, 0.0095, 0.0181, 0.004, 1.0, 0.0097, 0.0126, 0.0133, 0.0108, 0.0087, 0.0097, 0.0165, 0.0095, 0.0108, 0.0157, 0.0087, 0.0063, 0.0117, 0.0088, 0.0199, 0.0175, 0.0177, 0.0046, 0.0085, 0.0156, 0.0212, 0.0127, 0.0022, 0.0173, 0.0059, 0.0039, 0.0236, 0.0114, 0.0055, 0.0122, 0.0159], [0.0185, 0.0074, 0.013, 0.0193, 0.0148, 0.0153, 0.0123, 0.0153, 0.0236, 0.0082, 0.012, 0.016, 0.0054, 0.0085, 0.0119, 0.0022, 0.0052, 0.002, 0.0117, 0.0144, 0.0107, 0.0187, 0.0164, 0.0145, 0.0079, 0.01, 0.0061, 0.0112, 0.0076, 0.0075, 0.0095, 0.0087, 0.0097, 1.0, 0.0151, 0.0094, 0.0094, 0.007, 0.0121, 0.0114, 0.014, 0.0066, 0.007, 0.0101, 0.0199, 0.009, 0.0088, 0.0061, 0.0002, 0.0047, 0.0115, 0.0063, 0.0154, 0.0062, 0.0051, 0.0091, 0.0091, 0.0041, 0.0139, 0.0136, 0.0068, 0.0052, 0.0155, 0.0128], [0.0077, 0.0218, 0.0077, 0.0135, 0.0133, 0.0082, 0.0067, 0.0097, 0.0128, 0.0202, 0.0081, 0.0125, 0.0124, 0.011, 0.0109, -0.0037, 0.0186, 0.0135, 0.02, 0.0108, 0.0194, 0.0147, 0.0067, 0.0129, 0.0082, 0.0168, 0.0144, 0.0109, 0.0099, 0.0159, 0.0107, 0.0194, 0.0126, 0.0151, 1.0, 0.0255, 0.0127, 0.0081, 0.0032, 0.0141, 0.0265, 0.0241, 0.023, 0.0228, 0.0168, 0.0061, 0.0142, 0.0135, 0.019, 0.0136, 0.0191, 0.0129, 0.0175, 0.018, 0.018, 0.018, 0.0064, 0.0235, 0.0053, 0.0124, 0.0176, 0.0079, 0.0107, 0.0211], [0.0118, 0.0134, 0.0061, 0.0096, 0.0042, 0.0037, 0.0077, 0.0139, 0.0103, 0.0103, 0.0073, 0.0054, 0.0039, 0.0073, 0.0079, 0.0015, 0.0268, 0.0097, 0.0206, 0.0131, 0.0127, 0.0139, 0.0061, -0.0019, 0.0049, 0.0073, 0.0167, 0.0144, 0.0131, 0.0123, 0.0133, 0.012, 0.0133, 0.0094, 0.0255, 1.0, 0.0109, 0.0081, 0.0104, 0.0196, 0.0169, 0.0201, 0.0205, 0.0096, 0.0141, 0.0168, 0.0128, 0.0146, 0.0147, 0.0077, 0.0206, 0.0206, 0.0221, 0.0182, 0.0165, 0.0121, 0.0084, -0.0014, 0.0109, 0.0204, 0.0163, 0.0106, 0.0031, 0.0185], [0.0105, 0.0123, 0.0095, 0.0115, 0.0104, 0.0131, 0.0104, 0.0098, 0.0109, 0.0098, 0.012, 0.0127, 0.0114, 0.0098, 0.0095, 0.0033, 0.0097, 0.0117, 0.0134, 0.0109, 0.0157, 0.0075, 0.0075, 0.0072, 0.0135, 0.0153, 0.012, 0.0093, 0.0081, 0.0122, 0.0127, 0.0185, 0.0108, 0.0094, 0.0127, 0.0109, 1.0, 0.0063, 0.0121, 0.0156, 0.0149, 0.0125, 0.0157, 0.0114, 0.0141, 0.014, 0.0104, 0.0181, 0.0128, 0.0148, 0.019, 0.0087, 0.0147, 0.0121, 0.0144, 0.0104, 0.0149, 0.0096, 0.0142, 0.0152, 0.0163, 0.0156, 0.0142, 0.0096], [0.014, 0.0053, 0.0088, 0.0108, 0.0113, 0.0131, 0.0091, 0.0097, 0.0117, 0.0092, 0.008, 0.0106, 0.011, 0.0067, 0.0081, -0.0013, 0.0065, 0.0117, 0.0087, 0.0101, 0.0089, 0.0098, 0.0115, 0.0077, 0.0119, 0.0137, 0.0134, 0.004, 0.0101, 0.0114, 0.0062, 0.0039, 0.0087, 0.007, 0.0081, 0.0081, 0.0063, 1.0, 0.0065, 0.0117, 0.02, 0.0119, 0.0097, 0.009, 0.0085, 0.0141, 0.0092, 0.0094, 0.0079, 0.0049, 0.0113, 0.0099, 0.0096, 0.0143, 0.0151, 0.0114, 0.0111, 0.0007, 0.0074, 0.0057, 0.0041, 0.0043, 0.0125, 0.0113], [0.0179, 0.0112, 0.0145, 0.0172, 0.0089, 0.0161, 0.0158, 0.0169, 0.0105, 0.0181, 0.0161, 0.0154, 0.012, 0.0121, 0.0115, -0.0018, 0.0086, 0.0142, 0.0209, 0.0188, 0.0222, 0.0136, 0.0096, 0.0113, 0.0096, 0.0197, 0.0166, 0.0103, 0.0056, 0.0193, 0.0052, 0.0132, 0.0097, 0.0121, 0.0032, 0.0104, 0.0121, 0.0065, 1.0, 0.0072, 0.0139, 0.0108, 0.0245, 0.0139, 0.0163, 0.0195, 0.0107, 0.0037, 0.0173, 0.0135, 0.0162, 0.0256, 0.0176, 0.0129, 0.0104, 0.0117, 0.0082, 0.0062, 0.0109, 0.0115, 0.0078, 0.0036, 0.0008, 0.0107], [0.0193, 0.0069, 0.0098, 0.014, 0.0158, 0.009, 0.0066, 0.0193, 0.0155, 0.0179, 0.008, 0.013, 0.017, 0.0123, 0.0125, -0.0008, 0.0124, 0.0198, 0.0217, 0.0182, 0.0241, 0.0113, 0.0085, 0.0171, 0.0138, 0.0109, 0.0205, 0.0157, 0.0141, 0.0195, 0.0194, 0.0177, 0.0165, 0.0114, 0.0141, 0.0196, 0.0156, 0.0117, 0.0072, 1.0, 0.03, 0.0091, 0.0235, 0.0133, 0.013, 0.0128, 0.0149, 0.0222, 0.0198, 0.0205, 0.0284, 0.0229, 0.0202, 0.0235, 0.0167, 0.0119, 0.0164, 0.002, 0.011, 0.0223, 0.0149, 0.011, 0.0164, 0.0228], [0.0094, 0.0141, 0.016, 0.0206, 0.0237, 0.0094, 0.005, 0.0097, 0.0125, 0.0214, 0.0089, 0.0084, 0.0156, 0.0123, 0.0251, -0.002, 0.0069, 0.0135, 0.0208, 0.0149, 0.033, 0.0193, 0.0029, 0.02, 0.0075, 0.0173, 0.0059, 0.0153, 0.0169, 0.0183, 0.0109, 0.0228, 0.0095, 0.014, 0.0265, 0.0169, 0.0149, 0.02, 0.0139, 0.03, 1.0, 0.0191, 0.0178, 0.0165, 0.0204, 0.0172, 0.0107, 0.0234, 0.019, 0.0173, 0.0177, 0.0169, 0.0188, 0.0235, 0.0142, 0.0181, 0.0115, 0.0108, 0.0161, 0.0249, 0.0144, 0.0123, 0.0118, 0.017], [0.0053, 0.0249, 0.0053, 0.0183, 0.0032, 0.0119, 0.0113, 0.0014, 0.0108, 0.0132, 0.0091, 0.0153, 0.0056, 0.0086, 0.0095, -0.0032, 0.0128, 0.0106, 0.0163, 0.0043, 0.0111, 0.015, 0.0031, -0.0024, 0.0234, 0.0152, 0.017, 0.0309, 0.0123, 0.0158, 0.0193, 0.014, 0.0108, 0.0066, 0.0241, 0.0201, 0.0125, 0.0119, 0.0108, 0.0091, 0.0191, 1.0, 0.0131, 0.0147, 0.0134, 0.019, 0.0116, 0.0163, 0.0139, 0.0203, 0.02, 0.0184, 0.0207, 0.0184, 0.017, 0.0159, 0.0064, 0.0125, 0.0122, 0.0186, 0.0134, 0.0089, 0.0177, 0.0148], [0.0285, 0.0134, 0.015, 0.0237, 0.0162, 0.0187, 0.0178, 0.0268, 0.027, 0.0191, 0.0176, 0.016, 0.0154, 0.0102, 0.0213, 0.0055, 0.0233, 0.0181, 0.0188, 0.0284, 0.021, 0.0137, 0.0223, 0.0201, 0.0161, 0.0321, 0.0218, 0.0099, 0.0203, 0.0133, 0.022, 0.0135, 0.0157, 0.007, 0.023, 0.0205, 0.0157, 0.0097, 0.0245, 0.0235, 0.0178, 0.0131, 1.0, 0.0227, 0.0138, 0.0153, 0.017, 0.0253, 0.0189, 0.0063, 0.0155, 0.0137, 0.022, 0.0113, 0.0144, 0.0126, 0.0157, 0.0168, 0.0133, 0.0104, 0.0203, 0.0097, 0.0092, 0.0208], [0.0109, 0.0061, 0.0121, 0.0173, 0.0091, 0.007, 0.0219, 0.0133, 0.0122, 0.0191, 0.0097, 0.0064, 0.0094, 0.0049, 0.015, -0.002, 0.0114, 0.0234, 0.0106, 0.0066, 0.0202, 0.0069, 0.0061, 0.0147, 0.0176, 0.0108, 0.0187, 0.0043, 0.0073, 0.0186, 0.0142, 0.0183, 0.0087, 0.0101, 0.0228, 0.0096, 0.0114, 0.009, 0.0139, 0.0133, 0.0165, 0.0147, 0.0227, 1.0, 0.0195, 0.0161, 0.0173, 0.0154, 0.0158, 0.0246, 0.0132, 0.0054, 0.0136, 0.0148, 0.0146, 0.0091, 0.0098, 0.0189, 0.0174, 0.0254, 0.0167, 0.0109, 0.011, 0.0168], [0.0094, 0.0241, 0.0105, 0.0002, 0.0137, 0.0072, 0.0073, 0.009, 0.0055, 0.0087, 0.0101, 0.0101, 0.0115, 0.0086, 0.0107, -0.001, 0.0162, 0.0231, 0.0157, 0.0064, 0.0099, 0.004, 0.0069, 0.0141, 0.0211, 0.0238, 0.0135, 0.016, 0.0155, 0.022, 0.0149, 0.0159, 0.0063, 0.0199, 0.0168, 0.0141, 0.0141, 0.0085, 0.0163, 0.013, 0.0204, 0.0134, 0.0138, 0.0195, 1.0, 0.0196, 0.0142, 0.0217, 0.0099, 0.0206, 0.0212, 0.0231, 0.0172, 0.0231, 0.0111, 0.0164, 0.0108, 0.0111, 0.0155, 0.0266, 0.0205, 0.0112, 0.0215, 0.0201], [0.0074, 0.0172, 0.0188, 0.0098, 0.0117, 0.0152, 0.0145, 0.0039, 0.0025, 0.0116, 0.0164, 0.0158, 0.0138, 0.0114, 0.0158, 0.0044, 0.0062, 0.0126, 0.018, 0.0038, 0.0136, 0.015, 0.0151, 0.018, 0.0097, 0.0126, 0.0118, 0.0121, 0.0136, 0.0041, 0.0166, 0.0088, 0.0117, 0.009, 0.0061, 0.0168, 0.014, 0.0141, 0.0195, 0.0128, 0.0172, 0.019, 0.0153, 0.0161, 0.0196, 1.0, 0.0073, 0.0073, 0.0147, 0.0196, 0.0136, 0.0144, 0.0202, 0.0102, 0.0058, 0.0122, 0.0078, 0.0156, 0.0135, 0.0164, 0.0103, 0.006, 0.0107, 0.0096], [0.0122, 0.0022, 0.0078, 0.0085, 0.0035, 0.0057, 0.0049, 0.0088, 0.0115, 0.0111, 0.0037, 0.0032, 0.0084, 0.011, 0.01, 0.001, 0.0059, 0.0163, 0.0137, 0.0088, 0.0138, 0.002, 0.0068, 0.0015, 0.0184, 0.0106, 0.0086, 0.022, 0.0108, 0.0108, 0.0088, 0.0106, 0.0088, 0.0088, 0.0142, 0.0128, 0.0104, 0.0092, 0.0107, 0.0149, 0.0107, 0.0116, 0.017, 0.0173, 0.0142, 0.0073, 1.0, 0.0097, 0.0136, 0.017, 0.018, 0.0115, 0.0157, 0.0181, 0.0136, 0.0104, 0.0127, 0.0068, 0.0115, 0.0153, 0.0131, 0.0086, 0.0178, 0.0134], [0.022, 0.0137, 0.015, 0.0182, 0.0189, 0.0111, 0.0092, 0.0174, 0.0172, 0.0204, 0.01, 0.0105, 0.0168, 0.0091, 0.0184, 0.0007, 0.0048, 0.0115, 0.0285, 0.0162, 0.0195, 0.0121, 0.0158, 0.0161, 0.0153, 0.0221, 0.0196, 0.0203, 0.0131, 0.0254, 0.0243, 0.0232, 0.0199, 0.0061, 0.0135, 0.0146, 0.0181, 0.0094, 0.0037, 0.0222, 0.0234, 0.0163, 0.0253, 0.0154, 0.0217, 0.0073, 0.0097, 1.0, 0.0206, 0.0184, 0.0279, 0.0195, 0.0204, 0.0208, 0.0193, 0.0273, 0.0196, 0.0051, 0.0137, 0.0178, 0.0211, 0.0121, 0.0156, 0.0121], [0.0152, 0.0157, 0.0058, 0.0133, 0.0186, 0.0068, 0.0055, 0.0094, 0.0144, 0.0166, 0.0032, 0.008, 0.0114, 0.0074, 0.0112, 0.0014, 0.0147, 0.0192, 0.0204, 0.0087, 0.0148, 0.0089, 0.0042, 0.009, 0.0144, 0.0079, 0.0121, 0.0157, 0.018, 0.0154, 0.0238, 0.0191, 0.0175, 0.0002, 0.019, 0.0147, 0.0128, 0.0079, 0.0173, 0.0198, 0.019, 0.0139, 0.0189, 0.0158, 0.0099, 0.0147, 0.0136, 0.0206, 1.0, 0.0185, 0.0215, 0.0159, 0.0204, 0.0198, 0.0283, 0.0251, 0.0148, 0.0078, 0.0113, 0.0151, 0.0199, 0.011, 0.0174, 0.0216], [0.0391, 0.0104, 0.0164, 0.0388, 0.0281, 0.0318, 0.0271, 0.0405, 0.0395, 0.0199, 0.0209, 0.0262, 0.0183, 0.0122, 0.0251, -0.0029, 0.0221, 0.0187, 0.0185, 0.0361, 0.0299, 0.0268, 0.0323, 0.0172, 0.0283, 0.0269, 0.0273, 0.0238, 0.0107, 0.0167, 0.0167, 0.0207, 0.0177, 0.0047, 0.0136, 0.0077, 0.0148, 0.0049, 0.0135, 0.0205, 0.0173, 0.0203, 0.0063, 0.0246, 0.0206, 0.0196, 0.017, 0.0184, 0.0185, 1.0, 0.0218, 0.014, 0.0159, 0.0145, 0.0242, 0.0193, 0.0101, 0.0039, 0.0147, 0.0166, 0.0182, 0.0168, 0.0082, 0.0226], [0.0151, 0.0228, 0.0176, 0.0119, 0.0149, 0.0158, 0.0125, 0.0143, 0.0125, 0.0127, 0.0167, 0.0181, 0.0126, 0.009, 0.0061, 0.0002, 0.0192, 0.0192, 0.0225, 0.0133, 0.0181, 0.0113, 0.0131, 0.014, 0.0209, 0.0279, 0.0149, 0.0136, 0.0147, 0.019, 0.0194, 0.0173, 0.0046, 0.0115, 0.0191, 0.0206, 0.019, 0.0113, 0.0162, 0.0284, 0.0177, 0.02, 0.0155, 0.0132, 0.0212, 0.0136, 0.018, 0.0279, 0.0215, 0.0218, 1.0, 0.0247, 0.0247, 0.0195, 0.0205, 0.0285, 0.0083, 0.014, 0.0148, 0.0226, 0.0178, 0.0147, 0.0182, 0.0218], [0.0096, 0.013, 0.0155, 0.0192, 0.013, 0.0229, 0.0216, 0.0116, 0.0142, 0.022, 0.0227, 0.019, 0.0139, 0.0082, 0.0057, -0.0032, 0.0095, 0.0088, 0.0142, 0.0092, 0.0184, 0.0176, 0.0168, 0.0163, 0.0174, 0.0212, 0.0301, 0.0155, 0.01, 0.0142, 0.0177, 0.0125, 0.0085, 0.0063, 0.0129, 0.0206, 0.0087, 0.0099, 0.0256, 0.0229, 0.0169, 0.0184, 0.0137, 0.0054, 0.0231, 0.0144, 0.0115, 0.0195, 0.0159, 0.014, 0.0247, 1.0, 0.0218, 0.0138, 0.014, 0.0112, -0.0025, 0.01, 0.0143, 0.0186, 0.0127, 0.0062, 0.0126, 0.011], [0.0136, 0.0147, 0.0086, 0.0174, 0.0137, 0.0093, 0.0068, 0.0151, 0.011, 0.0108, 0.0097, 0.0072, 0.0092, 0.0116, 0.0074, -0.0014, 0.0087, 0.0123, 0.0186, 0.012, 0.0159, 0.0125, 0.0084, 0.0042, 0.0179, 0.0187, 0.0205, 0.0153, 0.0192, 0.0161, 0.0172, 0.0177, 0.0156, 0.0154, 0.0175, 0.0221, 0.0147, 0.0096, 0.0176, 0.0202, 0.0188, 0.0207, 0.022, 0.0136, 0.0172, 0.0202, 0.0157, 0.0204, 0.0204, 0.0159, 0.0247, 0.0218, 1.0, 0.0214, 0.0166, 0.0132, 0.0146, 0.0078, 0.0157, 0.0191, 0.0162, 0.0105, 0.0209, 0.0157], [0.0039, 0.0112, 0.0157, 0.01, 0.0176, 0.0142, 0.012, 0.0004, 0.0073, 0.0124, 0.0181, 0.0114, 0.0083, 0.0074, 0.0048, -0.0007, 0.0063, 0.0119, 0.0194, 0.002, 0.0202, 0.0095, 0.0067, 0.0025, 0.014, 0.0246, 0.0134, 0.0172, 0.013, 0.0124, 0.0217, 0.0124, 0.0212, 0.0062, 0.018, 0.0182, 0.0121, 0.0143, 0.0129, 0.0235, 0.0235, 0.0184, 0.0113, 0.0148, 0.0231, 0.0102, 0.0181, 0.0208, 0.0198, 0.0145, 0.0195, 0.0138, 0.0214, 1.0, 0.0141, 0.0156, 0.0185, 0.0003, 0.0086, 0.013, 0.0161, 0.0131, 0.0207, 0.0119], [0.0096, 0.0216, 0.014, 0.0094, 0.013, 0.0051, 0.004, 0.0091, 0.0062, 0.0144, 0.0074, 0.0088, 0.0102, 0.0088, 0.0073, -0.0068, 0.0133, 0.0156, 0.0178, 0.0154, 0.024, 0.0163, 0.0063, 0.0066, 0.0087, 0.0201, 0.0173, 0.016, 0.0136, 0.0171, 0.0191, 0.0201, 0.0127, 0.0051, 0.018, 0.0165, 0.0144, 0.0151, 0.0104, 0.0167, 0.0142, 0.017, 0.0144, 0.0146, 0.0111, 0.0058, 0.0136, 0.0193, 0.0283, 0.0242, 0.0205, 0.014, 0.0166, 0.0141, 1.0, 0.0179, 0.0107, 0.0104, 0.0257, 0.0186, 0.0163, 0.0124, 0.0142, 0.0158], [0.008, 0.0091, 0.0089, 0.0023, 0.004, 0.0003, 0.0052, 0.0114, 0.0014, 0.0067, 0.0076, -0.0026, 0.0084, 0.0078, 0.0131, -0.0015, 0.0041, 0.0153, 0.0202, 0.0147, 0.0049, 0.003, 0.0024, 0.0083, 0.0075, 0.017, 0.0182, 0.0175, 0.011, 0.0129, 0.01, 0.0063, 0.0022, 0.0091, 0.018, 0.0121, 0.0104, 0.0114, 0.0117, 0.0119, 0.0181, 0.0159, 0.0126, 0.0091, 0.0164, 0.0122, 0.0104, 0.0273, 0.0251, 0.0193, 0.0285, 0.0112, 0.0132, 0.0156, 0.0179, 1.0, 0.0101, 0.0016, 0.0071, 0.0102, 0.0132, 0.0083, 0.0079, 0.0214], [0.0191, 0.0208, 0.0173, 0.0156, 0.0012, 0.0183, 0.0166, 0.0111, 0.0129, 0.0187, 0.0128, 0.012, 0.0103, 0.0069, 0.0086, -0.0021, 0.0177, 0.0217, 0.0209, 0.0129, 0.0209, 0.0033, 0.0145, 0.0164, 0.0149, 0.0129, 0.0205, 0.0105, 0.0038, 0.0103, 0.0167, 0.0028, 0.0173, 0.0091, 0.0064, 0.0084, 0.0149, 0.0111, 0.0082, 0.0164, 0.0115, 0.0064, 0.0157, 0.0098, 0.0108, 0.0078, 0.0127, 0.0196, 0.0148, 0.0101, 0.0083, -0.0025, 0.0146, 0.0185, 0.0107, 0.0101, 1.0, 0.0351, 0.0153, 0.0116, 0.0127, 0.0059, 0.0092, 0.0189], [0.0176, 0.0144, 0.0033, 0.0101, 0.0067, 0.008, 0.0108, 0.0229, 0.0112, 0.0108, -0.0003, 0.0084, 0.0025, 0.0038, -0.0046, 0.0002, 0.0187, 0.0118, 0.0066, 0.023, 0.0183, 0.0005, 0.0094, 0.0026, 0.0138, 0.0174, 0.0093, 0.0099, 0.0062, 0.0118, 0.0175, 0.0071, 0.0059, 0.0041, 0.0235, -0.0014, 0.0096, 0.0007, 0.0062, 0.002, 0.0108, 0.0125, 0.0168, 0.0189, 0.0111, 0.0156, 0.0068, 0.0051, 0.0078, 0.0039, 0.014, 0.01, 0.0078, 0.0003, 0.0104, 0.0016, 0.0351, 1.0, 0.006, 0.01, 0.0083, 0.0059, 0.0099, 0.0214], [0.0053, 0.0064, 0.0106, 0.0131, 0.0058, 0.007, 0.0049, 0.0049, 0.0092, 0.0078, 0.0087, 0.0077, 0.0008, 0.004, 0.0066, -0.0022, 0.0034, 0.007, 0.0173, 0.0059, 0.0118, 0.0091, 0.0043, -0.0005, 0.0102, 0.0155, 0.0112, 0.0079, 0.0083, 0.0137, 0.01, 0.0151, 0.0039, 0.0139, 0.0053, 0.0109, 0.0142, 0.0074, 0.0109, 0.011, 0.0161, 0.0122, 0.0133, 0.0174, 0.0155, 0.0135, 0.0115, 0.0137, 0.0113, 0.0147, 0.0148, 0.0143, 0.0157, 0.0086, 0.0257, 0.0071, 0.0153, 0.006, 1.0, 0.022, 0.0162, 0.0038, 0.0183, 0.0092], [0.0109, 0.016, 0.0116, 0.0032, 0.0177, 0.0058, 0.0087, 0.0101, 0.0082, 0.0002, 0.0104, 0.0066, 0.0049, 0.0087, 0.0094, -0.0017, 0.0015, 0.0104, 0.0138, 0.0125, 0.0011, 0.0044, 0.0094, 0.0124, 0.0187, 0.0263, 0.0244, 0.021, 0.0102, 0.0097, 0.0243, 0.0188, 0.0236, 0.0136, 0.0124, 0.0204, 0.0152, 0.0057, 0.0115, 0.0223, 0.0249, 0.0186, 0.0104, 0.0254, 0.0266, 0.0164, 0.0153, 0.0178, 0.0151, 0.0166, 0.0226, 0.0186, 0.0191, 0.013, 0.0186, 0.0102, 0.0116, 0.01, 0.022, 1.0, 0.0174, 0.0094, 0.0146, 0.0222], [0.0117, 0.0158, 0.006, 0.0143, 0.0125, 0.0099, 0.0064, 0.0106, 0.0111, 0.0162, 0.0034, 0.0103, 0.011, 0.0103, 0.0122, 0.0014, 0.0129, 0.0167, 0.0165, 0.0108, 0.0186, 0.0096, 0.0097, 0.0103, 0.0162, 0.0152, 0.0159, 0.0211, 0.0116, 0.015, 0.0188, 0.0117, 0.0114, 0.0068, 0.0176, 0.0163, 0.0163, 0.0041, 0.0078, 0.0149, 0.0144, 0.0134, 0.0203, 0.0167, 0.0205, 0.0103, 0.0131, 0.0211, 0.0199, 0.0182, 0.0178, 0.0127, 0.0162, 0.0161, 0.0163, 0.0132, 0.0127, 0.0083, 0.0162, 0.0174, 1.0, 0.009, 0.0145, 0.0188], [0.0062, 0.0116, 0.008, 0.0059, 0.0125, 0.0082, 0.0063, 0.0062, 0.0068, 0.0075, 0.0085, 0.0118, 0.0093, 0.0082, 0.0091, -0.0022, 0.0059, 0.0083, 0.0117, 0.0075, 0.0077, 0.0154, 0.0065, 0.0105, 0.0132, 0.0142, 0.0114, 0.014, 0.0109, 0.0133, 0.011, 0.0093, 0.0055, 0.0052, 0.0079, 0.0106, 0.0156, 0.0043, 0.0036, 0.011, 0.0123, 0.0089, 0.0097, 0.0109, 0.0112, 0.006, 0.0086, 0.0121, 0.011, 0.0168, 0.0147, 0.0062, 0.0105, 0.0131, 0.0124, 0.0083, 0.0059, 0.0059, 0.0038, 0.0094, 0.009, 1.0, 0.0107, 0.0068], [0.0177, 0.0169, 0.0095, 0.0118, 0.0178, 0.0158, 0.0106, 0.009, 0.0174, 0.016, 0.0106, 0.0174, 0.0172, 0.0123, 0.0178, -0.0055, 0.0087, 0.0143, 0.019, 0.0104, 0.0087, 0.0229, 0.0126, 0.021, 0.0195, 0.0198, 0.0182, 0.0084, 0.0107, 0.0187, 0.0218, 0.0219, 0.0122, 0.0155, 0.0107, 0.0031, 0.0142, 0.0125, 0.0008, 0.0164, 0.0118, 0.0177, 0.0092, 0.011, 0.0215, 0.0107, 0.0178, 0.0156, 0.0174, 0.0082, 0.0182, 0.0126, 0.0209, 0.0207, 0.0142, 0.0079, 0.0092, 0.0099, 0.0183, 0.0146, 0.0145, 0.0107, 1.0, -0.0008], [0.0197, 0.0288, 0.0152, 0.028, 0.0136, 0.0142, 0.0214, 0.0209, 0.0165, 0.021, 0.0172, 0.0178, 0.0177, 0.0123, 0.0103, -0.0019, 0.0259, 0.026, 0.014, 0.0154, 0.0296, 0.0136, 0.0158, 0.0219, 0.013, 0.0183, 0.0183, 0.0145, 0.0055, 0.0143, 0.0173, 0.0202, 0.0159, 0.0128, 0.0211, 0.0185, 0.0096, 0.0113, 0.0107, 0.0228, 0.017, 0.0148, 0.0208, 0.0168, 0.0201, 0.0096, 0.0134, 0.0121, 0.0216, 0.0226, 0.0218, 0.011, 0.0157, 0.0119, 0.0158, 0.0214, 0.0189, 0.0214, 0.0092, 0.0222, 0.0188, 0.0068, -0.0008, 1.0]], "null_ref": [-0.0013178038851673346, -0.0011842241773190043, -0.001170678928984925, -0.0011056359303946994, -0.0009218826709194161, -0.0009081129990431425, -0.0008793445021983981, -0.0008552899816181014, -0.0007853282589522781, -0.0007775900079833864, -0.0007285830007113248, -0.0007196697999765078, -0.0006736995990614947, -0.0006145325826454329, -0.000591791707369449, -0.0005619521844562048, -0.0005429239610414971, -0.0005265553275026758, -0.0005072877855090141, -0.0004863410326716444, -0.0004845191627653733, -0.00046871087341271434, -0.0004305673381941322, -0.00042727496745875726, -0.00042080551569423363, -0.00038337900297547023, -0.00036120472730094555, -0.00035833193893552995, -0.00035237817327682386, -0.00034232453247629024, -0.0003057064439595525, -0.0002461961037161231, -0.00022621697486813197, -0.00022118287383676716, -0.00020617877259021533, -0.00020594147573205213, -0.00019186923572545034, -0.0001690957914952662, -0.00016716914243475323, -8.378348399595836e-05], "catalog": [{"domain": "book", "tier": "atoms", "flags": [], "ledger": false, "typed": true}, {"domain": "book", "tier": "atoms", "flags": ["parked"], "ledger": true, "typed": true}, {"domain": "book", "tier": "atoms", "flags": [], "ledger": true, "typed": true}, {"domain": "book", "tier": "atoms", "flags": [], "ledger": false, "typed": true}, {"domain": "book", "tier": "atoms", "flags": [], "ledger": true, "typed": true}, {"domain": "book", "tier": "atoms", "flags": [], "ledger": true, "typed": false}, {"domain": "book", "tier": "atoms", "flags": [], "ledger": false, "typed": true}, {"domain": "book", "tier": "molecules", "flags": [], "ledger": true, "typed": true}, {"domain": "book", "tier": "molecules", "flags": ["parked"], "ledger": true, "typed": true}, {"domain": "book", "tier": "molecules", "flags": [], "ledger": true, "typed": true}, {"domain": "book", "tier": "molecules", "flags": [], "ledger": true, "typed": true}, {"domain": "book", "tier": "molecules", "flags": ["dark"], "ledger": true, "typed": true}, {"domain": "book", "tier": "molecules", "flags": ["featured"], "ledger": true, "typed": true}, {"domain": "book", "tier": "molecules", "flags": [], "ledger": true, "typed": true}, {"domain": "book", "tier": "molecules", "flags": [], "ledger": true, "typed": true}, {"domain": "book", "tier": "molecules", "flags": ["dark"], "ledger": true, "typed": true}, {"domain": "book", "tier": "molecules", "flags": ["mutating", "featured"], "ledger": true, "typed": true}, {"domain": "book", "tier": "compounds", "flags": ["slow"], "ledger": true, "typed": true}, {"domain": "book", "tier": "compounds", "flags": ["slow", "featured"], "ledger": true, "typed": true}, {"domain": "book", "tier": "compounds", "flags": ["dark"], "ledger": true, "typed": true}, {"domain": "book", "tier": "compounds", "flags": ["featured"], "ledger": true, "typed": true}, {"domain": "book", "tier": "compounds", "flags": [], "ledger": true, "typed": true}, {"domain": "book", "tier": "compounds", "flags": [], "ledger": true, "typed": true}, {"domain": "book", "tier": "compounds", "flags": ["parked"], "ledger": true, "typed": true}, {"domain": "market", "tier": "atoms", "flags": ["dark"], "ledger": true, "typed": true}, {"domain": "market", "tier": "atoms", "flags": [], "ledger": true, "typed": true}, {"domain": "market", "tier": "atoms", "flags": [], "ledger": true, "typed": true}, {"domain": "market", "tier": "atoms", "flags": ["featured"], "ledger": false, "typed": true}, {"domain": "market", "tier": "atoms", "flags": [], "ledger": true, "typed": true}, {"domain": "market", "tier": "atoms", "flags": [], "ledger": true, "typed": true}, {"domain": "market", "tier": "atoms", "flags": [], "ledger": true, "typed": false}, {"domain": "market", "tier": "atoms", "flags": [], "ledger": true, "typed": true}, {"domain": "market", "tier": "atoms", "flags": [], "ledger": false, "typed": false}, {"domain": "market", "tier": "atoms", "flags": [], "ledger": true, "typed": true}, {"domain": "market", "tier": "atoms", "flags": [], "ledger": true, "typed": true}, {"domain": "market", "tier": "atoms", "flags": [], "ledger": true, "typed": true}, {"domain": "market", "tier": "molecules", "flags": [], "ledger": true, "typed": true}, {"domain": "market", "tier": "molecules", "flags": [], "ledger": true, "typed": true}, {"domain": "market", "tier": "molecules", "flags": [], "ledger": true, "typed": true}, {"domain": "market", "tier": "molecules", "flags": [], "ledger": true, "typed": true}, {"domain": "market", "tier": "molecules", "flags": [], "ledger": true, "typed": true}, {"domain": "market", "tier": "molecules", "flags": [], "ledger": true, "typed": true}, {"domain": "market", "tier": "molecules", "flags": [], "ledger": true, "typed": true}, {"domain": "market", "tier": "molecules", "flags": [], "ledger": true, "typed": true}, {"domain": "market", "tier": "molecules", "flags": [], "ledger": true, "typed": true}, {"domain": "market", "tier": "compounds", "flags": ["slow"], "ledger": true, "typed": true}, {"domain": "market", "tier": "compounds", "flags": ["slow", "featured"], "ledger": true, "typed": true}, {"domain": "market", "tier": "compounds", "flags": ["slow"], "ledger": true, "typed": true}, {"domain": "market", "tier": "meta_compounds", "flags": ["slow", "featured"], "ledger": true, "typed": true}, {"domain": "strategy", "tier": "atoms", "flags": [], "ledger": true, "typed": true}, {"domain": "strategy", "tier": "molecules", "flags": ["slow"], "ledger": true, "typed": true}, {"domain": "strategy", "tier": "compounds", "flags": ["slow", "featured"], "ledger": true, "typed": true}, {"domain": "watchlist", "tier": "atoms", "flags": ["mutating"], "ledger": true, "typed": true}, {"domain": "watchlist", "tier": "molecules", "flags": ["mutating"], "ledger": true, "typed": true}], "featured": [{"name": "premarket_brief", "domain": "market", "tier": "meta_compounds", "flags": ["slow"], "ledger": true, "doc": "The trader's 1-click morning workflow . At 8:30 AM ET the trader opens one call and sees: 1."}, {"name": "market_state_summary", "domain": "market", "tier": "compounds", "flags": ["slow"], "ledger": true, "doc": "Compose 3 upstream synthesis skills \u2014 MC04 composite_regime_brief (regime cell) + MM15 vrp_signal_synthesize (vrp signal) + MM12 iv_surface_signal (iv surface signal) \u2014 into a single trader-readable 3"}, {"name": "iv_percentile_query", "domain": "market", "tier": "atoms", "flags": [], "ledger": false, "doc": "Return current IV percentile rank of a ticker over its trailing 252-day distribution (legacy field name: ivPct1y ). Reads from the iVol cache parquet via MA03 parquet_query; computes the rolling-rank"}, {"name": "strategy_recommend", "domain": "strategy", "tier": "compounds", "flags": ["slow"], "ledger": true, "doc": "Third ARK-native Strategy-domain (S\\*) skill; first Strategy compound \u2014 completes S3.1's atom\u2192molecule\u2192compound arc. Given a ticker, recommend the best-fit option strategy for the current market state"}, {"name": "pretrade_risk_gate", "domain": "book", "tier": "compounds", "flags": [], "ledger": true, "doc": "The V3.1 Risk Charter pre-trade gate \u2014 the single gatekeeper that answers *\"can I add <ticker> ?\"* before a trade is staged. Given one proposed trade, it checks it against the DOCTRINE hard limits and"}, {"name": "exit_signals", "domain": "book", "tier": "compounds", "flags": ["slow"], "ledger": true, "doc": "ARK's first EXIT decision skill \u2014 the EXIT counterpart to BC08 trade_setup_brief (the ENTRY compound). Together BC08 + BC09 close the ENTRY-EXIT symmetry gap."}, {"name": "portfolio_greeks_aggregate", "domain": "book", "tier": "molecules", "flags": [], "ledger": true, "doc": "The book-domain Greeks capstone \u2014 portfolio-level \u0394/\u0393/V/\u0398 aggregation across all positions, with per-position drill-in. Trader asks \"what's my net delta? what does +1% S&P / +1 vol pt / +1 day do to m"}, {"name": "trade_journal_record", "domain": "book", "tier": "molecules", "flags": ["mutating"], "ledger": true, "doc": "The first ARK trader-event audit trail. Append one immutable row to a trade-event journal every time a fill happens \u2014 entry, exit, or adjust."}], "factors": [{"name": "vrp_30d", "cat": "vol_level"}, {"name": "iv_minus_hv", "cat": "vol_level"}, {"name": "iv_hv_ratio", "cat": "vol_level"}, {"name": "iv_pct_1y", "cat": "vol_level"}, {"name": "contango", "cat": "term"}, {"name": "term_slope", "cat": "term"}, {"name": "skew_atm", "cat": "skew"}, {"name": "hv_accel", "cat": "rv_dyn"}, {"name": "hv10_30_ratio", "cat": "rv_dyn"}, {"name": "ret_5d", "cat": "momentum"}, {"name": "ret_20d", "cat": "momentum"}, {"name": "atr_pct", "cat": "momentum"}, {"name": "dd_60d", "cat": "momentum"}, {"name": "uw_net_gamma", "cat": "positioning"}, {"name": "uw_net_delta", "cat": "positioning"}, {"name": "uw_net_vanna", "cat": "positioning"}], "baseline": {"dev": 1.1732236252129926, "sealed": 1.2213411589008343}, "arch": {"total": 54, "routes": 75, "forensic": 49, "ledgers": 20, "domains": ["market", "book", "strategy", "watchlist"], "tiers": [{"name": "atoms", "total": 21, "by_domain": {"market": 12, "book": 7, "strategy": 1, "watchlist": 1}}, {"name": "molecules", "total": 21, "by_domain": {"market": 9, "book": 10, "strategy": 1, "watchlist": 1}}, {"name": "compounds", "total": 11, "by_domain": {"market": 3, "book": 7, "strategy": 1}}, {"name": "meta", "total": 1, "by_domain": {"market": 1}}]}, "attestation": {"candidate": "yharm", "raw_gain": 0.02620864534083922, "trials_nominal": 64, "trials_effective": 43.78470080938676, "deflated_gain": 0.026145376527049624, "null_calibration": "0 of 64"}};
 
-const SVGNS = "http://www.w3.org/2000/svg";
-const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
-const fmt = (v, d = 5) => (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(d);
+/* ─── helpers ─────────────────────────────────────────────────────────── */
+const SVGNS="http://www.w3.org/2000/svg";
+const cssv=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const h=(html)=>{const d=document.createElement("div");d.innerHTML=html.trim();return d.firstChild;};
+function el(tag,attrs,parent){const n=document.createElementNS(SVGNS,tag);
+  for(const k in attrs)n.setAttribute(k,attrs[k]);if(parent)parent.appendChild(n);return n;}
+function clear(n){while(n.firstChild)n.removeChild(n.firstChild);}
+function stext(p,x,y,s,o={}){const t=el("text",{x,y,fill:o.fill||cssv("--muted"),
+  "font-size":o.size||11,"text-anchor":o.anchor||"start","font-weight":o.weight||400,
+  "font-family":"var(--mono)"},p);t.textContent=s;return t;}
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);
+  t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
 
-function el(tag, attrs, parent) {
-  const n = document.createElementNS(SVGNS, tag);
-  for (const k in attrs) n.setAttribute(k, attrs[k]);
-  if (parent) parent.appendChild(n);
-  return n;
-}
-function clear(svg) { while (svg.firstChild) svg.removeChild(svg.firstChild); }
-function text(p, x, y, s, o = {}) {
-  const t = el("text", { x, y, fill: o.fill || css("--mut"),
-    "font-size": o.size || 12, "text-anchor": o.anchor || "start",
-    "font-weight": o.weight || 400,
-    "font-family": "ui-monospace, SFMono-Regular, Menlo, monospace" }, p);
-  t.textContent = s; return t;
-}
+/* ─── views ───────────────────────────────────────────────────────────── */
+const VIEWS=[
+  {key:"dashboard",ico:"◆",label:"Dashboard"},
+  {key:"skills",   ico:"⚙",label:"Skills",  count:()=>DATA.catalog.length},
+  {key:"arena",    ico:"⚖",label:"Arena",   count:()=>DATA.cands.length},
+  {key:"ledger",   ico:"▤",label:"Ledger"},
+  {key:"factors",  ico:"🧪",label:"Factors", count:()=>16},
+  {key:"evidence", ico:"📈",label:"Evidence"},
+  {key:"chart",    ico:"📊",label:"Chart",       locked:1},
+  {key:"ovl",      ico:"🧮",label:"OVL",         locked:1},
+  {key:"voldesk",  ico:"🌡",label:"Vol Desk",    locked:1},
+  {key:"regime",   ico:"🧭",label:"Regime",      locked:1},
+  {key:"darkpool", ico:"🌑",label:"Darkpool",    locked:1},
+  {key:"cftc",     ico:"🏛",label:"CFTC",        locked:1},
+  {key:"macro",    ico:"🗓",label:"Macro",       locked:1},
+  {key:"earnings", ico:"📅",label:"Earnings",    locked:1},
+  {key:"positions",ico:"💼",label:"Positions",   locked:1},
+  {key:"watchlist",ico:"👁",label:"Watchlist",   locked:1},
+];
+let CURRENT="dashboard";
 
-/* deterministic PRNG so the illustration never changes under the reader */
-function mulberry32(a) {
-  return function () {
-    a |= 0; a = a + 0x6D2B79F5 | 0;
-    let t = Math.imul(a ^ a >>> 15, 1 | a);
-    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
-    return ((t ^ t >>> 14) >>> 0) / 4294967296;
-  };
-}
-const NOISE = (() => {
-  const r = mulberry32(20260731), out = [];
-  for (let i = 0; i < 400; i++) {
-    let u = 0, v = 0;
-    while (u === 0) u = r();
-    while (v === 0) v = r();
-    out.push(Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v));
-  }
-  return out;
-})();
-
-/* ── the console ───────────────────────────────────────────────────────── */
-const CON = { order: [], seen: [], sealed: false };
-
-function shuffled(n, seed) {
-  const r = mulberry32(seed), a = Array.from({ length: n }, (_, i) => i);
-  for (let i = n - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
-  return a;
-}
-function neffOf(idx) {
-  const k = idx.length;
-  if (k < 2) return k;
-  const C = idx.map(i => idx.map(j => DATA.corr[i][j]));
-  // participation ratio via eigenvalues; for small k use the power-free trace identity
-  let tr = 0, fro = 0;
-  for (let i = 0; i < k; i++) for (let j = 0; j < k; j++) {
-    const v = C[i][j]; if (i === j) tr += v; fro += v * v;
-  }
-  return (tr * tr) / fro;                       // = (Σλ)² / Σλ²
-}
-const NREF = () => DATA.null_ref;
-function expectedBestNull(k) {
-  const ref = NREF(), K = Math.max(1, Math.round(k)), r = mulberry32(99);
-  let acc = 0, T = 600;
-  for (let t = 0; t < T; t++) {
-    let m = -Infinity;
-    for (let i = 0; i < K; i++) m = Math.max(m, ref[Math.floor(r() * ref.length)]);
-    acc += m;
-  }
-  return acc / T;
-}
-function renderCatalog() {
-  const host = document.getElementById("catalog"); host.innerHTML = "";
-  const tiers = ["atoms", "molecules", "compounds", "meta_compounds"];
-  const label = { atoms: "atoms", molecules: "molecules", compounds: "compounds",
-                  meta_compounds: "meta" };
-  tiers.forEach(t => {
-    const items = DATA.catalog.filter(c => c.tier === t);
-    if (!items.length) return;
-    const d = document.createElement("div"); d.className = "tier";
-    d.innerHTML = '<b>' + label[t] + '</b> <span style="color:var(--mut);font-size:11.5px">'
-      + items.length + '</span><div class="cells">'
-      + items.map(c => '<span class="cell ' + c.domain + '" title="' + c.domain
-        + (c.flags.length ? " · " + c.flags.join(" · ") : "") + '"></span>').join("")
-      + '</div>';
-    host.appendChild(d);
+function renderNav(){
+  const nav=document.getElementById("nav");nav.innerHTML="";
+  VIEWS.forEach(v=>{
+    const n=h('<div class="nav-item'+(v.locked?" locked":"")+(v.key===CURRENT?" active":"")+'">'
+      +'<span class="nav-ico">'+v.ico+'</span><span>'+v.label+'</span>'
+      +(v.count?'<span class="nav-count">'+v.count()+'</span>':(v.locked?'<span class="nav-count">🔒</span>':''))
+      +'</div>');
+    n.addEventListener("click",()=>go(v.key));
+    nav.appendChild(n);
   });
-  const led = DATA.catalog.filter(c => c.ledger).length;
-  const typ = DATA.catalog.filter(c => c.typed).length;
-  document.getElementById("catmeta").textContent =
-    typ + " of " + DATA.catalog.length + " return a typed contract, " + led
-    + " write a ledger row on every call.";
+  document.getElementById("health").innerHTML =
+    "<b>"+DATA.catalog.filter(c=>c.ledger).length+"</b> skills metered\n"
+    +"<b>"+DATA.cands.length+"</b> trials replayable\n"
+    +"vendor feeds <b>offline</b>";
 }
-function renderConsole() {
-  const seen = CON.seen, n = seen.length;
-  const eff = n ? neffOf(seen) : 0;
-  document.getElementById("s_n").textContent = n;
-  document.getElementById("s_eff").textContent = n ? eff.toFixed(1) : "0.0";
+function go(key){
+  const v=VIEWS.find(x=>x.key===key)||VIEWS[0];
+  CURRENT=v.key;
+  document.getElementById("view-title").textContent=v.label;
+  renderNav();
+  const host=document.getElementById("view");host.innerHTML="";
+  (RENDER[v.key]||RENDER._locked)(host,v);
+  host.scrollTop=0;
+}
 
-  let best = null;
-  seen.forEach(i => { if (best === null || DATA.cands[i].dev > DATA.cands[best].dev) best = i; });
-  document.getElementById("s_raw").textContent =
-    best === null ? "—" : "+" + DATA.cands[best].dev.toFixed(5);
-  const allow = n ? -expectedBestNull(eff) : 0;
-  document.getElementById("s_def").textContent =
-    best === null ? "—" : "+" + (DATA.cands[best].dev + allow).toFixed(5);
-  document.getElementById("allow").textContent = n
-    ? "Chance allowance at " + eff.toFixed(1) + " effective trials: " + allow.toFixed(5)
-      + ". It falls as you search, because a wider run of nulls reaches a better best, so"
-      + " less of your score is credited to you."
-    : "";
+const RENDER={};
 
-  const host = document.getElementById("ledger");
-  if (!n) return;
-  host.innerHTML = '<table><thead><tr><th>#</th><th>trial key</th><th>kind</th>'
-    + '<th style="text-align:right">measured effect</th></tr></thead><tbody>'
-    + seen.map((i, k) => {
-        const c = DATA.cands[i];
-        return '<tr><td class="idcol">' + String(k + 1).padStart(2, "0") + '</td>'
-          + '<td class="idcol">' + ("t-" + (1000 + i).toString(16)) + '</td>'
-          + '<td><span class="pill ' + c.kind + '">' + c.kind + '</span></td>'
-          + '<td style="text-align:right;font-variant-numeric:tabular-nums;color:'
-          + (c.dev > 0 ? "var(--sealed)" : "var(--null)") + '">'
-          + (c.dev >= 0 ? "+" : "−") + Math.abs(c.dev).toFixed(5) + '</td></tr>';
-      }).reverse().join("") + '</tbody></table>';
-  host.scrollTop = 0;
-  document.getElementById("bseal").disabled = n < 2;
-}
-function step(k) {
-  for (let i = 0; i < k && CON.seen.length < CON.order.length; i++)
-    CON.seen.push(CON.order[CON.seen.length]);
-  document.getElementById("verdict").style.display = "none";
-  CON.sealed = false;
-  renderConsole();
-}
-function openSeal() {
-  const seen = CON.seen;
-  let best = seen[0];
-  seen.forEach(i => { if (DATA.cands[i].dev > DATA.cands[best].dev) best = i; });
-  const c = DATA.cands[best];
-  const eff = neffOf(seen);
-  const meanDev = seen.reduce((a, i) => a + DATA.cands[i].dev, 0) / seen.length;
-  const meanSea = seen.reduce((a, i) => a + DATA.cands[i].sealed, 0) / seen.length;
-  const D = c.dev - meanDev, S = c.sealed - meanSea;
-  const v = document.getElementById("verdict");
-  v.style.display = "block";
-  v.innerHTML = "<b>Seal opened after " + seen.length + " trials.</b> The winner was a <b>"
-    + c.kind + "</b> candidate. Against the average candidate in this draw it appeared to buy "
-    + (D >= 0 ? "+" : "−") + Math.abs(D).toFixed(4) + " and it actually delivered "
-    + (S >= 0 ? "+" : "−") + Math.abs(S).toFixed(4)
-    + " on data no selection could reach, a retention of <b>"
-    + (D !== 0 ? (S / D).toFixed(2) : "—") + "</b>. Effective trials "
-    + eff.toFixed(1) + " against " + seen.length + " nominal.";
-}
-function wireConsole() {
-  CON.order = shuffled(DATA.cands.length, 20260811);
-  renderCatalog(); renderConsole();
-  document.getElementById("b1").addEventListener("click", () => step(1));
-  document.getElementById("b10").addEventListener("click", () => step(10));
-  document.getElementById("bseal").addEventListener("click", openSeal);
-  document.getElementById("brst").addEventListener("click", () => {
-    CON.seen = []; document.getElementById("verdict").style.display = "none";
-    document.getElementById("ledger").innerHTML =
-      '<div class="empty">The ledger is empty.</div>';
-    renderConsole();
+/* ── dashboard ── */
+RENDER.dashboard=(host)=>{
+  const led=DATA.catalog.filter(c=>c.ledger).length, typ=DATA.catalog.filter(c=>c.typed).length;
+  host.appendChild(h(`<div>
+    <div class="hero">
+      <h1>An agentic research console, with a meter bolted on</h1>
+      <p>This is a public deployment of a live single-operator options and volatility
+      research console, running with its vendor feeds disconnected. The skill catalogue,
+      the contracts and the ledger are the real ones. The market views are locked, because
+      the data behind them is licensed per seat and cannot be re-served. What is live here
+      is the part this proposal is about: the <b>Arena</b>, where every evaluation is metered,
+      discounted and sealed.</p>
+      <div class="stat-row">
+        <div class="stat"><div class="n">${DATA.arch.total}</div><div class="l">skills</div></div>
+        <div class="stat"><div class="n">4</div><div class="l">tiers</div></div>
+        <div class="stat"><div class="n">${DATA.arch.routes}</div><div class="l">API routes</div></div>
+        <div class="stat"><div class="n">${led}</div><div class="l">write a ledger row</div></div>
+        <div class="stat"><div class="n">${typ}</div><div class="l">typed contracts</div></div>
+        <div class="stat"><div class="n">${DATA.arch.ledgers}</div><div class="l">ledgers on disk</div></div>
+      </div>
+    </div>
+    <div class="section-head"><h2>the three layers</h2><span class="cn">what this deployment shows</span></div>
+    <div class="grid">
+      <div class="card"><div class="card-top"><div><div class="card-title">One · the capability</div>
+        <div class="card-key">Skills</div></div><div class="badges"><span class="badge good">built</span></div></div>
+        <div class="card-doc">54 skills in four tiers, each with a formal contract and a typed
+        return rather than free-form text. Higher tiers compose lower ones, so one morning call
+        fans out into a dozen grounded sub-answers.</div></div>
+      <div class="card"><div class="card-top"><div><div class="card-title">Two · what breaks when it acts</div>
+        <div class="card-key">Ledger</div></div><div class="badges"><span class="badge warn">open</span></div></div>
+        <div class="card-doc">Analysis replays. Action does not. Idempotency, hallucination and
+        the sandbox stop being engineering details the moment an agent can send an order.</div></div>
+      <div class="card"><div class="card-top"><div><div class="card-title">Three · knowing it improved</div>
+        <div class="card-key">Arena</div></div><div class="badges"><span class="badge layer">live</span></div></div>
+        <div class="card-doc">A system that appears to improve with use looks exactly like one
+        that is overfitting harder. Run the Arena and watch the difference get measured.</div></div>
+    </div>
+    <div class="warnbox">Vendor credentials are deliberately absent from this deployment. Unusual
+    Whales, iVolatility and ORATS licences are per seat and forbid re-serving their data, so every
+    market view is locked rather than faked.</div>
+  </div>`));
+};
+
+/* ── skills ── */
+RENDER.skills=(host)=>{
+  const q=(document.getElementById("search").value||"").toLowerCase();
+  const tiers=["atoms","molecules","compounds","meta_compounds"];
+  const label={atoms:"atom",molecules:"molecule",compounds:"compound",meta_compounds:"meta"};
+  const wrap=h('<div></div>');
+  wrap.appendChild(h(`<p class="mut">The registry walks
+    <code>skills/&lt;domain&gt;/&lt;tier&gt;/&lt;name&gt;</code>, imports each leaf and turns every
+    exported function into a runnable action. Named entries are the operator-facing workflows.
+    The rest are shown by tier, domain and flags only, because the catalogue is the operator's own
+    research.</p>`));
+  const named=DATA.featured.filter(f=>!q||f.name.includes(q)||f.doc.toLowerCase().includes(q));
+  wrap.appendChild(h('<div class="section-head"><h2>operator workflows</h2><span class="cn">'+named.length+' of '+DATA.featured.length+'</span></div>'));
+  const g=h('<div class="grid"></div>');
+  named.forEach(f=>{
+    g.appendChild(h(`<div class="card featured"><div class="card-top">
+      <div><div class="card-title">${f.name}</div><div class="card-key">${f.domain} · ${label[f.tier]||f.tier}</div></div>
+      <div class="badges"><span class="badge layer">${label[f.tier]||f.tier}</span>
+      ${f.flags.map(x=>'<span class="badge '+(x==="mutating"?"warn":x==="slow"?"":"muted")+'">'+x+'</span>').join("")}
+      ${f.ledger?'<span class="badge good">metered</span>':''}</div></div>
+      <div class="card-doc">${f.doc}</div></div>`));
   });
-}
-
-/* ── panel 0: the skill architecture ───────────────────────────────────── */
-function drawFig0() {
-  const svg = document.getElementById("fig0"); clear(svg);
-  const A = DATA.arch, tiers = A.tiers, doms = A.domains;
-  const L = 108, R = 150, T = 34, W = 760;
-  const w = W - L - R, rowH = 44;
-  const maxTier = Math.max(...tiers.map(t => t.total));
-  const shade = [".95", ".76", ".57", ".38"];
-
-  text(svg, L, T - 14, "tier", { size: 11 });
-  text(svg, L + w + 14, T - 14, "skills", { size: 11 });
-
-  tiers.forEach((t, i) => {
-    const y = T + i * rowH;
-    text(svg, L - 12, y + 17, t.name, { anchor: "end", size: 12.5,
-         fill: css("--fg"), weight: 600 });
-    let x = L;
-    doms.forEach((d, j) => {
-      const n = t.by_domain[d] || 0;
-      if (!n) return;
-      const bw = (n / maxTier) * w;
-      el("rect", { x, y, width: Math.max(bw, 2), height: 26, rx: 2,
-                   fill: css("--accent"), opacity: shade[j % shade.length] }, svg);
-      if (bw > 26) text(svg, x + bw / 2, y + 17, String(n),
-                        { anchor: "middle", size: 11.5, fill: css("--bg"), weight: 600 });
-      x += bw + 2;
-    });
-    text(svg, L + w + 14, y + 17, String(t.total), { size: 12.5, fill: css("--mut") });
+  wrap.appendChild(g);
+  wrap.appendChild(h('<div class="section-head"><h2>full catalogue</h2><span class="cn">structure only</span></div>'));
+  tiers.forEach(t=>{
+    const items=DATA.catalog.filter(c=>c.tier===t);
+    if(!items.length)return;
+    wrap.appendChild(h('<div style="margin-bottom:10px"><b style="font-size:12.5px">'+label[t]
+      +'</b> <span style="color:var(--faint);font-size:11.5px">'+items.length+'</span>'
+      +'<div class="cells">'+items.map(c=>'<span class="cell '+c.domain+'" title="'+c.domain
+      +(c.flags.length?" · "+c.flags.join(" · "):"")+'"></span>').join("")+'</div></div>'));
   });
+  wrap.appendChild(h('<div class="legend">'+DATA.arch.domains.map(d=>
+    '<span><span class="cell '+d+'" style="display:inline-block;vertical-align:middle;margin-right:6px"></span>'+d+'</span>').join("")+'</div>'));
+  host.appendChild(wrap);
+};
 
-  const ly = T + tiers.length * rowH + 6;
-  let lx = L;
-  doms.forEach((d, j) => {
-    el("rect", { x: lx, y: ly, width: 11, height: 11, rx: 2, fill: css("--accent"),
-                 opacity: shade[j % shade.length] }, svg);
-    text(svg, lx + 16, ly + 10, d, { size: 11.5 });
-    lx += 22 + d.length * 7.2;
-  });
-  text(svg, L, ly + 32, A.total + " skills  ·  " + A.routes + " API routes  ·  "
-       + A.forensic + " writing a forensic row on every call  ·  "
-       + A.ledgers + " ledgers on disk", { size: 11.5, fill: css("--mut") });
+/* ── arena (the console) ── */
+const CON={order:[],seen:[]};
+function shuffled(n,seed){const r=mulberry32(seed),a=[...Array(n).keys()];
+  for(let i=n-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function neffOf(idx){const k=idx.length;if(k<2)return k;let tr=0,fro=0;
+  for(let i=0;i<k;i++)for(let j=0;j<k;j++){const v=DATA.corr[idx[i]][idx[j]];if(i===j)tr+=v;fro+=v*v;}
+  return (tr*tr)/fro;}
+function expectedBestNull(k){const ref=DATA.null_ref,K=Math.max(1,Math.round(k)),r=mulberry32(99);
+  let acc=0;const T=600;
+  for(let t=0;t<T;t++){let m=-Infinity;for(let i=0;i<K;i++)m=Math.max(m,ref[Math.floor(r()*ref.length)]);acc+=m;}
+  return acc/T;}
+
+RENDER.arena=(host)=>{
+  host.appendChild(h(`<div>
+    <p>Every evaluation below is a real one, replayed from
+    <code>dev/prelim_harness.py</code>. The pool holds <b>${DATA.cands.filter(c=>c.kind==="real").length}
+    genuine candidates</b> and <b>${DATA.cands.filter(c=>c.kind==="null").length} matched nulls</b> that
+    carry no information by construction. Search as hard as you like. The best raw score always
+    climbs, because searching always finds something. The platform counts how many
+    <em>distinct</em> things you tried and prices that in.</p>
+    <div class="stat-row" id="astats"></div>
+    <p class="mut" id="allow" style="margin:10px 0 0"></p>
+    <div class="btn-row">
+      <button class="btn primary" id="b1">Evaluate one</button>
+      <button class="btn" id="b10">Evaluate ten</button>
+      <button class="btn" id="ball">Evaluate all</button>
+      <button class="btn" id="bseal" disabled>Open the seal</button>
+      <button class="btn" id="brst">Reset</button>
+    </div>
+    <div class="tablewrap" id="ledger"></div>
+    <div id="verdict"></div>
+    <p class="mut" style="margin-top:14px"><b>Margin over chance</b> is the best score found minus
+    the best a run of matched nulls of the same effective size would reach. The allowance shown
+    above is that correction, and it falls as the search widens, which is the discount working.
+    On this data it stays small, because an uninformative candidate reliably costs something here
+    rather than helping by luck. That is itself the reading: this space is safe to explore, and a
+    noisier one would not be.</p>
+    <p class="mut">The seal is two folds of data no selection in this pool was ever allowed to
+    touch. In a live system it is the future, arriving on its own schedule.</p>
+  </div>`));
+  CON.order=shuffled(DATA.cands.length,20260811);
+  document.getElementById("b1").onclick=()=>step(1);
+  document.getElementById("b10").onclick=()=>step(10);
+  document.getElementById("ball").onclick=()=>step(DATA.cands.length);
+  document.getElementById("bseal").onclick=openSeal;
+  document.getElementById("brst").onclick=()=>{CON.seen=[];renderArena();};
+  renderArena();
+};
+function step(k){for(let i=0;i<k&&CON.seen.length<CON.order.length;i++)CON.seen.push(CON.order[CON.seen.length]);renderArena();}
+function renderArena(){
+  const seen=CON.seen,n=seen.length,eff=n?neffOf(seen):0;
+  let best=null;seen.forEach(i=>{if(best===null||DATA.cands[i].dev>DATA.cands[best].dev)best=i;});
+  const allow=n?-expectedBestNull(eff):0;
+  document.getElementById("astats").innerHTML=
+     '<div class="stat"><div class="n">'+n+'</div><div class="l">trials</div></div>'
+    +'<div class="stat"><div class="n">'+(n?eff.toFixed(1):"0.0")+'</div><div class="l">effective</div></div>'
+    +'<div class="stat"><div class="n">'+(best===null?"—":"+"+DATA.cands[best].dev.toFixed(5))+'</div><div class="l">best raw</div></div>'
+    +'<div class="stat"><div class="n">'+(best===null?"—":"+"+(DATA.cands[best].dev+allow).toFixed(5))+'</div><div class="l">margin over chance</div></div>';
+  document.getElementById("allow").textContent=n
+    ? "Chance allowance at "+eff.toFixed(1)+" effective trials: "+allow.toFixed(5)
+      +". It falls as you search, because a wider run of nulls reaches a better best, so less of your score is credited to you."
+    : "The ledger is empty. Each evaluation is keyed so a retry costs nothing and a new hypothesis costs a trial.";
+  const L=document.getElementById("ledger");
+  L.innerHTML=!n
+    ? '<div style="padding:24px;text-align:center;color:var(--faint);font-size:12.5px">no trials yet</div>'
+    : '<table class="rt"><thead><tr><th>#</th><th>trial key</th><th>kind</th><th style="text-align:right">measured effect</th></tr></thead><tbody>'
+      +seen.map((i,k)=>{const c=DATA.cands[i];
+        return '<tr><td style="color:var(--faint)">'+String(k+1).padStart(2,"0")+'</td>'
+          +'<td style="color:var(--muted)">t-'+(1000+i).toString(16)+'</td>'
+          +'<td><span class="badge '+(c.kind==="real"?"good":"muted")+'">'+c.kind+'</span></td>'
+          +'<td class="num" style="color:'+(c.dev>0?"var(--good)":"var(--faint)")+'">'
+          +(c.dev>=0?"+":"−")+Math.abs(c.dev).toFixed(5)+'</td></tr>';}).reverse().join("")
+      +'</tbody></table>';
+  document.getElementById("bseal").disabled=n<2;
+  if(n<2)document.getElementById("verdict").innerHTML="";
+}
+function openSeal(){
+  const seen=CON.seen;let best=seen[0];
+  seen.forEach(i=>{if(DATA.cands[i].dev>DATA.cands[best].dev)best=i;});
+  const c=DATA.cands[best],eff=neffOf(seen);
+  const mD=seen.reduce((a,i)=>a+DATA.cands[i].dev,0)/seen.length;
+  const mS=seen.reduce((a,i)=>a+DATA.cands[i].sealed,0)/seen.length;
+  const D=c.dev-mD,S=c.sealed-mS;
+  document.getElementById("verdict").innerHTML=
+    '<div class="warnbox" style="color:var(--text);border-color:var(--border2);background:var(--panel2)">'
+    +'<b style="color:var(--accent)">Seal opened after '+seen.length+' trials.</b> The winner was a <b>'
+    +c.kind+'</b> candidate. Against the average candidate in this draw it appeared to buy '
+    +(D>=0?"+":"−")+Math.abs(D).toFixed(4)+' and it actually delivered '+(S>=0?"+":"−")+Math.abs(S).toFixed(4)
+    +' on data no selection could reach, a retention of <b style="color:var(--accent)">'
+    +(D!==0?(S/D).toFixed(2):"—")+'</b>. Effective trials '+eff.toFixed(1)+' against '+seen.length+' nominal.</div>';
 }
 
-/* ── panel 1 ───────────────────────────────────────────────────────────── */
-const P1 = { L: 52, R: 20, T: 22, B: 40, W: 760, H: 300 };
-function drawFig1(n) {
-  const svg = document.getElementById("fig1"); clear(svg);
-  const w = P1.W - P1.L - P1.R, h = P1.H - P1.T - P1.B;
-  const yMin = -3.6, yMax = 3.6;
-  const X = i => P1.L + (n === 1 ? w / 2 : (i / (n - 1)) * w);
-  const Y = v => P1.T + h - ((v - yMin) / (yMax - yMin)) * h;
+/* ── ledger ── */
+RENDER.ledger=(host)=>{
+  host.appendChild(h(`<div>
+    <p>49 of the 54 skills append a forensic row on every call, under an exclusive per-partition
+    file lock with an atomic temp-swap, into date-partitioned parquet. Schema drift is a hard
+    error rather than a silent column. Those ledgers are already aggregated across the system.</p>
+    <div class="warnbox">Today the aggregate answers "what is the research costing in vendor API
+    spend". Nothing yet answers "how many hypotheses were tried". The meter is built and hardened.
+    It points at money. Repointing it is the first milestone of this proposal.</div>
+    <div class="section-head"><h2>trial identity is an idempotency key</h2></div>
+    <div class="kvs">
+      <div class="k">a crash-retry</div><div class="v">must not increment the count, or the agent is punished for infrastructure</div>
+      <div class="k">a renamed variable</div><div class="v">must not buy a fresh identity, or the meter is trivially gamed</div>
+      <div class="k">a nudged parameter</div><div class="v">must cost a trial, because it is a new hypothesis</div>
+      <div class="k">under self-improvement</div><div class="v">the agent is rewriting the very code the key is derived from</div>
+    </div>
+    <div class="section-head"><h2>replay needs pinned data</h2></div>
+    <p class="mut">Prices are adjusted for corporate actions and fundamentals get restated. Re-running
+    the same evaluation next year against a live feed silently returns a different answer and the audit
+    trail is void, so every row names the content-addressed snapshot it saw. Research replays at will.
+    An order does not, so the metered research path and the exactly-once execution path are separate
+    systems with separate guarantees.</p>
+    <div class="section-head"><h2>attestation</h2></div>
+    <pre style="background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:13px;overflow:auto;font-size:12px;color:var(--text)">attestation {
+  finding          "candidate <span style="color:var(--accent)">${DATA.attestation.candidate}</span> improves the panel-only baseline"
+  raw_gain         <span style="color:var(--accent)">+${DATA.attestation.raw_gain.toFixed(5)}</span>
+  trials_nominal   <span style="color:var(--accent)">${DATA.attestation.trials_nominal}</span>
+  trials_effective <span style="color:var(--accent)">${DATA.attestation.trials_effective.toFixed(1)}</span>   <span style="color:var(--faint)">// measured, not declared</span>
+  null_calibration "<span style="color:var(--accent)">${DATA.attestation.null_calibration}</span> matched nulls admitted"
+  seals_opened     ["S1","S2"]  <span style="color:var(--faint)">// after the design was frozen</span>
+  data_snapshot    sha256:…      <span style="color:var(--faint)">// point-in-time, content addressed</span>
+  replay           ledger rows + code hashes
+}</pre></div>`));
+};
 
-  el("line", { x1: P1.L, y1: Y(0), x2: P1.L + w, y2: Y(0),
-               stroke: css("--line"), "stroke-width": 1 }, svg);
-  for (const v of [-3, -2, -1, 1, 2, 3]) {
-    el("line", { x1: P1.L, y1: Y(v), x2: P1.L + w, y2: Y(v),
-                 stroke: css("--line"), "stroke-width": .5,
-                 "stroke-dasharray": "2 4" }, svg);
-    text(svg, P1.L - 8, Y(v) + 4, v > 0 ? "+" + v : String(v), { anchor: "end", size: 11 });
-  }
+/* ── factors ── */
+RENDER.factors=(host)=>{
+  const rows=DATA.factors.map(f=>'<tr><td>'+f.name+'</td><td style="color:var(--muted)">'+f.cat+'</td></tr>').join("");
+  host.appendChild(h(`<div>
+    <p>The console carries a factor research pipeline: sixteen factors, cross-sectional rank
+    information coefficient against two forward targets, decay, per-regime breakdown, and a daily
+    cross-sectional accumulator.</p>
+    <div class="section-head"><h2>the four gates</h2><span class="cn">a factor is usable only if it clears all four</span></div>
+    <div class="kvs">
+      <div class="k">stationary</div><div class="v">ADF unit-root test, because a unit root invites spurious regression</div>
+      <div class="k">not redundant</div><div class="v">partial IC after residualising factor and target on the controls</div>
+      <div class="k">not confounded</div><div class="v">rejected if the sign flips once controls are applied</div>
+      <div class="k">significant</div><div class="v">Newey-West |t| &gt; 2, correcting the inflation overlapping forward windows create</div>
+    </div>
+    <div class="warnbox">That is careful work, and it handles the overlapping-window inflation most
+    practitioners miss. What it does not handle is that the same threshold is applied across
+    <b>16 factors against 2 targets</b>. At |t| &gt; 2 over 32 tests, roughly 1.5 false "usable"
+    verdicts are expected from noise alone, and nothing in the pipeline accounts for it. This is the
+    first workload for the Arena.</div>
+    <div class="section-head"><h2>factor library</h2><span class="cn">16</span></div>
+    <div class="tablewrap" style="max-height:none"><table class="rt"><thead><tr><th>factor</th><th>category</th></tr></thead><tbody>${rows}</tbody></table></div>
+  </div>`));
+};
 
-  const draws = NOISE.slice(0, n);
-  const best = Math.max(...draws), bi = draws.indexOf(best);
-  draws.forEach((v, i) => {
-    el("circle", { cx: X(i), cy: Y(v), r: i === bi ? 4.5 : 2.4,
-      fill: i === bi ? css("--naive") : css("--null"),
-      opacity: i === bi ? 1 : .55 }, svg);
-  });
+/* ── evidence (the measured charts) ── */
+RENDER.evidence=(host)=>{
+  host.appendChild(h(`<div>
+    <p>Measured on the ADIA Lab forecast fusion data, reusing that search machinery, against sealed
+    folds no selection was allowed to touch. Every number is reproducible from the scripts named.</p>
+    <div class="section-head"><h2>1 · the mechanism</h2><span class="cn">illustration, synthetic</span></div>
+    <p class="mut">Every dot is one idea with genuinely zero skill, scored on noise alone. Nothing here
+    has any edge and the reported best climbs anyway. That climb is the whole problem.</p>
+    <div class="ctl"><label for="nSlider">ideas tried</label>
+      <input type="range" id="nSlider" min="1" max="400" value="1" step="1"><output id="nOut">1</output></div>
+    <div class="chartbox"><div class="chart-title">best of N, pure noise</div>
+      <svg id="fig1" viewBox="0 0 760 280"></svg></div>
 
-  el("line", { x1: P1.L, y1: Y(best), x2: P1.L + w, y2: Y(best),
-               stroke: css("--naive"), "stroke-width": 2 }, svg);
-  text(svg, P1.L + w, Y(best) - 9, "best of " + n + " = " + best.toFixed(2),
-       { anchor: "end", fill: css("--naive"), size: 13, weight: 600 });
+    <div class="section-head"><h2>2 · what a search costs</h2><span class="cn">real · dev/prelim_selection.py</span></div>
+    <div class="chartbox"><div class="chart-title">apparent lift vs what survived the seal, and the retention between them</div>
+      <svg id="fig2" viewBox="0 0 760 330"></svg></div>
+    <p class="mut" id="gap2"></p>
 
-  const eMax = Math.sqrt(2 * Math.log(Math.max(n, 1.001)));
-  el("line", { x1: P1.L, y1: Y(eMax), x2: P1.L + w, y2: Y(eMax),
-               stroke: css("--mut"), "stroke-width": 1, "stroke-dasharray": "5 4" }, svg);
-  text(svg, P1.L + 4, Y(eMax) - 7, "expected best ≈ √(2 ln N)", { size: 11 });
+    <div class="section-head"><h2>3 · the calibration</h2><span class="cn">real · dev/prelim.py</span></div>
+    <div class="chartbox"><div class="chart-title">64 matched nulls against the acceptance threshold</div>
+      <svg id="fig3" viewBox="0 0 760 240"></svg></div>
+    <p class="mut" id="cap3"></p>
 
-  text(svg, P1.L, P1.H - 12, "each dot is one idea with zero real skill", { size: 11.5 });
-  text(svg, P1.L - 40, P1.T - 8, "score", { size: 11 });
+    <div class="section-head"><h2>4 · nominal versus effective</h2><span class="cn">real · dev/prelim.py</span></div>
+    <div class="chartbox"><div class="chart-title">and what happens when the pool is padded with junk</div>
+      <svg id="fig4" viewBox="0 0 760 150"></svg></div>
+    <p class="mut" id="cap4"></p>
+  </div>`));
+  const sl=document.getElementById("nSlider");
+  sl.addEventListener("input",()=>{document.getElementById("nOut").textContent=sl.value;drawFig1(+sl.value);});
+  drawFig1(1);drawFig2();drawFig3();drawFig4();
+};
+
+/* ── locked ── */
+RENDER._locked=(host,v)=>{
+  host.appendChild(h(`<div class="lockbox"><div class="big">🔒</div>
+    <div style="font-size:14px;color:var(--text);margin-bottom:6px">${v.label} needs vendor credentials</div>
+    <p class="mut" style="margin:0 auto;max-width:60ch">This view is served by paid feeds whose licences
+    are per seat and forbid re-serving the data. Rather than fake it, the deployment locks it. The
+    catalogue, the ledger and the Arena are the real thing and are open.</p></div>`));
+};
+
+/* ─── charts ──────────────────────────────────────────────────────────── */
+const NOISE=(()=>{const r=mulberry32(20260731),o=[];
+  for(let i=0;i<400;i++){let u=0,v=0;while(u===0)u=r();while(v===0)v=r();
+    o.push(Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v));}return o;})();
+
+function drawFig1(n){
+  const svg=document.getElementById("fig1");if(!svg)return;clear(svg);
+  const L=48,R=18,T=18,B=34,W=760,H=280,w=W-L-R,hh=H-T-B;
+  const yMin=-3.6,yMax=3.6;
+  const X=i=>L+(n===1?w/2:(i/(n-1))*w), Y=v=>T+hh-((v-yMin)/(yMax-yMin))*hh;
+  for(const v of [-3,-2,-1,0,1,2,3]){
+    el("line",{x1:L,y1:Y(v),x2:L+w,y2:Y(v),stroke:cssv("--border"),"stroke-width":v===0?1:.5,
+      "stroke-dasharray":v===0?"none":"2 4"},svg);
+    stext(svg,L-7,Y(v)+4,v>0?"+"+v:String(v),{anchor:"end",size:10.5});}
+  const d=NOISE.slice(0,n),best=Math.max(...d),bi=d.indexOf(best);
+  d.forEach((v,i)=>el("circle",{cx:X(i),cy:Y(v),r:i===bi?4.5:2.3,
+    fill:i===bi?cssv("--accent"):cssv("--faint"),opacity:i===bi?1:.7},svg));
+  el("line",{x1:L,y1:Y(best),x2:L+w,y2:Y(best),stroke:cssv("--accent"),"stroke-width":2},svg);
+  stext(svg,L+w,Y(best)-8,"best of "+n+" = "+best.toFixed(2),
+    {anchor:"end",fill:cssv("--accent"),size:12,weight:600});
+  const e=Math.sqrt(2*Math.log(Math.max(n,1.001)));
+  el("line",{x1:L,y1:Y(e),x2:L+w,y2:Y(e),stroke:cssv("--muted"),"stroke-width":1,"stroke-dasharray":"5 4"},svg);
+  stext(svg,L+4,Y(e)-6,"expected best ≈ √(2 ln N)",{size:10.5});
+  stext(svg,L,H-10,"each dot is one idea with zero real skill",{size:11});
+}
+function drawFig2(){
+  const svg=document.getElementById("fig2");if(!svg)return;clear(svg);
+  const L=58,R=22,W=760,w=W-L-R,T1=14,H1=162,T2=214,H2=72;
+  const c=DATA.curve,n0=c[0].n,nN=c[c.length-1].n,X=n=>L+((n-n0)/(nN-n0))*w;
+  const hi=Math.max(...c.flatMap(p=>[p.D,p.S]))*1.08,Y=v=>T1+H1-(v/hi)*H1;
+  for(let i=0;i<=4;i++){const v=(i/4)*hi;
+    el("line",{x1:L,y1:Y(v),x2:L+w,y2:Y(v),stroke:cssv("--border"),"stroke-width":.5},svg);
+    stext(svg,L-7,Y(v)+4,v.toFixed(3),{anchor:"end",size:10});}
+  const line=(k,col)=>el("path",{d:c.map((p,i)=>(i?"L":"M")+X(p.n).toFixed(1)+" "+Y(p[k]).toFixed(1)).join(" "),
+    fill:"none",stroke:col,"stroke-width":2.2,"stroke-linejoin":"round"},svg);
+  line("S",cssv("--good"));line("D",cssv("--accent"));
+  const last=c[c.length-1];
+  stext(svg,X(last.n)-4,Y(last.D)+15,"what searching appears to buy",{anchor:"end",size:11,fill:cssv("--accent"),weight:600});
+  stext(svg,X(last.n)-4,Y(last.S)-7,"what survived the seal",{anchor:"end",size:11,fill:cssv("--good"),weight:600});
+  const rv=c.map(p=>p.retention),rlo=Math.min(1,...rv)-.03,rhi=Math.max(...rv)+.03;
+  const RY=v=>T2+H2-((v-rlo)/(rhi-rlo))*H2;
+  el("line",{x1:L,y1:RY(1),x2:L+w,y2:RY(1),stroke:cssv("--border2"),"stroke-width":1.2,"stroke-dasharray":"4 4"},svg);
+  stext(svg,L-7,RY(1)+4,"1.00",{anchor:"end",size:10});
+  el("path",{d:c.map((p,i)=>(i?"L":"M")+X(p.n).toFixed(1)+" "+RY(p.retention).toFixed(1)).join(" "),
+    fill:"none",stroke:cssv("--accent2"),"stroke-width":2.2},svg);
+  stext(svg,X(c[0].n)+6,RY(c[0].retention)-7,c[0].retention.toFixed(2),{size:11,fill:cssv("--accent2"),weight:600});
+  stext(svg,X(last.n)-4,RY(last.retention)-9,last.retention.toFixed(2),{anchor:"end",size:11,fill:cssv("--accent2"),weight:600});
+  stext(svg,L-52,T2-4,"retained",{size:10.5});
+  for(const n of [2,8,16,24,32,48,64].filter(t=>t<=nN))stext(svg,X(n),312,String(n),{anchor:"middle",size:10.5});
+  stext(svg,L+w/2,328,"candidates searched",{anchor:"middle",size:11});
+  const g=document.getElementById("gap2");
+  if(g)g.innerHTML="Both curves are measured inside their own fold set against the average candidate "
+    +"in the same draw, so the longer training window the sealed folds enjoy cancels out. Searching "
+    +last.n+" candidates appeared to buy "+last.D.toFixed(4)+" and "+last.S.toFixed(4)
+    +" actually survived, a retention of <b style='color:var(--accent)'>"+last.retention.toFixed(2)
+    +"</b>. The signal is the decline: retention falls monotonically from "+c[0].retention.toFixed(2)
+    +" as the search widens. That decay is the selection cost, measured rather than assumed.";
+}
+function drawFig3(){
+  const svg=document.getElementById("fig3");if(!svg)return;clear(svg);
+  const L=26,R=22,T=30,B=46,W=760,H=240,w=W-L-R,hh=H-T-B;
+  const nulls=DATA.nulls,reals=DATA.reals,thr=DATA.gate_threshold;
+  const all=nulls.concat(reals,[thr]),lo=Math.min(...all),hi=Math.max(...all),pad=(hi-lo)*.08;
+  const X=v=>L+((v-(lo-pad))/((hi+pad)-(lo-pad)))*w;
+  const yN=T+hh*.3,yR=T+hh*.72;
+  [yN,yR].forEach(y=>el("line",{x1:L,y1:y,x2:L+w,y2:y,stroke:cssv("--border"),"stroke-width":1},svg));
+  el("line",{x1:X(thr),y1:T-6,x2:X(thr),y2:T+hh+6,stroke:cssv("--accent"),"stroke-width":1.6,"stroke-dasharray":"5 4"},svg);
+  stext(svg,X(thr),T-12,"acceptance threshold",{anchor:"middle",size:11,fill:cssv("--accent")});
+  nulls.forEach(v=>el("circle",{cx:X(v),cy:yN,r:3.3,fill:cssv("--faint"),opacity:.85},svg));
+  reals.forEach(v=>el("circle",{cx:X(v),cy:yR,r:3.7,fill:v>=thr?cssv("--good"):cssv("--faint"),opacity:v>=thr?.95:.5},svg));
+  stext(svg,L,yN-13,nulls.length+" matched nulls — none admitted",{size:12,fill:cssv("--muted"),weight:600});
+  stext(svg,L,yR-13,reals.length+" real candidates — "+DATA.n_real_accepted+" admitted",{size:12,fill:cssv("--good"),weight:600});
+  stext(svg,L+w/2,H-8,"development-fold gain (right is better)",{anchor:"middle",size:11});
+  const c=document.getElementById("cap3");
+  if(c)c.textContent="Every null lands on the wrong side of zero, because adding an uninformative column "
+    +"costs parameters and buys nothing. The best of them falls short of the threshold by "
+    +Math.abs(DATA.best_null_shortfall).toFixed(4)+", which is what lets the gate quote a measured "
+    +"false-positive rate instead of an assumed one.";
+}
+function drawFig4(){
+  const svg=document.getElementById("fig4");if(!svg)return;clear(svg);
+  const L=150,R=140,T=16,W=760,w=W-L-R,maxN=DATA.n_pool,X=v=>L+(v/maxN)*w;
+  const bar=(y,val,col,lab,sub,faint)=>{
+    el("rect",{x:L,y,width:Math.max(X(val)-L,1),height:20,rx:3,fill:col,opacity:faint?.32:.92},svg);
+    stext(svg,L-10,y+14,lab,{anchor:"end",size:11.5,fill:cssv("--text"),weight:600});
+    stext(svg,X(val)+9,y+14,sub,{size:11.5,fill:col,weight:600});};
+  bar(T,DATA.n_nominal,cssv("--faint"),"24 real, nominal",DATA.n_nominal+" tries",1);
+  bar(T+28,DATA.n_eff,cssv("--accent"),"24 real, effective",DATA.n_eff.toFixed(1)+"  ("+Math.round(100*DATA.n_eff/DATA.n_nominal)+"%)");
+  bar(T+66,DATA.n_pool,cssv("--faint"),"+40 junk, nominal",DATA.n_pool+" tries",1);
+  bar(T+94,DATA.n_eff_pool,cssv("--accent2"),"+40 junk, effective",DATA.n_eff_pool.toFixed(1)+"  ("+Math.round(100*DATA.n_eff_pool/DATA.n_pool)+"%)");
+  const c=document.getElementById("cap4");
+  if(c)c.innerHTML="Participation ratio of the eigenvalues of the correlation matrix of per-observation "
+    +"improvements. Among the 24 real candidates the median pairwise correlation is "+DATA.corr_median.toFixed(2)
+    +" and the maximum "+DATA.corr_max.toFixed(2)+", so counting attempts over-penalises by "
+    +(DATA.n_nominal/DATA.n_eff).toFixed(1)+"×. But padding the pool with forty worthless candidates "
+    +"<b style='color:var(--accent)'>raises</b> the effective share from "+Math.round(100*DATA.n_eff/DATA.n_nominal)
+    +"% to "+Math.round(100*DATA.n_eff_pool/DATA.n_pool)+"%, because junk is mutually independent junk and each "
+    +"null contributes a fresh direction. Independence is not informativeness, so discounting by effective "
+    +"trials alone lets a wasteful search off too lightly. That is an open problem, not a solved detail.";
 }
 
-/* ── panel 2 ───────────────────────────────────────────────────────────── */
-function drawFig2() {
-  const svg = document.getElementById("fig2"); clear(svg);
-  const L = 64, R = 26, W = 760;
-  const w = W - L - R;
-  const T1 = 18, H1 = 168;          // upper: the two gain curves
-  const T2 = 226, H2 = 74;          // lower: retention
-  const c = DATA.curve, n0 = c[0].n, nN = c[c.length - 1].n;
-  const X = n => L + ((n - n0) / (nN - n0)) * w;
-
-  /* upper panel */
-  const vals = c.flatMap(p => [p.D, p.S]);
-  const lo = 0, hi = Math.max(...vals) * 1.08;
-  const Y = v => T1 + H1 - ((v - lo) / (hi - lo)) * H1;
-  for (let i = 0; i <= 4; i++) {
-    const v = lo + (i / 4) * (hi - lo);
-    el("line", { x1: L, y1: Y(v), x2: L + w, y2: Y(v), stroke: css("--line"), "stroke-width": .5 }, svg);
-    text(svg, L - 8, Y(v) + 4, v.toFixed(3), { anchor: "end", size: 10.5 });
-  }
-  const line = (key, colour) => {
-    const d = c.map((p, i) => (i ? "L" : "M") + X(p.n).toFixed(1) + " " + Y(p[key]).toFixed(1)).join(" ");
-    el("path", { d, fill: "none", stroke: colour, "stroke-width": 2.4, "stroke-linejoin": "round" }, svg);
-  };
-  line("S", css("--sealed"));
-  line("D", css("--naive"));
-  const last = c[c.length - 1];
-  text(svg, X(last.n) - 4, Y(last.D) + 16, "what searching appears to buy",
-       { anchor: "end", size: 11.5, fill: css("--naive"), weight: 600 });
-  text(svg, X(last.n) - 4, Y(last.S) - 8, "what survived the seal",
-       { anchor: "end", size: 11.5, fill: css("--sealed"), weight: 600 });
-  text(svg, L - 52, T1 - 4, "lift", { size: 11 });
-
-  /* lower panel: retention */
-  const rv = c.map(p => p.retention);
-  const rlo = Math.min(1, Math.min(...rv)) - 0.03, rhi = Math.max(...rv) + 0.03;
-  const RY = v => T2 + H2 - ((v - rlo) / (rhi - rlo)) * H2;
-  el("line", { x1: L, y1: RY(1), x2: L + w, y2: RY(1), stroke: css("--line"),
-               "stroke-width": 1.2, "stroke-dasharray": "4 4" }, svg);
-  text(svg, L - 8, RY(1) + 4, "1.00", { anchor: "end", size: 10.5 });
-  text(svg, L - 8, RY(rhi) + 10, rhi.toFixed(2), { anchor: "end", size: 10.5 });
-  const rd = c.map((p, i) => (i ? "L" : "M") + X(p.n).toFixed(1) + " " + RY(p.retention).toFixed(1)).join(" ");
-  el("path", { d: rd, fill: "none", stroke: css("--defl"), "stroke-width": 2.4 }, svg);
-  text(svg, L - 52, T2 - 4, "retained", { size: 11 });
-  text(svg, X(c[0].n) + 6, RY(c[0].retention) - 8, c[0].retention.toFixed(2),
-       { size: 11.5, fill: css("--defl"), weight: 600 });
-  text(svg, X(last.n) - 4, RY(last.retention) - 10, last.retention.toFixed(2),
-       { anchor: "end", size: 11.5, fill: css("--defl"), weight: 600 });
-
-  for (const n of [2, 8, 16, 24, 32, 48, 64].filter(t => t <= nN)) {
-    text(svg, X(n), 322, String(n), { anchor: "middle", size: 11 });
-  }
-  text(svg, L + w / 2, 338, "candidates searched", { anchor: "middle", size: 11.5 });
-
-  document.getElementById("nOrd").textContent = DATA.n_orderings.toLocaleString();
-  document.getElementById("cap2").textContent =
-    "Both curves are measured inside their own fold set, against the average candidate in "
-    + "the same draw, so the longer training window the sealed folds enjoy cancels out and "
-    + "what is left is the effect of having selected.";
-  document.getElementById("gap2").innerHTML =
-    "On this data the search was <strong>clean</strong>. Searching " + last.n
-    + " candidates appeared to buy " + last.D.toFixed(4) + " and "
-    + last.S.toFixed(4) + " actually survived, a retention of <strong>"
-    + last.retention.toFixed(2) + "</strong>. The useful signal is the decline: retention falls "
-    + "monotonically from " + c[0].retention.toFixed(2) + " to " + last.retention.toFixed(2)
-    + " as the search widens. That decay is the selection cost, measured rather than assumed.";
-}
-
-/* ── panel 3 ───────────────────────────────────────────────────────────── */
-function drawFig3() {
-  const svg = document.getElementById("fig3"); clear(svg);
-  const L = 30, R = 24, T = 34, B = 52, W = 760, H = 260;
-  const w = W - L - R, h = H - T - B;
-  const nulls = DATA.nulls, reals = DATA.reals, thr = DATA.gate_threshold;
-
-  const all = nulls.concat(reals, [thr]);
-  const lo = Math.min(...all), hi = Math.max(...all);
-  const pad = (hi - lo) * 0.08;
-  const X = v => L + ((v - (lo - pad)) / ((hi + pad) - (lo - pad))) * w;
-
-  const yN = T + h * 0.32, yR = T + h * 0.74;
-  el("line", { x1: L, y1: yN, x2: L + w, y2: yN, stroke: css("--line"), "stroke-width": 1 }, svg);
-  el("line", { x1: L, y1: yR, x2: L + w, y2: yR, stroke: css("--line"), "stroke-width": 1 }, svg);
-
-  el("line", { x1: X(thr), y1: T - 6, x2: X(thr), y2: T + h + 6,
-               stroke: css("--accent"), "stroke-width": 1.6, "stroke-dasharray": "5 4" }, svg);
-  text(svg, X(thr), T - 12, "acceptance threshold", { anchor: "middle", size: 11.5, fill: css("--accent") });
-  text(svg, X(thr) + 8, T + h + 22, "← rejected", { size: 11 });
-  text(svg, X(thr) - 8, T + h + 22, "admitted →", { anchor: "end", size: 11 });
-
-  nulls.forEach(v => el("circle", { cx: X(v), cy: yN, r: 3.4, fill: css("--null"), opacity: .75 }, svg));
-  reals.forEach(v => el("circle", { cx: X(v), cy: yR, r: 3.8,
-    fill: v >= thr ? css("--sealed") : css("--null"),
-    opacity: v >= thr ? .95 : .5 }, svg));
-
-  text(svg, L, yN - 14, nulls.length + " matched nulls — none admitted",
-       { size: 12.5, fill: css("--null"), weight: 600 });
-  text(svg, L, yR - 14, reals.length + " real candidates — " + DATA.n_real_accepted + " admitted",
-       { size: 12.5, fill: css("--sealed"), weight: 600 });
-  text(svg, L + w / 2, H - 8, "development-fold gain (right is better)", { anchor: "middle", size: 11.5 });
-
-  document.getElementById("cap3").textContent =
-    "Every null lands on the wrong side of zero, because adding an uninformative "
-    + "column costs parameters and buys nothing. The best of them falls short of the "
-    + "threshold by " + Math.abs(DATA.best_null_shortfall).toFixed(4)
-    + ", which is what lets the gate quote a measured false-positive rate.";
-}
-
-/* ── panel 4 ───────────────────────────────────────────────────────────── */
-function drawFig4() {
-  const svg = document.getElementById("fig4"); clear(svg);
-  const L = 152, R = 150, T = 24, W = 760;
-  const w = W - L - R;
-  const maxN = DATA.n_pool;
-  const X = v => L + (v / maxN) * w;
-
-  const bar = (y, val, colour, label, sub, faint) => {
-    el("rect", { x: L, y, width: Math.max(X(val) - L, 1), height: 22, rx: 3,
-                 fill: colour, opacity: faint ? .35 : .9 }, svg);
-    text(svg, L - 12, y + 15, label, { anchor: "end", size: 12.5,
-         fill: css("--fg"), weight: 600 });
-    text(svg, X(val) + 10, y + 15, sub, { size: 12, fill: colour, weight: 600 });
-  };
-
-  bar(T, DATA.n_nominal, css("--null"),
-      "24 real, nominal", DATA.n_nominal + " tries", true);
-  bar(T + 30, DATA.n_eff, css("--accent"),
-      "24 real, effective", DATA.n_eff.toFixed(1) + "  (" +
-      Math.round(100 * DATA.n_eff / DATA.n_nominal) + "%)");
-  bar(T + 74, DATA.n_pool, css("--null"),
-      "+40 junk, nominal", DATA.n_pool + " tries", true);
-  bar(T + 104, DATA.n_eff_pool, css("--naive"),
-      "+40 junk, effective", DATA.n_eff_pool.toFixed(1) + "  (" +
-      Math.round(100 * DATA.n_eff_pool / DATA.n_pool) + "%)");
-
-  document.getElementById("cap4").textContent =
-    "Participation ratio of the eigenvalues of the correlation matrix of per-observation "
-    + "improvements. Among the 24 real candidates, median pairwise correlation is "
-    + DATA.corr_median.toFixed(2) + " and the maximum " + DATA.corr_max.toFixed(2)
-    + ", so counting attempts over-penalises by "
-    + (DATA.n_nominal / DATA.n_eff).toFixed(1) + "×. But adding forty worthless "
-    + "candidates RAISES the effective share from "
-    + Math.round(100 * DATA.n_eff / DATA.n_nominal) + "% to "
-    + Math.round(100 * DATA.n_eff_pool / DATA.n_pool)
-    + "%, because junk is mutually independent junk and each null contributes a fresh "
-    + "direction. Independence is not informativeness. Deflating by effective trials alone "
-    + "would let a search that wasted most of its attempts off lightly, which is why this "
-    + "is posed as an open question rather than a solved one.";
-}
-
-/* ── attestation mock ──────────────────────────────────────────────────── */
-function fillAttestation() {
-  const a = DATA.attestation;
-  document.getElementById("atCand").textContent = a.candidate;
-  document.getElementById("atRaw").textContent = fmt(a.raw_gain);
-  document.getElementById("atNom").textContent = a.trials_nominal;
-  document.getElementById("atEff").textContent = a.trials_effective.toFixed(1);
-  document.getElementById("atDef").textContent = fmt(a.deflated_gain);
-  document.getElementById("atNull").textContent = a.null_calibration;
-}
-
-/* ── wiring ────────────────────────────────────────────────────────────── */
-function drawAll() {
-  drawFig0();
-  drawFig1(+document.getElementById("nSlider").value);
-  drawFig2(); drawFig3(); drawFig4();
-}
-const slider = document.getElementById("nSlider");
-slider.addEventListener("input", () => {
-  document.getElementById("nOut").textContent = slider.value;
-  drawFig1(+slider.value);
-});
-document.getElementById("themeBtn").addEventListener("click", () => {
-  const cur = document.documentElement.getAttribute("data-theme");
-  const dark = cur ? cur === "dark"
-    : matchMedia("(prefers-color-scheme: dark)").matches;
-  document.documentElement.setAttribute("data-theme", dark ? "light" : "dark");
-  drawAll();
-});
-matchMedia("(prefers-color-scheme: dark)").addEventListener("change", drawAll);
-fillAttestation();
-wireConsole();
-drawAll();
+/* ─── boot ────────────────────────────────────────────────────────────── */
+document.getElementById("search").addEventListener("input",()=>{if(CURRENT==="skills")go("skills");});
+renderNav();
+go(location.hash.replace("#","")||"dashboard");
+window.addEventListener("hashchange",()=>go(location.hash.replace("#","")));
 </script>
 </body>
 </html>
