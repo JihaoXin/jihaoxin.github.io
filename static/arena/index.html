@@ -36,6 +36,26 @@ body{font-family:var(--mono);background:radial-gradient(1200px 600px at 80% -10%
   #view{padding:16px 14px 60px}
 }
 
+/* gate */
+#gate{position:fixed;inset:0;z-index:100;display:grid;place-items:center;
+  background:radial-gradient(900px 500px at 50% 20%,#15203a 0%,#000 60%)}
+#gate.done{display:none}
+.gbox{width:min(360px,90vw);border:1px solid var(--border);border-radius:16px;
+  background:linear-gradient(180deg,var(--panel),var(--bg2));padding:26px 24px}
+.gbrand{display:flex;align-items:center;gap:11px;margin-bottom:18px}
+.gbrand .m{width:38px;height:38px;display:grid;place-items:center;font-size:20px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:10px;color:#06231f}
+.gbrand .n{font-weight:700;letter-spacing:.14em;font-size:16px}
+.gbrand .s{color:var(--faint);font-size:11px;letter-spacing:.08em}
+.gf{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
+.gf label{font-size:11px;color:var(--muted);letter-spacing:.05em;text-transform:uppercase}
+.gf input{background:var(--bg);border:1px solid var(--border);border-radius:9px;color:var(--text);
+  padding:9px 11px;font:13px var(--mono);outline:none}
+.gf input:focus{border-color:var(--accent2)}
+#gerr{color:var(--bad);font-size:12px;min-height:16px;margin:2px 0 8px}
+.gnote{color:var(--faint);font-size:11px;line-height:1.5;margin-top:14px;
+  border-top:1px solid var(--border);padding-top:11px}
+
 /* sidebar */
 #sidebar{background:linear-gradient(180deg,var(--bg2),var(--bg));border-right:1px solid var(--border);
   display:flex;flex-direction:column;padding:18px 12px;overflow:hidden}
@@ -146,6 +166,21 @@ svg{display:block;max-width:100%;height:auto}
 </style>
 </head>
 <body>
+<div id="gate">
+  <div class="gbox">
+    <div class="gbrand"><div class="m">⚡</div>
+      <div><div class="n">ARK</div><div class="s">arena · metered</div></div></div>
+    <form id="gform" autocomplete="off">
+      <div class="gf"><label for="gu">user</label><input id="gu" type="text" autocomplete="username"></div>
+      <div class="gf"><label for="gp">password</label><input id="gp" type="password" autocomplete="current-password"></div>
+      <div id="gerr"></div>
+      <button class="btn primary" type="submit" style="width:100%">Sign in</button>
+    </form>
+    <div class="gnote">This gate is a courtesy, not a control. The page is static and
+      everything it can show is already inside it, so treat anything here as public.
+      Nothing sensitive is served from this deployment for exactly that reason.</div>
+  </div>
+</div>
 <div id="app">
   <aside id="sidebar">
     <div class="brand">
@@ -712,6 +747,36 @@ function drawFig4(){
     +"null contributes a fresh direction. Independence is not informativeness, so discounting by effective "
     +"trials alone lets a wasteful search off too lightly. That is an open problem, not a solved detail.";
 }
+
+/* ─── gate ────────────────────────────────────────────────────────────── */
+/* A courtesy gate. On a static host the check can only run in the browser, so
+   this keeps casual visitors out and nothing else. The credential is stored as a
+   hash purely so it is not sitting in plain sight in the source, which is
+   obfuscation rather than security, and the deployment carries nothing that
+   needs security. */
+function ghash(s){let a=5381,b=52711;
+  for(let i=0;i<s.length;i++){a=(a*33^s.charCodeAt(i))>>>0;b=(b*31^s.charCodeAt(s.length-1-i))>>>0;}
+  return (a>>>0).toString(16)+"-"+(b>>>0).toString(16);}
+const GKEY="ark.arena.session";
+const GOK="b5beab1f-c77f1c33";
+function gateOpen(){document.getElementById("gate").classList.add("done");}
+(function(){
+  try{ if(sessionStorage.getItem(GKEY)==="1"){gateOpen();return;} }catch(e){}
+  const f=document.getElementById("gform");
+  f.addEventListener("submit",ev=>{
+    ev.preventDefault();
+    const u=document.getElementById("gu").value.trim();
+    const p=document.getElementById("gp").value;
+    if(ghash(u+":"+p)===GOK){
+      try{sessionStorage.setItem(GKEY,"1");}catch(e){}
+      gateOpen();
+    }else{
+      document.getElementById("gerr").textContent="Not recognised.";
+      document.getElementById("gp").value="";
+    }
+  });
+  document.getElementById("gu").focus();
+})();
 
 /* ─── boot ────────────────────────────────────────────────────────────── */
 document.getElementById("search").addEventListener("input",()=>{if(CURRENT==="skills")go("skills");});
