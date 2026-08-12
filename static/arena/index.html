@@ -198,9 +198,21 @@ const VIEWS=[
   {key:"ledger",   ico:"▤",label:"Ledger"},
   {key:"evidence", ico:"📈",label:"Evidence"},
   {divider:"needs a live feed"},
-  {key:"ovl",      ico:"🧮",label:"OVL",         locked:1},
-  {key:"darkpool", ico:"🌑",label:"Darkpool",    locked:1},
-  {key:"positions",ico:"💼",label:"Positions",   locked:1},
+  {key:"ovl",      ico:"🧮",label:"OVL",       locked:1,
+   what:"Option valuation. Prices a multi-leg structure against the real listed contract, "
+       +"with live quote, implied volatility, open interest and model greeks.",
+   why:"Needs a live option chain. Those surfaces are the core product of the vendors that "
+      +"sell them, licensed per seat, and republishing one is redistribution."},
+  {key:"darkpool", ico:"🌑",label:"Darkpool",  locked:1,
+   what:"Off-exchange prints and smart-money flow, with the option sweeps that accompany them.",
+   why:"Needs a live flow feed under the same per-seat terms."},
+  {key:"positions",ico:"💼",label:"Positions", locked:1,
+   what:"The book: current holdings, portfolio-level delta, gamma, vega and theta, scenario "
+       +"P&L, sizing, leverage, concentration and the pre-trade risk gate. Twenty-four of the "
+       +"fifty-four skills serve this view.",
+   why:"This one is not about licences. It needs the operator's actual brokerage positions, "
+      +"and his real trade history is personal financial data. It stays out of any public "
+      +"deployment on purpose, whatever the data terms happen to say."},
 ];
 let CURRENT="dashboard";
 
@@ -590,11 +602,14 @@ RENDER.evidence=(host)=>{
 
 /* ── locked ── */
 RENDER._locked=(host,v)=>{
-  host.appendChild(h(`<div class="lockbox"><div class="big">🔒</div>
-    <div style="font-size:14px;color:var(--text);margin-bottom:6px">${v.label} needs vendor credentials</div>
-    <p class="mut" style="margin:0 auto;max-width:60ch">This view is served by paid feeds whose licences
-    are per seat and forbid re-serving the data. Rather than fake it, the deployment locks it. The
-    catalogue, the ledger and the Arena are the real thing and are open.</p></div>`));
+  host.appendChild(h(`<div>
+    <p>${v.what||""}</p>
+    <div class="lockbox" style="text-align:left"><div class="big">🔒</div>
+      <div style="font-size:14px;color:var(--text);margin-bottom:6px">Not served in this deployment</div>
+      <p class="mut" style="margin:0;max-width:72ch">${v.why||""}</p>
+      <p class="mut" style="margin:9px 0 0;max-width:72ch">Faking it would be easy and would prove
+      nothing, so it is locked instead. Everything above the divider in the sidebar runs on real
+      data and is open.</p></div></div>`));
 };
 
 /* ─── charts ──────────────────────────────────────────────────────────── */
