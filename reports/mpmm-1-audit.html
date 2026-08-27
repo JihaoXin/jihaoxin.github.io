@@ -1,0 +1,819 @@
+<title>The MPMM-1 Audit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  --ground:#E7EBE9; --surface:#F7F9F8; --surface-2:#EFF3F1;
+  --ink:#0E1A18; --ink-2:#4E5F5B; --ink-3:#778783;
+  --rule:#C6D0CC; --rule-soft:#DAE1DE;
+  --accent:#008B76; --accent-soft:#D5E8E3;
+  --loss:#B4531A; --loss-soft:#F1DFD2;
+  --l1:#8A3D0C; --l2:#B4531A; --l3:#D07B36; --l4:#E7A870;
+  --shadow:0 1px 2px rgba(14,26,24,.05), 0 8px 24px -16px rgba(14,26,24,.22);
+  --display:"Instrument Serif",Georgia,"Times New Roman",serif;
+  --body:"Spectral",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#0B1211; --surface:#131C1A; --surface-2:#182321;
+    --ink:#DEE7E4; --ink-2:#8CA09B; --ink-3:#6B7D79;
+    --rule:#24312E; --rule-soft:#1C2725;
+    --accent:#28AC92; --accent-soft:#0E2B26;
+    --loss:#D4762A; --loss-soft:#2E1D11;
+    --l1:#F0B074; --l2:#D4762A; --l3:#AE5A19; --l4:#8A430E;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0B1211; --surface:#131C1A; --surface-2:#182321;
+  --ink:#DEE7E4; --ink-2:#8CA09B; --ink-3:#6B7D79;
+  --rule:#24312E; --rule-soft:#1C2725;
+  --accent:#28AC92; --accent-soft:#0E2B26;
+  --loss:#D4762A; --loss-soft:#2E1D11;
+  --l1:#F0B074; --l2:#D4762A; --l3:#AE5A19; --l4:#8A430E;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.7);
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--ground); color:var(--ink);
+  font-family:var(--body); font-size:17px; line-height:1.62;
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+}
+::selection{background:var(--accent-soft); color:var(--ink)}
+a{color:var(--accent); text-underline-offset:.18em; text-decoration-thickness:.05em}
+a:focus-visible,button:focus-visible{outline:2px solid var(--accent); outline-offset:3px; border-radius:2px}
+
+/* ---------- grid ---------- */
+.doc{
+  display:grid;
+  grid-template-columns:[rail-start] 11rem [rail-end main-start] minmax(0,41rem) [main-end];
+  column-gap:3.5rem; justify-content:center;
+  padding:0 2.5rem 7rem;
+}
+.doc>*{grid-column:main; min-width:0}
+.span2{grid-column:rail-start/main-end; display:grid; grid-template-columns:11rem minmax(0,41rem); column-gap:3.5rem}
+.full{grid-column:rail-start/main-end}
+.mbody{grid-column:2}
+.span2>*,.sec-head>*,figure,.tablewrap,.figbox,.eq{min-width:0}
+
+/* ---------- masthead ---------- */
+.mast{grid-column:rail-start/main-end; padding:5.5rem 0 0; border-bottom:1px solid var(--rule); margin-bottom:3.5rem}
+.eyebrow{font-family:var(--mono); font-size:.7rem; font-weight:500; letter-spacing:.16em; text-transform:uppercase; color:var(--accent); margin:0 0 1.6rem}
+.eyebrow span{color:var(--ink-3)}
+h1{
+  font-family:var(--display); font-weight:400; font-size:clamp(2.9rem,7vw,5.1rem);
+  line-height:.98; letter-spacing:-.015em; margin:0 0 1.1rem; text-wrap:balance; max-width:17ch;
+}
+h1 em{font-style:italic; color:var(--accent)}
+.deck{font-size:1.22rem; line-height:1.5; color:var(--ink-2); max-width:52ch; margin:0 0 2.4rem; text-wrap:pretty}
+.byline{font-family:var(--mono); font-size:.76rem; line-height:1.9; color:var(--ink-3); letter-spacing:.02em; margin:0 0 3rem}
+.byline strong{color:var(--ink-2); font-weight:500}
+
+/* verdict strip */
+.verdict{display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:0; border-top:1px solid var(--rule); margin-bottom:0}
+.vcell{padding:1.4rem 1.4rem 1.6rem; border-right:1px solid var(--rule-soft)}
+.vcell:last-child{border-right:0}
+.vcell:first-child{padding-left:0}
+.vlab{font-family:var(--mono); font-size:.63rem; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-3); margin:0 0 .55rem}
+.vnum{font-family:var(--mono); font-size:1.55rem; font-weight:500; font-variant-numeric:tabular-nums; letter-spacing:-.02em; line-height:1; margin:0 0 .3rem}
+.vnum.neg{color:var(--loss)} .vnum.pos{color:var(--accent)}
+.vsub{font-family:var(--mono); font-size:.66rem; color:var(--ink-3); margin:0}
+
+/* ---------- abstract ---------- */
+.abstract{background:var(--surface); border:1px solid var(--rule); border-left:2px solid var(--accent); padding:1.8rem 2rem; margin:0 0 4rem; box-shadow:var(--shadow)}
+.abstract h2{font-family:var(--mono); font-size:.66rem; letter-spacing:.16em; text-transform:uppercase; color:var(--accent); margin:0 0 .9rem; font-weight:600}
+.abstract p{margin:0 0 .9rem; font-size:.97rem; line-height:1.66; color:var(--ink-2)}
+.abstract p:last-child{margin-bottom:0}
+.abstract strong{color:var(--ink); font-weight:600}
+
+/* ---------- sections ---------- */
+.sec-head{grid-column:rail-start/main-end; display:grid; grid-template-columns:11rem minmax(0,41rem); column-gap:3.5rem; align-items:baseline; margin:4.2rem 0 1.5rem; padding-top:1.4rem; border-top:1px solid var(--rule)}
+.secnum{font-family:var(--display); font-size:2.4rem; line-height:1; color:var(--rule); text-align:right; font-variant-numeric:tabular-nums; user-select:none}
+h2.sect{font-family:var(--display); font-weight:400; font-size:2.05rem; line-height:1.12; letter-spacing:-.01em; margin:0; text-wrap:balance}
+h3{font-family:var(--body); font-weight:600; font-size:1.02rem; letter-spacing:.01em; margin:2.4rem 0 .7rem; color:var(--ink)}
+h3 .tag{font-family:var(--mono); font-size:.68rem; font-weight:600; letter-spacing:.1em; color:var(--accent); margin-right:.6rem; text-transform:uppercase}
+p{margin:0 0 1.15rem; text-wrap:pretty}
+.lede{font-size:1.08rem; color:var(--ink-2)}
+strong{font-weight:600}
+em{font-style:italic}
+var{font-style:italic; font-family:var(--body)}
+.num{font-family:var(--mono); font-size:.9em; font-variant-numeric:tabular-nums; letter-spacing:-.01em}
+ul,ol{margin:0 0 1.15rem; padding-left:1.3rem}
+li{margin-bottom:.5rem; text-wrap:pretty}
+li::marker{color:var(--ink-3)}
+
+/* marginalia */
+.marg{grid-column:1; font-family:var(--mono); font-size:.68rem; line-height:1.62; color:var(--ink-3); text-align:right; padding-top:.3rem; border-right:1px solid var(--rule-soft); padding-right:1rem; align-self:start}
+.marg b{display:block; color:var(--accent); font-weight:500; letter-spacing:.1em; text-transform:uppercase; font-size:.62rem; margin-bottom:.4rem}
+
+/* equations */
+.eq{display:grid; grid-template-columns:1fr auto; align-items:center; gap:1.5rem; background:var(--surface); border:1px solid var(--rule-soft); border-radius:2px; padding:1.15rem 1.3rem; margin:1.5rem 0 1.6rem; overflow-x:auto}
+.eq .ex{font-family:var(--body); font-size:1.06rem; white-space:nowrap; letter-spacing:.01em}
+.eq .ex i{font-style:italic}
+.eq .ex sub{font-size:.68em; letter-spacing:0}
+.eq .ex .op{color:var(--ink-3); padding:0 .18em}
+.eq .ex .val{font-family:var(--mono); font-size:.86em; font-variant-numeric:tabular-nums}
+.eq .n{font-family:var(--mono); font-size:.72rem; color:var(--ink-3); font-variant-numeric:tabular-nums}
+
+/* ---------- figures & tables ---------- */
+figure{margin:2.6rem 0 2.8rem}
+.figbox{background:var(--surface); border:1px solid var(--rule); padding:1.6rem 1.4rem 1rem; box-shadow:var(--shadow); overflow-x:auto}
+figcaption{font-family:var(--mono); font-size:.72rem; line-height:1.7; color:var(--ink-3); margin-top:.9rem; max-width:74ch}
+figcaption b{color:var(--accent); font-weight:600; letter-spacing:.08em; text-transform:uppercase; font-size:.66rem; margin-right:.5rem}
+.tablewrap{overflow-x:auto; background:var(--surface); border:1px solid var(--rule); box-shadow:var(--shadow)}
+table{border-collapse:collapse; width:100%; font-family:var(--mono); font-size:.78rem; font-variant-numeric:tabular-nums}
+caption{caption-side:top; text-align:left; font-family:var(--mono); font-size:.72rem; color:var(--ink-3); padding:0 0 .8rem; line-height:1.7}
+caption b{color:var(--accent); font-weight:600; letter-spacing:.08em; text-transform:uppercase; font-size:.66rem; margin-right:.5rem}
+th,td{padding:.62rem .9rem; text-align:right; border-bottom:1px solid var(--rule-soft); white-space:nowrap}
+th:first-child,td:first-child{text-align:left; white-space:normal; min-width:14rem}
+thead th{font-weight:600; font-size:.65rem; letter-spacing:.11em; text-transform:uppercase; color:var(--ink-3); border-bottom:1px solid var(--rule); background:var(--surface-2)}
+tbody tr:last-child td{border-bottom:0}
+td.neg{color:var(--loss)} td.pos{color:var(--accent)}
+tr.sub td{border-top:1px solid var(--rule); font-weight:600; background:var(--surface-2)}
+tr.total td{border-top:2px solid var(--ink); border-bottom:0; font-weight:600; font-size:.84rem; background:var(--surface-2)}
+.stage-cell{display:flex; gap:.6rem; align-items:baseline}
+.chip{font-family:var(--mono); font-size:.6rem; font-weight:600; letter-spacing:.06em; padding:.12rem .38rem; border-radius:2px; background:var(--accent-soft); color:var(--accent); flex:none}
+td .note{display:block; font-family:var(--body); font-size:.78rem; color:var(--ink-3); line-height:1.5; margin-top:.15rem; white-space:normal}
+
+/* verdict banner inside stage analyses */
+.ruling{border-left:2px solid var(--loss); background:var(--loss-soft); padding:.95rem 1.15rem; margin:1.4rem 0 1.9rem; font-size:.93rem; line-height:1.6}
+.ruling b{font-family:var(--mono); font-size:.64rem; letter-spacing:.14em; text-transform:uppercase; color:var(--loss); display:block; margin-bottom:.4rem; font-weight:600}
+
+/* pull quote */
+.pull{grid-column:rail-start/main-end; font-family:var(--display); font-size:clamp(1.5rem,3.4vw,2.25rem); line-height:1.24; letter-spacing:-.01em; color:var(--ink); margin:3.2rem 0; padding:2rem 0; border-top:1px solid var(--rule); border-bottom:1px solid var(--rule); text-wrap:balance; max-width:30ch}
+.pull em{font-style:italic; color:var(--accent)}
+
+/* references */
+.refs{font-family:var(--mono); font-size:.74rem; line-height:1.75; color:var(--ink-2); counter-reset:r; list-style:none; padding:0}
+.refs li{counter-increment:r; padding-left:2.6rem; position:relative; margin-bottom:.75rem}
+.refs li::before{content:"[" counter(r) "]"; position:absolute; left:0; color:var(--accent)}
+.refs i{font-style:italic; color:var(--ink)}
+
+/* legend */
+.legend{display:flex; flex-wrap:wrap; gap:.4rem 1.4rem; font-family:var(--mono); font-size:.68rem; color:var(--ink-2); margin:0 0 1rem; padding-left:.2rem}
+.legend span{display:flex; align-items:center; gap:.45rem}
+.swatch{width:14px; height:3px; border-radius:2px; flex:none}
+.swatch.dash{background:none; border-top:2px dashed var(--ink-3); height:0}
+
+/* chart tooltip */
+.chartwrap{position:relative}
+.tip{position:absolute; pointer-events:none; opacity:0; transition:opacity .1s; background:var(--ink); color:var(--ground); font-family:var(--mono); font-size:.68rem; line-height:1.5; padding:.45rem .6rem; border-radius:3px; white-space:nowrap; transform:translate(-50%,-135%); z-index:5; box-shadow:0 4px 14px rgba(0,0,0,.28)}
+.tip b{color:var(--ground); font-weight:600}
+
+svg{display:block; max-width:100%; height:auto}
+.s-lab{font-family:var(--mono); font-size:11px; fill:var(--ink-2)}
+.s-lab-sm{font-family:var(--mono); font-size:9.5px; fill:var(--ink-3); letter-spacing:.06em}
+.s-val{font-family:var(--mono); font-size:11px; fill:var(--ink); font-weight:500}
+.s-title{font-family:var(--mono); font-size:9.5px; fill:var(--ink-3); letter-spacing:.14em; text-transform:uppercase}
+
+.foot{grid-column:rail-start/main-end; margin-top:4.5rem; padding-top:1.4rem; border-top:1px solid var(--rule); font-family:var(--mono); font-size:.7rem; color:var(--ink-3); line-height:1.8; display:flex; justify-content:space-between; gap:2rem; flex-wrap:wrap}
+
+@media (max-width:1080px){
+  .doc{grid-template-columns:[rail-start] 0 [rail-end main-start] minmax(0,41rem) [main-end]; column-gap:0; padding:0 1.5rem 5rem}
+  .span2,.sec-head{grid-template-columns:1fr; column-gap:0}
+  .mbody{grid-column:1}
+  .secnum{text-align:left; font-size:1.5rem; color:var(--accent); margin-bottom:.2rem}
+  .marg{grid-column:1; text-align:left; border-right:0; border-left:1px solid var(--rule); padding:.6rem 0 .6rem 1rem; margin-bottom:1.2rem}
+  .pull{max-width:none}
+}
+@media (max-width:640px){
+  body{font-size:16px}
+  .vcell{border-right:0; border-bottom:1px solid var(--rule-soft); padding-left:0}
+  .abstract{padding:1.3rem 1.2rem}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important; transition:none!important}}
+</style>
+
+<article class="doc">
+
+  <header class="mast">
+    <p class="eyebrow">Technical Report&nbsp;&nbsp;·&nbsp;&nbsp;Thermodynamic Assay <span>/ MPMM-1 &ldquo;Cascade Loop&rdquo;</span></p>
+    <h1>A machine that <em>almost</em> balances its books</h1>
+    <p class="deck">A complete engineering specification for a four-stage closed-loop perpetual motion machine, followed by the energy audit that dismantles it &mdash; stage by stage, in every domain at once.</p>
+    <p class="byline">
+      <strong>Classification</strong>&nbsp; PMM&#8202;1 by claim, PMM&#8202;2 by mechanism<br>
+      <strong>Subject</strong>&nbsp; MPMM-1, four-stage capillary&ndash;magnetostatic&ndash;thermoelectric&ndash;buoyant loop<br>
+      <strong>Method</strong>&nbsp; Per-cycle closed-contour energy and entropy accounting; analytic, no free parameters<br>
+      <strong>Finding</strong>&nbsp; Net shaft work per revolution is negative in every operating regime
+    </p>
+    <div class="verdict">
+      <div class="vcell">
+        <p class="vlab">Claimed net output</p>
+        <p class="vnum pos">+38.63 J</p>
+        <p class="vsub">per revolution &nbsp;/&nbsp; 12.30 W</p>
+      </div>
+      <div class="vcell">
+        <p class="vlab">Audited net output</p>
+        <p class="vnum neg">&minus;14.19 J</p>
+        <p class="vsub">per revolution &nbsp;/&nbsp; &minus;4.52 W</p>
+      </div>
+      <div class="vcell">
+        <p class="vlab">Accounting gap</p>
+        <p class="vnum">52.82 J</p>
+        <p class="vsub">per revolution &nbsp;/&nbsp; 16.82 W</p>
+      </div>
+      <div class="vcell">
+        <p class="vlab">Time to standstill</p>
+        <p class="vnum">13.21 s</p>
+        <p class="vsub">2.00 revolutions from &omega;<sub>0</sub></p>
+      </div>
+    </div>
+  </header>
+
+  <div class="abstract">
+    <h2>Abstract</h2>
+    <p>We specify MPMM-1, a four-stage closed-loop machine intended to deliver net mechanical work without an external energy input. The design is deliberately constructed so that no single-domain analysis condemns it: each stage's energy deficit is settled in a <em>different</em> physical domain from the one in which its gain is claimed &mdash; capillarity against gravitation, magnetostatics against rotation, thermoelectrics against friction, buoyancy against hydrostatics. An auditor who checks only mechanics finds the mechanics sound; one who checks only the magnetic circuit finds no fault.</p>
+    <p>Auditing all four domains on a common closed contour removes the hiding places. The capillary array releases <span class="num">6.79&nbsp;J</span> of surface energy per fill and stores exactly half of it as potential energy, the other half being dissipated by viscous shear during the rise; none of it is extractable at the meniscus, and the drying stroke costs the full <span class="num">6.79&nbsp;J</span> back. The magnetic gate does exactly zero net work, because a static magnetic field is conservative, and then charges <span class="num">3.64&nbsp;J</span> per revolution in eddy-current and hysteresis losses for the privilege. The thermoelectric recuperator returns <span class="num">0.137&nbsp;%</span> of the friction it harvests, this being the Carnot limit at a <span class="num">2.4&nbsp;K</span> temperature difference reduced by a realistic figure of merit. The buoyant chain's injection work equals its buoyant work identically, <span class="num">32.96&nbsp;J</span> against <span class="num">32.96&nbsp;J</span>, leaving only seal friction and drag.</p>
+    <p>The result is <strong>&minus;14.19&nbsp;J per revolution</strong> against a claimed <strong>+38.63&nbsp;J</strong>, an accounting gap of <span class="num">52.82&nbsp;J</span>. Entropy production is <span class="num">0.0481&nbsp;J&#8202;K<sup>&minus;1</sup></span> per revolution, strictly positive as required. Integrating the speed-dependent loss torque predicts that the rotor, released at <span class="num">2.00&nbsp;rad&#8202;s<sup>&minus;1</sup></span>, stops after <span class="num">13.21&nbsp;s</span> and <span class="num">2.00</span> revolutions. We give a falsification protocol whose discriminating observable is the coast-down curve, and we close by noting that the impossibility proved here is far more useful as an <em>axiom</em> than as a target &mdash; which is precisely how Stevin used it in 1586 to derive the law of the inclined plane.</p>
+  </div>
+
+  <div class="sec-head"><div class="secnum">01</div><h2 class="sect">The brief, and why it is interesting anyway</h2></div>
+
+  <p class="lede">A perpetual motion machine cannot be built. This is not an engineering limitation awaiting better bearings; it is a consequence of the observation that the laws of physics do not depend on what time it is. By Noether's theorem, invariance of a system's action under translation in time <em>is</em> conservation of its energy &mdash; the two statements are the same statement. To claim a machine that produces energy from nothing is to claim that physics was different yesterday.</p>
+
+  <div class="span2">
+    <aside class="marg"><b>On the framing</b>Stevin (1586) assumed no perpetual motion and <em>derived</em> the inclined plane. The impossibility is a premise that pays, not a wall that blocks.</aside>
+    <div class="mbody">
+      <p>So the interesting question is never &ldquo;can it be done.&rdquo; It is: <strong>given a design that appears to work, where exactly does it fail, and by how much?</strong> That question has a numerical answer, and computing it is a real exercise in multi-domain energy accounting &mdash; the same exercise one performs on a heat pump, a regenerative brake, or a claimed efficiency improvement in a data-centre cooling loop.</p>
+      <p>Accordingly, this report does two things in sequence. First it presents MPMM-1 as its designer would: a complete, dimensioned, buildable specification with claimed performance figures. Then it audits that specification on a closed contour, in all four of its physical domains simultaneously, and reports the deficit to three significant figures.</p>
+    </div>
+  </div>
+
+  <p>MPMM-1 was designed adversarially &mdash; that is, designed to be <em>hard to refute</em> rather than easy. Its four stages are chosen so that each one's loss appears in a domain that a specialist in the adjacent stage would not think to check. This is the characteristic structure of every serious perpetual motion proposal in the historical record, and naming it is the report's main pedagogical contribution.</p>
+
+  <div class="sec-head"><div class="secnum">02</div><h2 class="sect">Specification of MPMM-1</h2></div>
+
+  <p>The machine is a horizontal-axis flywheel of <span class="num">1.20&nbsp;m</span> diameter carrying twelve arms, coupled to four subsystems arranged around it. Nominal operating speed is <span class="num">2.00&nbsp;rad&#8202;s<sup>&minus;1</sup></span> (<span class="num">19.1&nbsp;rpm</span>), giving a cycle period of <span class="num">&pi;&nbsp;s&nbsp;&asymp;&nbsp;3.14&nbsp;s</span>. All figures below are quoted per revolution at this speed, with ambient at <span class="num">295&nbsp;K</span>.</p>
+
+  <figure class="full">
+    <div class="figbox">
+      <svg viewBox="0 0 960 400" role="img" aria-labelledby="schematic-t">
+        <title id="schematic-t">Schematic cross-section of MPMM-1 showing the four stages arranged around the central rotor</title>
+        <defs>
+          <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/>
+          </marker>
+          <marker id="ahl" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--loss)"/>
+          </marker>
+        </defs>
+
+        <text x="0" y="14" class="s-title">Figure 1 &mdash; Arrangement</text>
+
+        <!-- STAGE A : capillary column -->
+        <rect x="62" y="72" width="118" height="236" fill="none" stroke="var(--rule)" stroke-width="1.4"/>
+        <rect x="63" y="248" width="116" height="59" fill="var(--accent-soft)"/>
+        <g stroke="var(--accent)" stroke-width="1.1" opacity=".85">
+          <line x1="82" y1="248" x2="82" y2="100"/><line x1="97" y1="248" x2="97" y2="100"/>
+          <line x1="112" y1="248" x2="112" y2="100"/><line x1="127" y1="248" x2="127" y2="100"/>
+          <line x1="142" y1="248" x2="142" y2="100"/><line x1="157" y1="248" x2="157" y2="100"/>
+        </g>
+        <path d="M78 100 q42 -16 84 0" fill="none" stroke="var(--accent)" stroke-width="1.6"/>
+        <line x1="120" y1="248" x2="120" y2="112" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#ah)"/>
+        <text x="121" y="332" class="s-lab" text-anchor="middle">Jurin rise</text>
+        <text x="121" y="346" class="s-val" text-anchor="middle">h = 1.484 m</text>
+        <text x="121" y="360" class="s-lab-sm" text-anchor="middle">10&#8202;&mu;m &times; 10&#8309; capillaries</text>
+        <path d="M162 96 L214 96 L214 118" fill="none" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#ah)"/>
+        <circle cx="240" cy="140" r="24" fill="none" stroke="var(--rule)" stroke-width="1.4"/>
+        <g stroke="var(--ink-3)" stroke-width="1"><line x1="240" y1="116" x2="240" y2="164"/><line x1="216" y1="140" x2="264" y2="140"/><line x1="223" y1="123" x2="257" y2="157"/><line x1="257" y1="123" x2="223" y2="157"/></g>
+        <text x="240" y="182" class="s-lab-sm" text-anchor="middle">spill turbine</text>
+        <line x1="266" y1="152" x2="392" y2="182" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#ah)"/>
+        <circle cx="121" cy="52" r="11" fill="var(--accent)"/>
+        <text x="121" y="56" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="600" fill="var(--surface)">A</text>
+
+        <!-- ROTOR -->
+        <circle cx="480" cy="196" r="66" fill="none" stroke="var(--ink-2)" stroke-width="1.6"/>
+        <circle cx="480" cy="196" r="14" fill="var(--surface-2)" stroke="var(--ink-2)" stroke-width="1.4"/>
+        <g stroke="var(--rule)" stroke-width="1">
+          <line x1="480" y1="130" x2="480" y2="262"/><line x1="414" y1="196" x2="546" y2="196"/>
+          <line x1="433" y1="149" x2="527" y2="243"/><line x1="527" y1="149" x2="433" y2="243"/>
+          <line x1="447" y1="139" x2="513" y2="253"/><line x1="513" y1="139" x2="447" y2="253"/>
+          <line x1="423" y1="163" x2="537" y2="229"/><line x1="537" y1="163" x2="423" y2="229"/>
+        </g>
+        <g fill="var(--accent)">
+          <rect x="474" y="118" width="12" height="14" rx="1"/><rect x="474" y="260" width="12" height="14" rx="1"/>
+          <rect x="402" y="190" width="14" height="12" rx="1"/><rect x="544" y="190" width="14" height="12" rx="1"/>
+          <rect x="424" y="140" width="12" height="12" rx="1" transform="rotate(-45 430 146)"/>
+          <rect x="524" y="140" width="12" height="12" rx="1" transform="rotate(45 530 146)"/>
+          <rect x="424" y="240" width="12" height="12" rx="1" transform="rotate(45 430 246)"/>
+          <rect x="524" y="240" width="12" height="12" rx="1" transform="rotate(-45 530 246)"/>
+        </g>
+        <path d="M480 196 m0,-92 a92,92 0 0,1 65,27" fill="none" stroke="var(--accent)" stroke-width="7" stroke-linecap="round" opacity=".45"/>
+        <text x="480" y="94" class="s-lab" text-anchor="middle">stator gate arc</text>
+        <text x="480" y="300" class="s-lab" text-anchor="middle">I = 12.96 kg&#8202;m&sup2;</text>
+        <text x="480" y="314" class="s-lab-sm" text-anchor="middle">&omega;&#8320; = 2.00 rad&#8202;s&#8315;&sup1;&nbsp; &middot;&nbsp; 45.0 kg</text>
+        <circle cx="398" cy="96" r="11" fill="var(--accent)"/>
+        <text x="398" y="100" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="600" fill="var(--surface)">B</text>
+        <text x="398" y="122" class="s-lab-sm" text-anchor="middle">12&times;12 N52</text>
+
+        <!-- STAGE C : TEG on the bearing housing, right of the rotor -->
+        <text x="652" y="216" class="s-lab-sm" text-anchor="middle" fill="var(--loss)">friction heat 0.930 J&#8202;rev&#8315;&sup1;</text>
+        <g stroke="var(--loss)" stroke-width="1.3">
+          <line x1="552" y1="234" x2="594" y2="234" marker-end="url(#ahl)"/>
+          <line x1="552" y1="248" x2="594" y2="248" marker-end="url(#ahl)"/>
+        </g>
+        <rect x="600" y="228" width="104" height="26" fill="var(--loss-soft)" stroke="var(--loss)" stroke-width="1.3"/>
+        <text x="652" y="245" class="s-lab" text-anchor="middle" fill="var(--loss)">TEG, ZT = 1.0</text>
+        <path d="M652 256 C652 292 580 292 528 268" fill="none" stroke="var(--accent)" stroke-width="1.3" marker-end="url(#ah)"/>
+        <text x="668" y="302" class="s-lab-sm" text-anchor="middle" fill="var(--accent)">0.0013 J back</text>
+        <text x="668" y="320" class="s-lab-sm" text-anchor="middle">&Delta;T = 2.4 K&nbsp; &rarr;&nbsp; 0.137&#8202;%</text>
+        <circle cx="726" cy="241" r="11" fill="var(--accent)"/>
+        <text x="726" y="245" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="600" fill="var(--surface)">C</text>
+
+        <!-- STAGE D : buoyancy column -->
+        <rect x="784" y="72" width="118" height="236" fill="none" stroke="var(--rule)" stroke-width="1.4"/>
+        <rect x="785" y="96" width="116" height="211" fill="var(--accent-soft)"/>
+        <g fill="none" stroke="var(--accent)" stroke-width="1.5">
+          <circle cx="843" cy="278" r="13"/><circle cx="843" cy="232" r="13"/>
+          <circle cx="843" cy="186" r="13"/><circle cx="843" cy="140" r="13"/>
+        </g>
+        <line x1="843" y1="300" x2="843" y2="112" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#ah)"/>
+        <rect x="800" y="308" width="86" height="18" fill="var(--loss-soft)" stroke="var(--loss)" stroke-width="1.2"/>
+        <text x="843" y="321" class="s-lab-sm" text-anchor="middle" fill="var(--loss)">lock seal</text>
+        <text x="843" y="346" class="s-lab" text-anchor="middle">H = 1.40 m</text>
+        <text x="843" y="360" class="s-lab-sm" text-anchor="middle">8 &times; 0.300 L per rev</text>
+        <path d="M770 78 L624 78 C592 78 566 106 548 140" fill="none" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#ah)"/>
+        <text x="672" y="70" class="s-lab-sm" text-anchor="middle">chain drive</text>
+        <circle cx="843" cy="52" r="11" fill="var(--accent)"/>
+        <text x="843" y="56" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="600" fill="var(--surface)">D</text>
+      </svg>
+    </div>
+    <figcaption><b>Figure 1</b> Arrangement of MPMM-1. Stage&nbsp;A lifts water by capillarity and spills it onto a turbine; Stage&nbsp;B is a magnetostatic &ldquo;gate&rdquo; of twelve rotor and twelve stator magnets; Stage&nbsp;C is a thermoelectric generator harvesting bearing-housing heat; Stage&nbsp;D is a buoyant float chain returning work to the shaft. Accent arrows show the circulation as the designer intends it; the amber elements are where the audit finds the money going.</figcaption>
+  </figure>
+
+  <figure class="full">
+    <div class="tablewrap">
+      <table>
+        <caption><b>Table 1</b> Design specification. Materials and dimensions are ordinary commercial grades; nothing exotic is invoked.</caption>
+        <thead><tr><th>Parameter</th><th>Symbol</th><th>Value</th><th>Unit</th></tr></thead>
+        <tbody>
+          <tr><td>Rotor diameter</td><td>2R</td><td>1.200</td><td>m</td></tr>
+          <tr><td>Rotor mass</td><td>m</td><td>45.0</td><td>kg</td></tr>
+          <tr><td>Moment of inertia (rim-loaded, 0.80&#8202;mR&sup2;)</td><td>I</td><td>12.96</td><td>kg&#8202;m&sup2;</td></tr>
+          <tr><td>Nominal angular velocity</td><td>&omega;<sub>0</sub></td><td>2.00</td><td>rad&#8202;s<sup>&minus;1</sup></td></tr>
+          <tr><td>Stored kinetic energy at &omega;<sub>0</sub></td><td>E<sub>k</sub></td><td>25.92</td><td>J</td></tr>
+          <tr class="sub"><td colspan="4">Stage A &mdash; capillary lift array</td></tr>
+          <tr><td>Capillary radius / count</td><td>r, N</td><td>10.0&#8202;&mu;m, 1.00&times;10&#8310;</td><td>&mdash;</td></tr>
+          <tr><td>Surface tension, water at 22&nbsp;&deg;C</td><td>&gamma;</td><td>72.8</td><td>mN&#8202;m<sup>&minus;1</sup></td></tr>
+          <tr><td>Jurin height, 2&gamma;/&rho;gr</td><td>h</td><td>1.484</td><td>m</td></tr>
+          <tr><td>Mass raised per fill</td><td>m<sub>A</sub></td><td>0.466</td><td>kg</td></tr>
+          <tr class="sub"><td colspan="4">Stage B &mdash; magnetostatic gate</td></tr>
+          <tr><td>Magnets (rotor + stator), NdFeB N52</td><td>&mdash;</td><td>12 + 12, 25&times;25&times;12</td><td>mm</td></tr>
+          <tr><td>Remanence / energy product</td><td>B<sub>r</sub>, (BH)<sub>max</sub></td><td>1.45, 400</td><td>T, kJ&#8202;m<sup>&minus;3</sup></td></tr>
+          <tr><td>Back-iron peak flux density / thickness</td><td>B<sub>pk</sub>, d</td><td>0.35, 8.0</td><td>T, mm</td></tr>
+          <tr><td>Pole passing frequency</td><td>f</td><td>3.82</td><td>Hz</td></tr>
+          <tr class="sub"><td colspan="4">Stage C &mdash; thermoelectric recuperator</td></tr>
+          <tr><td>Bearing drag torque</td><td>T<sub>f</sub></td><td>0.120</td><td>N&#8202;m</td></tr>
+          <tr><td>Housing&ndash;ambient thermal resistance</td><td>R<sub>th</sub></td><td>8.0</td><td>K&#8202;W<sup>&minus;1</sup></td></tr>
+          <tr><td>Thermoelectric figure of merit</td><td>ZT</td><td>1.0</td><td>&mdash;</td></tr>
+          <tr class="sub"><td colspan="4">Stage D &mdash; buoyant return chain</td></tr>
+          <tr><td>Column depth</td><td>H</td><td>1.400</td><td>m</td></tr>
+          <tr><td>Float displacement / count per revolution</td><td>V, n</td><td>0.300, 8</td><td>L, &mdash;</td></tr>
+          <tr><td>Lock-seal friction force / stroke</td><td>F<sub>s</sub>, s</td><td>6.0, 0.080</td><td>N, m</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </figure>
+
+  <div class="sec-head"><div class="secnum">03</div><h2 class="sect">Stage-by-stage audit</h2></div>
+
+  <p>Each stage is treated identically: the claim as specified, the governing physics, the closed-contour result, and the ruling. &ldquo;Closed contour&rdquo; means the integral is taken over a complete cycle that returns every component to its initial state &mdash; the condition the designer's own accounting omits.</p>
+
+  <h3><span class="tag">Stage A</span>Capillary lift array</h3>
+
+  <p><strong>The claim.</strong> A bundle of <span class="num">10&#8310;</span> borosilicate capillaries of <span class="num">10&nbsp;&mu;m</span> radius raises <span class="num">0.466&nbsp;kg</span> of water to <span class="num">1.484&nbsp;m</span> with no input. The water spills at the top onto a turbine, returns to the reservoir, and the capillaries refill spontaneously. Claimed yield: the stored potential energy, <span class="num">+3.39&nbsp;J</span> per cycle.</p>
+
+  <p><strong>The physics.</strong> The rise is driven by the surface energy released as the meniscus wets the tube wall. Over the full rise the surface does work</p>
+
+  <div class="eq"><span class="ex"><i>W</i><sub>&sigma;</sub> <span class="op">=</span> 2&pi;<i>r</i>&gamma;<i>h</i> <span class="op">&middot;</span> <i>N</i> <span class="op">=</span> 4&pi;<i>N</i>&gamma;<sup>2</sup>&#8202;/&#8202;&rho;<i>g</i> <span class="op">=</span> <span class="val">6.79 J</span></span><span class="n">(1)</span></div>
+
+  <div class="span2">
+    <aside class="marg"><b>The factor of two</b>Exactly half the surface energy reaches the centre of mass; the other half is spent on viscous shear during the rise. This is exact at equilibrium, independent of <i>r</i>, <i>N</i> and &gamma;.</aside>
+    <div class="mbody">
+      <p>while the water's centre of mass rises only to <var>h</var>/2, so the potential energy actually stored is</p>
+      <div class="eq"><span class="ex"><i>E</i><sub>p</sub> <span class="op">=</span> <i>m</i><sub>A</sub><i>g h</i>&#8202;/&#8202;2 <span class="op">=</span> 2&pi;<i>N</i>&gamma;<sup>2</sup>&#8202;/&#8202;&rho;<i>g</i> <span class="op">=</span> <span class="val">3.39 J</span></span><span class="n">(2)</span></div>
+      <p>The missing <span class="num">3.39&nbsp;J</span> is dissipated by Poiseuille shear against the tube walls on the way up. It is gone before the water arrives.</p>
+    </div>
+  </div>
+
+  <p><strong>Why nothing spills.</strong> At equilibrium the meniscus curvature exactly supports the column. To shed a drop the meniscus must flatten, which requires the column to exceed <var>h</var>, which it cannot do by definition. The capillary does not overflow &mdash; this is the failure mode Boyle's 1660 &ldquo;perpetual fountain&rdquo; shares, and it is the reason no such fountain has ever run. Forcing a drop off the top requires re-supplying the full surface energy of equation&nbsp;(1).</p>
+
+  <p><strong>Closing the contour.</strong> To make the stage cyclic the array must be dried and re-wetted. Drying costs <span class="num">6.79&nbsp;J</span>; the descending water can return at best its stored <span class="num">3.39&nbsp;J</span>. Surface energy is a state function of the wetted area, so over a complete wet&ndash;dry cycle its net contribution is identically zero and only the dissipation survives.</p>
+
+  <div class="ruling"><b>Ruling &mdash; Stage A</b>Best case <span class="num">&minus;3.40&nbsp;J</span> per revolution. The claimed <span class="num">+3.39&nbsp;J</span> is real energy, but it is a one-time deposit from the surface state, not an income stream, and it is unreachable at the point of use.</div>
+
+  <h3><span class="tag">Stage B</span>Magnetostatic gate</h3>
+
+  <p><strong>The claim.</strong> Twelve rotor magnets pass twelve shaped stator magnets. The stator geometry is asymmetric &mdash; a shallow approach ramp and a steep departure &mdash; so that attraction on approach exceeds repulsion on departure, netting <span class="num">+8.00&nbsp;J</span> per revolution.</p>
+
+  <p><strong>The physics.</strong> In the absence of free currents and time variation, <span class="num">&nabla;&times;<b>H</b> = 0</span>, so <b>H</b> derives from a scalar potential and the force on a rigid dipole assembly is the gradient of a potential energy. For any closed path,</p>
+
+  <div class="eq"><span class="ex">&#8750; <b>F</b> <span class="op">&middot;</span> d<b>l</b> <span class="op">=</span> &minus;&#8750; &nabla;<i>U</i> <span class="op">&middot;</span> d<b>l</b> <span class="op">=</span> <span class="val">0</span> &nbsp;&nbsp;<span class="op">exactly</span></span><span class="n">(3)</span></div>
+
+  <div class="span2">
+    <aside class="marg"><b>Not an approximation</b>Equation (3) holds for <em>any</em> stator profile, however cunning. Shaping changes where torque appears within the revolution, never its integral.</aside>
+    <div class="mbody">
+      <p>No arrangement of permanent magnets can produce a nonzero line integral, because the field is conservative. The asymmetry is real and does exactly what asymmetries do: it redistributes torque within the revolution, front-loading it so that a hand-turned prototype feels a convincing kick. The integral is unchanged.</p>
+      <p>The stage is worse than neutral, because the moving flux is dissipative. Eddy currents in the <span class="num">8&nbsp;mm</span> unlaminated mild-steel back iron cost</p>
+      <div class="eq"><span class="ex"><i>P</i><sub>e</sub> <span class="op">=</span> &pi;<sup>2</sup><i>B</i><sub>pk</sub><sup>2</sup><i>d</i><sup>2</sup><i>f</i><sup>2</sup><i>V</i> &#8202;/&#8202; 6&rho;<sub>e</sub> <span class="op">=</span> <span class="val">1.06 W</span></span><span class="n">(4)</span></div>
+      <p>which is <span class="num">3.33&nbsp;J</span> per revolution, and Steinmetz hysteresis in the same iron adds <span class="num">0.313&nbsp;J</span>.</p>
+    </div>
+  </div>
+
+  <div class="ruling"><b>Ruling &mdash; Stage B</b><span class="num">&minus;3.64&nbsp;J</span> per revolution. The gate contributes exactly zero gross work and then bills the rotor for magnetising its own iron twelve times a turn.</div>
+
+  <h3><span class="tag">Stage C</span>Thermoelectric recuperator</h3>
+
+  <p><strong>The claim.</strong> Bearing friction and windage dissipate <span class="num">0.930&nbsp;J</span> per revolution as heat in the bearing housing. A thermoelectric generator clamped to the housing recovers this heat and returns it to the shaft as electrical work, claimed at <span class="num">+0.28&nbsp;J</span> per revolution &mdash; &ldquo;waste heat recycling, so the bearings are effectively free.&rdquo;</p>
+
+  <p><strong>The physics.</strong> This is a direct attempt on the Kelvin&ndash;Planck statement: no cyclic device may produce net work while exchanging heat with a single reservoir. The TEG does not see a single reservoir &mdash; it sees the housing and the ambient &mdash; but the temperature difference between them is created <em>by the very dissipation being harvested</em>, and it is small. At <span class="num">0.296&nbsp;W</span> through <span class="num">8.0&nbsp;K&#8202;W<sup>&minus;1</sup></span>,</p>
+
+  <div class="eq"><span class="ex">&Delta;<i>T</i> <span class="op">=</span> <span class="val">2.37 K</span>,&nbsp;&nbsp; &eta;<sub>C</sub> <span class="op">=</span> &Delta;<i>T</i>&#8202;/&#8202;<i>T</i><sub>h</sub> <span class="op">=</span> <span class="val">0.796&#8202;%</span></span><span class="n">(5)</span></div>
+
+  <div class="span2">
+    <aside class="marg"><b>The reduction factor</b>Even a perfect Carnot engine here would return under 1&#8202;%. A real thermoelectric returns about a sixth of that.</aside>
+    <div class="mbody">
+      <p>A thermoelectric couple attains only a fraction of Carnot, set by its figure of merit:</p>
+      <div class="eq"><span class="ex">&eta; <span class="op">=</span> &eta;<sub>C</sub> <span class="op">&middot;</span> (&radic;(1+<i>ZT</i>) &minus; 1) &#8202;/&#8202; (&radic;(1+<i>ZT</i>) + <i>T</i><sub>c</sub>/<i>T</i><sub>h</sub>)</span><span class="n">(6)</span></div>
+      <p>At <span class="num">ZT = 1.0</span>, competitive for commercial bismuth telluride, the reduction factor is <span class="num">0.172</span>, giving <span class="num">&eta; = 0.137&#8202;%</span> and a recovery of <span class="num">1.27&times;10<sup>&minus;3</sup>&nbsp;J</span> per revolution.</p>
+    </div>
+  </div>
+
+  <p>The stage recovers about one part in seven hundred of a loss the machine has already suffered. Worse, inserting the TEG raises the housing's thermal resistance, so the stage marginally increases the bearing temperature it feeds on. This is the report's clearest example of the central bookkeeping error: <strong>a partial refund is entered in the ledger as income.</strong></p>
+
+  <div class="ruling"><b>Ruling &mdash; Stage C</b><span class="num">&minus;0.929&nbsp;J</span> per revolution. Recovering <span class="num">0.137&#8202;%</span> of a loss is not a gain; it is a loss of <span class="num">99.863&#8202;%</span>.</div>
+
+  <h3><span class="tag">Stage D</span>Buoyant return chain</h3>
+
+  <p><strong>The claim.</strong> Eight <span class="num">0.300&nbsp;L</span> floats per revolution are injected at the bottom of a <span class="num">1.40&nbsp;m</span> water column through a rotary lock, rise under buoyancy, and drive the shaft through a chain. Buoyant work is <span class="num">&rho;gVH = 4.12&nbsp;J</span> per float, <span class="num">+32.96&nbsp;J</span> per revolution, and the injection is claimed to be &ldquo;free, since the descending floats push the next one in.&rdquo;</p>
+
+  <p><strong>The physics.</strong> The injection is not free. A float entering at depth <var>H</var> must displace water against the gauge pressure <span class="num">p = &rho;gH</span> there, costing</p>
+
+  <div class="eq"><span class="ex"><i>W</i><sub>inj</sub> <span class="op">=</span> <i>pV</i> <span class="op">=</span> &rho;<i>gHV</i> <span class="op">=</span> <span class="val">4.12 J</span> <span class="op">&equiv;</span> <i>W</i><sub>buoy</sub></span><span class="n">(7)</span></div>
+
+  <p>The two are not approximately equal &mdash; they are the same expression. Hydrostatic pressure integrates to exactly the buoyant work over the same depth, so the ideal net is identically zero for any float volume, any depth, any number of floats. This is the oldest known result in the field: the reason no submerged-buoyancy engine has ever run is that the water charges admission at precisely the rate the float is later paid.</p>
+
+  <p>What remains is entirely parasitic: lock-seal friction at <span class="num">6.0&nbsp;N</span> over an <span class="num">80&nbsp;mm</span> stroke for eight floats (<span class="num">3.84&nbsp;J</span>); hydrodynamic drag on the ascending floats at <span class="num">C<sub>d</sub> = 0.50</span> and <span class="num">0.25&nbsp;m&#8202;s<sup>&minus;1</sup></span> (<span class="num">1.37&nbsp;J</span>); and turbulent entrainment at each injection (<span class="num">&asymp;1.00&nbsp;J</span>).</p>
+
+  <div class="ruling"><b>Ruling &mdash; Stage D</b><span class="num">&minus;6.22&nbsp;J</span> per revolution, the largest single deficit in the machine. The stage that appeared to contribute <span class="num">85&#8202;%</span> of the gross output contributes none of it.</div>
+
+  <div class="sec-head"><div class="secnum">04</div><h2 class="sect">The closed-loop audit</h2></div>
+
+  <p>Collecting the four rulings on a common contour gives the machine's balance sheet. The distinction that matters is between energy that <em>circulates</em> &mdash; leaving the rotor and returning to it within the cycle, contributing nothing net &mdash; and energy that <em>escapes</em> as heat. The designer's accounting counts the first as output.</p>
+
+  <figure class="full">
+    <div class="figbox chartwrap" id="sankeyWrap">
+      <div class="legend">
+        <span><i class="swatch" style="background:var(--accent)"></i>Returned to store &mdash; reversible circulation</span>
+        <span><i class="swatch" style="background:var(--l2)"></i>Dissipated as heat &mdash; irreversible</span>
+        <span><i class="swatch" style="background:var(--ink-3)"></i>Delivered as useful work</span>
+      </div>
+      <svg id="sankey" viewBox="0 0 960 510" role="img" aria-labelledby="sankey-t"><title id="sankey-t">Sankey diagram of energy transacted per revolution: 39.75 joules circulate and return, 14.19 joules escape as heat across four stages, and zero joules are delivered as useful work</title></svg>
+      <div class="tip" id="sankeyTip"></div>
+    </div>
+    <figcaption><b>Figure 2</b> Energy transacted per revolution, <span class="num">53.94&nbsp;J</span> in total. Verdigris is the reversible circulation that leaves the rotor and comes back &mdash; the buoyant and capillary exchanges the designer books as output. Amber is the four dissipation channels, ordered by magnitude and directly labelled. The output port at lower right has zero height: it is drawn to scale.</figcaption>
+  </figure>
+
+  <figure class="full">
+    <div class="tablewrap">
+      <table>
+        <caption><b>Table 2</b> Balance sheet, joules per revolution at <span class="num">&omega;<sub>0</sub> = 2.00&nbsp;rad&#8202;s<sup>&minus;1</sup></span>. Positive is work delivered to the shaft. The &ldquo;claimed&rdquo; column reproduces the designer's own figures.</caption>
+        <thead><tr><th>Stage</th><th>Claimed</th><th>Audited</th><th>&Delta;</th><th>Governing constraint</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><div class="stage-cell"><span class="chip">A</span><div>Capillary lift array<span class="note">Surface energy is a state function; half the release is lost to viscous shear before the water arrives, and the meniscus cannot shed.</span></div></div></td>
+            <td class="pos">+3.39</td><td class="neg">&minus;3.40</td><td class="neg">&minus;6.79</td><td style="text-align:left;white-space:normal">Gibbs surface thermodynamics</td>
+          </tr>
+          <tr>
+            <td><div class="stage-cell"><span class="chip">B</span><div>Magnetostatic gate<span class="note">Static magnetic fields are conservative; shaping redistributes torque within the revolution but cannot change its integral.</span></div></div></td>
+            <td class="pos">+8.00</td><td class="neg">&minus;3.64</td><td class="neg">&minus;11.64</td><td style="text-align:left;white-space:normal">&#8750;&#8202;<b>F</b>&#8202;&middot;&#8202;d<b>l</b> = 0</td>
+          </tr>
+          <tr>
+            <td><div class="stage-cell"><span class="chip">C</span><div>Thermoelectric recuperator<span class="note">Harvests a 2.4&#8202;K difference the machine created by wasting the energy in the first place.</span></div></div></td>
+            <td class="pos">+0.28</td><td class="neg">&minus;0.93</td><td class="neg">&minus;1.21</td><td style="text-align:left;white-space:normal">Kelvin&ndash;Planck; Carnot</td>
+          </tr>
+          <tr>
+            <td><div class="stage-cell"><span class="chip">D</span><div>Buoyant return chain<span class="note">Injection work against hydrostatic pressure equals buoyant work identically, for any volume and any depth.</span></div></div></td>
+            <td class="pos">+32.96</td><td class="neg">&minus;6.22</td><td class="neg">&minus;39.18</td><td style="text-align:left;white-space:normal">Hydrostatic reciprocity</td>
+          </tr>
+          <tr class="sub"><td>Gross subtotal</td><td class="pos">+44.63</td><td class="neg">&minus;14.19</td><td class="neg">&minus;58.82</td><td style="text-align:left"></td></tr>
+          <tr><td>Losses admitted by the designer</td><td class="neg">&minus;6.00</td><td>&mdash;</td><td class="pos">+6.00</td><td style="text-align:left;white-space:normal">already counted above</td></tr>
+          <tr class="total"><td>Net work per revolution</td><td class="pos">+38.63</td><td class="neg">&minus;14.19</td><td class="neg">&minus;52.82</td><td style="text-align:left;white-space:normal">&minus;4.52 W at &omega;<sub>0</sub></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </figure>
+
+  <div class="span2">
+    <aside class="marg"><b>Second law check</b>Entropy production is strictly positive, as it must be. A machine that worked would require this number to be negative.</aside>
+    <div class="mbody">
+      <p>The corresponding entropy production, all dissipation landing in the ambient reservoir at <span class="num">295&nbsp;K</span>, is</p>
+      <div class="eq"><span class="ex"><i>S</i><sub>gen</sub> <span class="op">=</span> <i>W</i><sub>diss</sub>&#8202;/&#8202;<i>T</i><sub>0</sub> <span class="op">=</span> <span class="val">0.0481 J&#8202;K&#8315;&sup1;</span> per rev</span><span class="n">(8)</span></div>
+      <p>This is the audit's independent confirmation. Had the four stages summed to a positive net output, equation&nbsp;(8) would have returned a negative entropy production for an isolated cyclic device &mdash; an immediate contradiction with the second law, independent of any detail of the machine.</p>
+    </div>
+  </div>
+
+  <div class="sec-head"><div class="secnum">05</div><h2 class="sect">What the machine actually does</h2></div>
+
+  <p>The audit yields a falsifiable dynamical prediction. Resolving the loss torque into its speed dependencies &mdash; bearing and seal friction constant, hysteresis constant, eddy currents linear in <span class="num">&omega;</span>, windage quadratic &mdash; gives</p>
+
+  <div class="eq"><span class="ex"><i>T</i>(&omega;) <span class="op">=</span> <span class="val">1.701</span> <span class="op">+</span> <span class="val">0.265</span>&#8202;&omega; <span class="op">+</span> <span class="val">0.007</span>&#8202;&omega;<sup>2</sup> &nbsp;&nbsp;<span class="op">N&#8202;m</span></span><span class="n">(9)</span></div>
+
+  <p>Integrating <span class="num">I&#8202;d&omega;/dt = &minus;T(&omega;)</span> from <span class="num">&omega;<sub>0</sub> = 2.00&nbsp;rad&#8202;s<sup>&minus;1</sup></span>, the rotor comes to rest after <strong>13.21&nbsp;s</strong>, having turned <strong>2.00 revolutions</strong>. The claimed machine, delivering <span class="num">12.30&nbsp;W</span> net, would instead accelerate as <span class="num">&omega;(t) = &radic;(&omega;<sub>0</sub><sup>2</sup> + 2Pt/I)</span> without bound until some other limit intervened.</p>
+
+  <figure class="full">
+    <div class="figbox chartwrap" id="coastWrap">
+      <div class="legend">
+        <span><i class="swatch" style="background:var(--accent)"></i>Audited prediction &mdash; coast-down</span>
+        <span><i class="swatch dash"></i>Designer's claim &mdash; runaway</span>
+      </div>
+      <svg id="coast" viewBox="0 0 960 400" role="img" aria-labelledby="coast-t"><title id="coast-t">Angular velocity against time: the audited prediction decays to zero at 13.2 seconds while the claimed machine accelerates without bound</title></svg>
+      <div class="tip" id="coastTip"></div>
+    </div>
+    <figcaption><b>Figure 3</b> The discriminating observable. The two hypotheses do not differ by a few percent &mdash; they differ in sign of curvature and in whether the curve reaches zero. Twenty seconds of unattended observation with a <span class="num">$20</span> optical encoder settles the question. Hover for values.</figcaption>
+  </figure>
+
+  <div class="sec-head"><div class="secnum">06</div><h2 class="sect">Why it looked like it would work</h2></div>
+
+  <p>The four failures above are not four independent engineering oversights. They are one theorem applied four times, wearing four costumes. What made MPMM-1 persuasive was a set of accounting manoeuvres that recur, in the same order, throughout the historical record of the field. Naming them is more durable than refuting any particular machine.</p>
+
+  <figure class="full">
+    <div class="tablewrap">
+      <table>
+        <caption><b>Table 3</b> Taxonomy of the accounting errors in MPMM-1, with the stage each one is doing its work in.</caption>
+        <thead><tr><th>Manoeuvre</th><th>Stage</th><th style="text-align:left">How it hides the deficit</th></tr></thead>
+        <tbody>
+          <tr><td>Domain hopping</td><td>all</td><td style="text-align:left;white-space:normal">The gain is claimed in one domain and the debit falls in another, so no single-discipline review sees both halves of the transaction.</td></tr>
+          <tr><td>The unpriced reset stroke</td><td>A</td><td style="text-align:left;white-space:normal">Only the power stroke is costed. The return to the initial state &mdash; drying, re-cocking, re-charging &mdash; is assumed free, which is precisely where cycle closure bites.</td></tr>
+          <tr><td>Force mistaken for energy</td><td>B</td><td style="text-align:left;white-space:normal">A permanent magnet exerts force indefinitely at zero energy cost. This is read as the ability to do work indefinitely. A table leg also exerts force forever.</td></tr>
+          <tr><td>Conservative field as source</td><td>B</td><td style="text-align:left;white-space:normal">Local asymmetry in a static field is taken to imply a nonzero loop integral. It never does; it only moves torque around inside the loop.</td></tr>
+          <tr><td>Refund booked as income</td><td>C</td><td style="text-align:left;white-space:normal">Recovering a fraction of an already-incurred loss is entered on the credit side, as though the loss had not also been entered on the debit side.</td></tr>
+          <tr><td>Gross quoted for net</td><td>D</td><td style="text-align:left;white-space:normal">Buoyant work is quoted without the identically equal injection work. The largest headline number in the specification is a gross figure with the offsetting entry omitted.</td></tr>
+          <tr><td>Peak read as mean</td><td>B, D</td><td style="text-align:left;white-space:normal">Instantaneous peak torque, which the asymmetry genuinely raises, is quoted as sustained output. A hand-turned prototype feels convincing for exactly this reason.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </figure>
+
+  <p>The seventh is why prototypes matter so little as evidence. A well-built MPMM-1 would feel, to the hand, exactly as its designer describes: a strong pull through the gate, a satisfying surge as each float releases. Every one of those sensations is real. None of them is net work.</p>
+
+  <div class="sec-head"><div class="secnum">07</div><h2 class="sect">The general result</h2></div>
+
+  <p>It is worth stating plainly what the stage-by-stage audit is a special case of, because the general statement is shorter than any of the four refutations.</p>
+
+  <div class="span2">
+    <aside class="marg"><b>Noether, 1918</b>Every differentiable symmetry of the action yields a conserved quantity. Time-translation symmetry yields energy.</aside>
+    <div class="mbody">
+      <p>If the Lagrangian of a system has no explicit time dependence &mdash; if the experiment gives the same result today as tomorrow &mdash; then the corresponding Hamiltonian is a constant of the motion. Energy conservation is not an empirical tally that has happened to balance so far. It is the statement that physics is the same on Tuesday. A machine producing net energy over a closed cycle would be direct evidence that it is not.</p>
+    </div>
+  </div>
+
+  <p>The conventional classification is worth applying:</p>
+
+  <ul>
+    <li><strong>PMM of the first kind</strong> &mdash; produces work from nothing, violating the first law. Stages&nbsp;A, B and D are each claimed to do this.</li>
+    <li><strong>PMM of the second kind</strong> &mdash; conserves energy but converts heat wholly to work from a single reservoir, violating the second law. Stage&nbsp;C is a textbook instance.</li>
+    <li><strong>PMM of the third kind</strong> &mdash; violates neither law, merely claims perfect elimination of friction so motion persists without producing output. Not claimed here, and not useful even if achieved: such a machine delivers nothing.</li>
+  </ul>
+
+  <p>MPMM-1 is therefore a first-kind machine by claim and a second-kind machine by mechanism. That its designer needed both is a measure of the effort required to hide a deficit of <span class="num">14.19&nbsp;J</span>.</p>
+
+  <p>The institutional response settled long ago. The Académie royale des sciences resolved in 1775 to accept no further submissions on the subject, having concluded that examining them consumed more of the Académie's time than the field could ever repay. The United States Patent and Trademark Office retains the authority to demand a working model of an applicant claiming perpetual motion &mdash; effectively the only technology for which a demonstration, not a description, is required.</p>
+
+  <div class="sec-head"><div class="secnum">08</div><h2 class="sect">Falsification protocol</h2></div>
+
+  <p>The audit is a prediction, and predictions should be cheap to check. The following protocol distinguishes the two hypotheses decisively; it is specified so that a null result is as informative as a positive one.</p>
+
+  <ol>
+    <li><strong>Pre-register the coast-down curve.</strong> Figure&nbsp;3 is the discriminating observable and should be lodged before the machine is run. The hypotheses differ in the sign of <span class="num">d&omega;/dt</span>, not merely in magnitude, so no fitting freedom can reconcile them.</li>
+    <li><strong>Instrument the shaft.</strong> A reaction-torque transducer at the rotor mount, <span class="num">10&nbsp;N&#8202;m</span> full scale at <span class="num">&plusmn;0.25&#8202;%</span>, resolves <span class="num">&plusmn;0.025&nbsp;N&#8202;m</span>. The torque discrepancy to be resolved is <span class="num">2.26&nbsp;N&#8202;m</span> at <span class="num">&omega;<sub>0</sub></span> &mdash; a signal-to-noise ratio near <span class="num">90:1</span>. A <span class="num">5000&nbsp;ppr</span> optical encoder fixes <span class="num">&omega;</span> to <span class="num">&plusmn;0.1&#8202;%</span>.</li>
+    <li><strong>Enclose it calorimetrically.</strong> Because all internal circulation ultimately degrades to heat, an isoperibolic enclosure must show steady-state heat output equal to net energy input. The claim predicts <span class="num">12.3&nbsp;W</span> emerging with nothing going in; the audit predicts zero once motion ceases. This test is indifferent to the internal mechanism, which is its value: it cannot be defeated by an argument about magnet geometry.</li>
+    <li><strong>Run it unattended and disconnected.</strong> Seventy-two hours with no electrical, pneumatic, thermal or mechanical connection. The claim predicts <span class="num">3.19&nbsp;MJ</span> delivered. The audit predicts standstill at <span class="num">13.21&nbsp;s</span>.</li>
+    <li><strong>Run a blinded substitution control.</strong> Replace the four stages with an inert flywheel of matched inertia and repeat. If the coast-down curves coincide within instrument error, the stages contribute nothing, whatever the torque trace looks like within a revolution.</li>
+    <li><strong>Report the failure modes in advance.</strong> Sustained rotation would most plausibly indicate an unrecognised energy input &mdash; building vibration, thermal gradients across the room, stray field from nearby equipment, residual magnetisation, or a temperature-driven density change in the water column. Each should be independently monitored, because the interesting outcome of such an experiment is almost always the discovery of the leak.</li>
+  </ol>
+
+  <div class="pull">The impossibility is worth more as a <em>premise</em> than it ever was as a target.</div>
+
+  <div class="sec-head"><div class="secnum">09</div><h2 class="sect">Conclusion</h2></div>
+
+  <p>MPMM-1 does not work, and the audit says by how much: <strong>&minus;14.19&nbsp;J per revolution</strong>, <span class="num">&minus;4.52&nbsp;W</span>, standstill in <span class="num">13.21&nbsp;s</span>. Each of its four stages fails for a reason specific to its own domain, and all four reasons are the same reason. The design's real ingenuity lay not in the mechanism but in the accounting &mdash; in arranging for each deficit to be settled where the reviewer of the adjacent stage was not looking. That is the transferable lesson, and it applies well beyond this subject: <strong>an efficiency claim is only as good as the contour the audit was taken over.</strong> Close the contour and the claim resolves itself.</p>
+
+  <p>It is worth ending where the physics began. In 1586 Simon Stevin drew a loop of beads hung over an asymmetric prism and reasoned that if it ever began to turn it would turn forever, which was absurd &mdash; and from that absurdity derived the law of the inclined plane, correctly, two decades before Galileo. He did not build the machine. He assumed it could not exist and got mechanics in exchange. Carnot did the same thing in 1824 and got the second law; Clausius formalised it in 1865 and got entropy. Every attempt to build the thing has produced nothing, and every attempt to assume it away has produced a branch of physics.</p>
+
+  <p>The honest design brief, then, is the inverse of the one we were given: not <em>make the loop close</em>, but <em>find what must be true because it cannot</em>. On that brief, MPMM-1 pays for itself.</p>
+
+  <div class="sec-head"><div class="secnum">10</div><h2 class="sect">References and constants</h2></div>
+
+  <ol class="refs">
+    <li>Stevin, S. <i>De Beghinselen der Weeghconst</i>. Leiden, 1586. The <i>clootcrans</i> argument; impossibility used as a premise to derive the inclined plane.</li>
+    <li>Bh&#257;skara II. <i>Siddh&#257;nta &#346;iroma&#7751;i</i>, c. 1150. Earliest documented overbalanced-wheel proposal.</li>
+    <li>Villard de Honnecourt. <i>Portfolio</i>, MS Fr 19093, Biblioth&egrave;que nationale de France, c. 1230, fol. 5r. Mallet wheel.</li>
+    <li>Acad&eacute;mie royale des sciences. Resolution to cease examination of perpetual motion submissions, 1775.</li>
+    <li>Carnot, S. <i>R&eacute;flexions sur la puissance motrice du feu</i>. Bachelier, Paris, 1824.</li>
+    <li>Joule, J. P. On the mechanical equivalent of heat. <i>Phil. Trans. R. Soc.</i> <b>140</b>, 61&ndash;82, 1850.</li>
+    <li>Thomson, W. On the dynamical theory of heat. <i>Trans. R. Soc. Edinb.</i> <b>20</b>, 261&ndash;288, 1851. Kelvin&ndash;Planck statement.</li>
+    <li>Clausius, R. Ueber verschiedene f&uuml;r die Anwendung bequeme Formen der Hauptgleichungen der mechanischen W&auml;rmetheorie. <i>Ann. Phys.</i> <b>201</b>, 353&ndash;400, 1865. Introduces entropy.</li>
+    <li>Noether, E. Invariante Variationsprobleme. <i>Nachr. Ges. Wiss. G&ouml;ttingen</i>, 235&ndash;257, 1918.</li>
+    <li>Jurin, J. An account of some experiments shown before the Royal Society. <i>Phil. Trans.</i> <b>30</b>, 739&ndash;747, 1718. Capillary rise law.</li>
+    <li>de Gennes, P.-G., Brochard-Wyart, F. &amp; Qu&eacute;r&eacute;, D. <i>Capillarity and Wetting Phenomena</i>. Springer, 2004. &sect;2 for the surface-energy partition used in equations (1)&ndash;(2).</li>
+    <li>Steinmetz, C. P. On the law of hysteresis. <i>Trans. AIEE</i> <b>9</b>, 1&ndash;64, 1892.</li>
+    <li>Goldsmid, H. J. <i>Introduction to Thermoelectricity</i>, 2nd ed. Springer, 2016. Equation (6) and the <i>ZT</i> reduction factor.</li>
+    <li>Ord-Hume, A. W. J. G. <i>Perpetual Motion: The History of an Obsession</i>. St. Martin's Press, 1977. Standard historical survey, including the Orffyreus affair of 1712&ndash;1717.</li>
+    <li>United States Patent and Trademark Office. <i>Manual of Patent Examining Procedure</i>, &sect;608.03(a); 37 CFR &sect;1.91. Working-model requirement.</li>
+  </ol>
+
+  <p style="margin-top:2.2rem"><strong>Constants used throughout.</strong> <span class="num">g = 9.81&nbsp;m&#8202;s<sup>&minus;2</sup></span>; <span class="num">&rho;<sub>water</sub> = 1.00&times;10<sup>3</sup>&nbsp;kg&#8202;m<sup>&minus;3</sup></span>; <span class="num">&gamma; = 72.8&nbsp;mN&#8202;m<sup>&minus;1</sup></span> at <span class="num">22&nbsp;&deg;C</span>; <span class="num">&rho;<sub>air</sub> = 1.20&nbsp;kg&#8202;m<sup>&minus;3</sup></span>; <span class="num">&rho;<sub>e,steel</sub> = 1.60&times;10<sup>&minus;7</sup>&nbsp;&Omega;&#8202;m</span>; <span class="num">T<sub>0</sub> = 295&nbsp;K</span>. All results quoted to three significant figures; intermediate values carried at full precision.</p>
+
+  <div class="foot">
+    <span>MPMM-1 &ldquo;Cascade Loop&rdquo; &mdash; thermodynamic assay</span>
+    <span>Net &minus;14.19 J&#8202;rev<sup>&minus;1</sup> &nbsp;&middot;&nbsp; S<sub>gen</sub> &gt; 0 &nbsp;&middot;&nbsp; verdict: does not close</span>
+  </div>
+
+</article>
+
+<script>
+(function(){
+  "use strict";
+  var NS = "http://www.w3.org/2000/svg";
+  function el(n, a){ var e = document.createElementNS(NS, n); for (var k in a) e.setAttribute(k, a[k]); return e; }
+  function fmt(v, d){ return v.toFixed(d === undefined ? 2 : d); }
+
+  /* ---------------- Figure 2 : Sankey ---------------- */
+  var sv = document.getElementById("sankey"), stip = document.getElementById("sankeyTip");
+  if (sv) {
+    var TOTAL = 53.94, SCALE = 300 / TOTAL, X0 = 206, X1 = 596, NW = 16, SY0 = 84, LX = X1 + NW + 14;
+    var flows = [
+      { key:"ret", name:"Returned to store",          sub:"net contribution zero",   v:39.75, c:"var(--accent)", ty:76,  op:0.42 },
+      { key:"D",   name:"Stage D \u00b7 buoyant chain",   sub:"seal, drag, entrainment", v:6.22,  c:"var(--l1)",     ty:314, op:0.80 },
+      { key:"B",   name:"Stage B \u00b7 magnetic gate",   sub:"eddy + hysteresis",       v:3.64,  c:"var(--l2)",     ty:370, op:0.80 },
+      { key:"A",   name:"Stage A \u00b7 capillary array", sub:"viscous shear",           v:3.40,  c:"var(--l3)",     ty:412, op:0.80 },
+      { key:"C",   name:"Stage C \u00b7 bearings",        sub:"friction + windage",      v:0.93,  c:"var(--l4)",     ty:450, op:0.85 },
+      { key:"out", name:"Delivered as useful work",   sub:"drawn to scale",          v:0.00,  c:"var(--ink-3)",  ty:486, op:1.00 }
+    ];
+
+    var defs = el("defs", {});
+    var mk = el("marker", { id:"sk-arrow", viewBox:"0 0 10 10", refX:8, refY:5,
+      markerWidth:6, markerHeight:6, orient:"auto-start-reverse" });
+    mk.appendChild(el("path", { d:"M0,0 L10,5 L0,10 z", fill:"var(--accent)" }));
+    defs.appendChild(mk); sv.appendChild(defs);
+
+    sv.appendChild(el("text", { x:0, y:14, "class":"s-title" })).textContent =
+      "Figure 2 \u2014 Energy transacted per revolution";
+
+    /* source node */
+    sv.appendChild(el("rect", { x:X0-NW, y:SY0, width:NW, height:300, fill:"var(--ink-2)" }));
+    [["Rotor kinetic store","s-lab",226],["53.94 J","s-val",242],["TRANSACTED PER REV","s-lab-sm",258]]
+      .forEach(function(r){
+        var t = el("text", { x:X0-NW-14, y:r[2], "class":r[1], "text-anchor":"end" });
+        t.textContent = r[0]; sv.appendChild(t);
+      });
+
+    var sy = SY0, xm = (X0 + X1) / 2;
+    flows.forEach(function(f){
+      var h = f.v * SCALE, a = sy, b = sy + h, c = f.ty, d = f.ty + h;
+      if (h > 0.4) {
+        var p = el("path", {
+          d: "M"+X0+","+a+" C"+xm+","+a+" "+xm+","+c+" "+X1+","+c+
+             " L"+X1+","+d+" C"+xm+","+d+" "+xm+","+b+" "+X0+","+b+" Z",
+          fill: f.c, opacity: f.op * 0.55, stroke: f.c, "stroke-width": 0.6, "stroke-opacity": 0.5
+        });
+        p.style.cursor = "crosshair";
+        (function(ff, pp){
+          function on(e){
+            pp.setAttribute("opacity", ff.op);
+            var r = sv.getBoundingClientRect();
+            stip.style.left = (e.clientX - r.left) + "px";
+            stip.style.top  = (e.clientY - r.top) + "px";
+            stip.style.opacity = 1;
+            stip.innerHTML = "<b>" + ff.name + "</b><br>" + fmt(ff.v) + " J per revolution &nbsp;\u00b7&nbsp; " +
+                             fmt(ff.v / TOTAL * 100, 1) + "% of throughput";
+          }
+          pp.addEventListener("mouseenter", on);
+          pp.addEventListener("mousemove", on);
+          pp.addEventListener("mouseleave", function(){
+            pp.setAttribute("opacity", ff.op * 0.55); stip.style.opacity = 0;
+          });
+        })(f, p);
+        sv.appendChild(p);
+        sv.appendChild(el("rect", { x:X1, y:c, width:NW, height:Math.max(h,1), fill:f.c }));
+      } else {
+        /* zero-height output port, drawn to scale and capped so it reads as measured, not missing */
+        sv.appendChild(el("line", { x1:X1-54, y1:c, x2:X1+NW, y2:c, stroke:"var(--ink)", "stroke-width":1.6 }));
+        sv.appendChild(el("line", { x1:X1-54, y1:c-5, x2:X1-54, y2:c+5, stroke:"var(--ink)", "stroke-width":1.6 }));
+        sv.appendChild(el("line", { x1:X1+NW, y1:c-5, x2:X1+NW, y2:c+5, stroke:"var(--ink)", "stroke-width":1.6 }));
+      }
+      var ly = c + Math.max(h, 1) / 2;
+      var t1 = el("text", { x:LX, y:ly - 3, "class":"s-lab" }); t1.textContent = f.name; sv.appendChild(t1);
+      var t2 = el("text", { x:LX, y:ly + 12, "class":"s-val" });
+      var vt = el("tspan", {}); vt.textContent = fmt(f.v) + " J";
+      if (f.key === "out") { vt.setAttribute("fill", "var(--ink)"); vt.setAttribute("font-weight", "600"); }
+      t2.appendChild(vt);
+      var st2 = el("tspan", { "class":"s-lab-sm", dx:"10" }); st2.textContent = f.sub;
+      t2.appendChild(st2); sv.appendChild(t2);
+      sy = b;
+    });
+
+    /* the reversible circulation hooks back to the store within the cycle */
+    sv.appendChild(el("path", { d:"M"+(X1+NW)+",70 C"+(X1+64)+",30 "+(X0-96)+",30 "+(X0-NW-4)+",78",
+      fill:"none", stroke:"var(--accent)", "stroke-width":1.3, "stroke-dasharray":"4 4", opacity:.8,
+      "marker-end":"url(#sk-arrow)" }));
+    var rl = el("text", { x:(X0+X1)/2, y:38, "class":"s-lab-sm", "text-anchor":"middle" });
+    rl.setAttribute("fill", "var(--accent)");
+    rl.textContent = "RETURNS TO THE SHAFT WITHIN THE CYCLE";
+    sv.appendChild(rl);
+  }
+
+  /* ---------------- Figure 3 : coast-down ---------------- */
+  var cv = document.getElementById("coast"), ctip = document.getElementById("coastTip");
+  if (cv) {
+    var L = 74, R = 902, T = 44, B = 330, TMAX = 20, WMAX = 7, I = 12.96;
+    function fx(t){ return L + t / TMAX * (R - L); }
+    function fy(w){ return B - w / WMAX * (B - T); }
+    function torque(w){ return 1.701 + 0.265 * w + 0.007 * w * w; }
+
+    /* audited: integrate I dw/dt = -T(w) */
+    var audited = [], w = 2.0, dt = 0.002, tStop = null;
+    for (var t = 0; t <= TMAX + 1e-9; t += dt) {
+      if (w > 0) { w -= torque(w) / I * dt; if (w <= 0) { w = 0; tStop = t; } }
+      if (Math.abs(t / 0.05 - Math.round(t / 0.05)) < 1e-6) audited.push([t, Math.max(w, 0)]);
+    }
+    /* claimed: constant 12.30 W net into the flywheel */
+    var claimed = [];
+    for (var t2 = 0; t2 <= TMAX + 1e-9; t2 += 0.05) claimed.push([t2, Math.sqrt(4 + 2 * 12.30 * t2 / I)]);
+
+    cv.appendChild(el("text", { x:0, y:14, "class":"s-title" })).textContent =
+      "Figure 3 — Angular velocity after release at ω₀ = 2.00 rad s⁻¹";
+
+    /* grid + axes */
+    for (var g = 0; g <= WMAX; g++) {
+      cv.appendChild(el("line", { x1:L, y1:fy(g), x2:R, y2:fy(g),
+        stroke: g === 0 ? "var(--rule)" : "var(--rule-soft)", "stroke-width": g === 0 ? 1.2 : 1 }));
+      var yl = el("text", { x:L - 10, y:fy(g) + 4, "class":"s-lab-sm", "text-anchor":"end" });
+      yl.textContent = g; cv.appendChild(yl);
+    }
+    for (var xt = 0; xt <= TMAX; xt += 4) {
+      var xl = el("text", { x:fx(xt), y:B + 20, "class":"s-lab-sm", "text-anchor":"middle" });
+      xl.textContent = xt; cv.appendChild(xl);
+    }
+    var ax = el("text", { x:(L+R)/2, y:B + 42, "class":"s-lab", "text-anchor":"middle" });
+    ax.textContent = "time after release  (s)"; cv.appendChild(ax);
+    var ay = el("text", { x:16, y:(T+B)/2, "class":"s-lab", "text-anchor":"middle",
+      transform:"rotate(-90 16 " + ((T+B)/2) + ")" });
+    ay.textContent = "angular velocity  ω  (rad s⁻¹)"; cv.appendChild(ay);
+
+    function line(pts){ return pts.map(function(p, i){ return (i ? "L" : "M") + fx(p[0]) + "," + fy(p[1]); }).join(" "); }
+
+    cv.appendChild(el("path", { d:line(claimed), fill:"none", stroke:"var(--ink-3)",
+      "stroke-width":2, "stroke-dasharray":"6 5", "stroke-linecap":"round" }));
+    cv.appendChild(el("path", { d:line(audited), fill:"none", stroke:"var(--accent)",
+      "stroke-width":2, "stroke-linejoin":"round", "stroke-linecap":"round" }));
+
+    /* emphasized endpoint: standstill */
+    cv.appendChild(el("circle", { cx:fx(tStop), cy:fy(0), r:4.5, fill:"var(--accent)",
+      stroke:"var(--surface)", "stroke-width":2 }));
+    cv.appendChild(el("line", { x1:fx(tStop), y1:fy(0), x2:fx(tStop), y2:fy(0) - 46,
+      stroke:"var(--accent)", "stroke-width":1, "stroke-dasharray":"3 3" }));
+    var sl = el("text", { x:fx(tStop) + 8, y:fy(0) - 52, "class":"s-val" });
+    sl.setAttribute("fill", "var(--accent)");
+    sl.textContent = "standstill  " + fmt(tStop, 2) + " s"; cv.appendChild(sl);
+    var sl2 = el("text", { x:fx(tStop) + 8, y:fy(0) - 38, "class":"s-lab-sm" });
+    sl2.textContent = "2.00 revolutions"; cv.appendChild(sl2);
+
+    /* direct labels */
+    var cl = el("text", { x:fx(TMAX) - 6, y:fy(claimed[claimed.length-1][1]) - 10, "class":"s-val", "text-anchor":"end" });
+    cl.setAttribute("fill", "var(--ink-2)"); cl.textContent = "claimed  +12.30 W"; cv.appendChild(cl);
+    var al = el("text", { x:fx(TMAX) - 6, y:fy(0) - 12, "class":"s-val", "text-anchor":"end" });
+    al.setAttribute("fill", "var(--accent)"); al.textContent = "audited  −4.52 W"; cv.appendChild(al);
+
+    /* crosshair + tooltip */
+    var cross = el("line", { x1:L, y1:T, x2:L, y2:B, stroke:"var(--ink-3)", "stroke-width":1, opacity:0 });
+    var dotA  = el("circle", { r:4, fill:"var(--accent)", stroke:"var(--surface)", "stroke-width":1.5, opacity:0 });
+    var dotC  = el("circle", { r:4, fill:"var(--ink-3)", stroke:"var(--surface)", "stroke-width":1.5, opacity:0 });
+    cv.appendChild(cross); cv.appendChild(dotA); cv.appendChild(dotC);
+    var hit = el("rect", { x:L, y:T, width:R-L, height:B-T, fill:"transparent" });
+    hit.style.cursor = "crosshair"; cv.appendChild(hit);
+
+    function at(arr, tq){ var i = Math.min(arr.length-1, Math.max(0, Math.round(tq/0.05))); return arr[i]; }
+    hit.addEventListener("mousemove", function(e){
+      var r = cv.getBoundingClientRect(), vx = (e.clientX - r.left) / r.width * 960;
+      var tq = Math.max(0, Math.min(TMAX, (vx - L) / (R - L) * TMAX));
+      var a = at(audited, tq), c = at(claimed, tq);
+      cross.setAttribute("x1", fx(tq)); cross.setAttribute("x2", fx(tq)); cross.setAttribute("opacity", .45);
+      dotA.setAttribute("cx", fx(a[0])); dotA.setAttribute("cy", fy(a[1])); dotA.setAttribute("opacity", 1);
+      dotC.setAttribute("cx", fx(c[0])); dotC.setAttribute("cy", fy(c[1])); dotC.setAttribute("opacity", 1);
+      ctip.style.left = (e.clientX - r.left) + "px";
+      ctip.style.top  = (e.clientY - r.top) + "px";
+      ctip.style.opacity = 1;
+      ctip.innerHTML = "<b>t = " + fmt(tq, 2) + " s</b><br>audited &nbsp;" + fmt(a[1], 3) +
+                       " rad s⁻¹<br>claimed &nbsp;" + fmt(c[1], 3) + " rad s⁻¹";
+    });
+    hit.addEventListener("mouseleave", function(){
+      cross.setAttribute("opacity", 0); dotA.setAttribute("opacity", 0);
+      dotC.setAttribute("opacity", 0); ctip.style.opacity = 0;
+    });
+  }
+})();
+</script>
