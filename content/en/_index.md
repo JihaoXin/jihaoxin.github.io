@@ -92,6 +92,14 @@ sections:
       #   Leave `date_end` empty if it's your current employer.
       #   Begin multi-line descriptions with YAML's `|2-` multi-line prefix.
       items:
+        - title: AI Researcher
+          company: 'WILL Lab (WizardQuant)'
+          company_url: 'https://wq-will.com/'
+          location: Shanghai, China
+          date_start: '2026-09-21'
+          date_end: '2026-12-21'
+          description: |
+           Post-Training Team, working on self-evolving agents.
         - title: Research Intern
           company: Microsoft Research Asia
           company_url: ''
