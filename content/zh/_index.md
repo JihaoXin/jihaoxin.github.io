@@ -105,7 +105,7 @@ sections:
           company: 微软亚洲研究院
           company_url: ''
           company_logo: microsoft
-          location: 北京 中国
+          location: 中国 北京
           date_start: '2023-09-19'
           date_end: '2024-03-19'
           description: |
