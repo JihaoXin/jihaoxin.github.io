@@ -109,7 +109,7 @@ sections:
           date_start: '2023-09-19'
           date_end: '2024-03-19'
           description: |
-           大语言模型推理的多GPU通信
+           GPU 通信与计算的算子融合
         - title: 研究实习生
           company: 奥地利科学技术研究所
           company_url: ''

@@ -108,7 +108,8 @@ sections:
           location: Beijing, China
           date_start: '2023-09-19'
           date_end: '2024-03-19'
-          description:
+          description: |
+           Operator fusion of GPU communication and computation.
         - title: Research Intern
           company: ISTAustria
           company_url: ''
