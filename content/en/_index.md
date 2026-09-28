@@ -95,7 +95,7 @@ sections:
         - title: AI Researcher
           company: 'WILL Lab (WizardQuant)'
           company_url: 'https://wq-will.com/'
-          company_logo: will
+          company_logo: wizardquant
           location: Shanghai, China
           date_start: '2026-09-21'
           date_end: '2026-12-21'
