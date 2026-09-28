@@ -95,11 +95,12 @@ sections:
         - title: AI Researcher
           company: 'WILL Lab (WizardQuant)'
           company_url: 'https://wq-will.com/'
+          company_logo: will
           location: Shanghai, China
           date_start: '2026-09-21'
           date_end: '2026-12-21'
           description: |
-           Post-Training Team, working on self-evolving agents.
+           Post-Training Team, working on agent self-improvement.
         - title: Research Intern
           company: Microsoft Research Asia
           company_url: ''

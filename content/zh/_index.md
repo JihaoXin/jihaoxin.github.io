@@ -95,6 +95,7 @@ sections:
         - title: AI 研究员
           company: 宽德智能学习实验室（WILL）
           company_url: 'https://wq-will.com/'
+          company_logo: will
           location: 中国 上海
           date_start: '2026-09-21'
           date_end: '2026-12-21'
