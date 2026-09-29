@@ -118,8 +118,8 @@ sections:
           date_start: '2022-05-01'
           date_end: '2022-08-01'
           description: |
-              基于高效阈值选择的TopK梯度压缩。 语言：CUDA/C++
-              
+              基于高效阈值选择的 TopK 梯度压缩
+
         - title: 后端开发实习生
           company: 腾讯
           company_url: ''
@@ -128,7 +128,7 @@ sections:
           date_start: '2019-08-01'
           date_end: '2019-11-01'
           description: |
-           腾讯云国际站后台开发。 语言：GoLang
+           腾讯云国际站后台开发
 
         - title: 研究实习生
           company: 西澳大利亚大学
@@ -138,7 +138,7 @@ sections:
           date_start: '2019-06-01'
           date_end: '2019-08-01'
           description: |
-           基于YOLO的西澳大利亚环海高速浪花监测。语言：Python
+           基于 YOLO 的西澳大利亚环海高速浪花监测
 
     design:
       columns: '2'

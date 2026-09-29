@@ -118,8 +118,8 @@ sections:
           date_start: '2022-05-01'
           date_end: '2022-08-01'
           description: |
-              TopK gradient compression with efficient threshold selection by CUDA/C++.
-              
+              TopK gradient compression with efficient threshold selection.
+
         - title: Engineering Intern
           company: Tencent Cloud
           company_url: ''
@@ -128,7 +128,7 @@ sections:
           date_start: '2019-08-01'
           date_end: '2019-11-01'
           description: |
-           Tencent international website backend developer by GoLang.
+           Backend development for the Tencent Cloud international website.
 
         - title: Research Intern
           company: The University of Western Australia
@@ -138,7 +138,7 @@ sections:
           date_start: '2019-06-01'
           date_end: '2019-08-01'
           description: |
-           YOLO-based splash detection of Western Australia's coastal highway by Python.
+           YOLO-based splash detection for Western Australia's coastal highway.
 
     design:
       columns: '2'
